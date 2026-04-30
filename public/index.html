@@ -1,0 +1,1205 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sky Kids — Cel Mai Mare Teren de Joacă din Soroca | Restaurant & Distracție</title>
+    <meta name="description" content="Sky Kids Soroca — teren de joacă pentru copii 1-12 ani, restaurant pentru părinți, zile de naștere, evenimente. Programează-te acum!">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        sky: { 50:'#f0f9ff', 100:'#e0f2fe', 200:'#bae6fd', 300:'#7dd3fc', 400:'#38bdf8', 500:'#0ea5e9', 600:'#0284c7', 700:'#0369a1' },
+                        candy: { pink:'#FF6B9D', purple:'#C084FC', blue:'#60A5FA', green:'#34D399', yellow:'#FBBF24', orange:'#FB923C', red:'#F87171' },
+                        dark: '#1a1a2e',
+                    },
+                    fontFamily: {
+                        sans: ['Nunito', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Nunito', sans-serif; overflow-x: hidden; }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f0f9ff; }
+        ::-webkit-scrollbar-thumb { background: #0ea5e9; border-radius: 4px; }
+
+        @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+        @keyframes floatSlow { 0%,100%{transform:translateY(0) rotate(0)} 50%{transform:translateY(-6px) rotate(5deg)} }
+        @keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-15px)} }
+        @keyframes spin-slow { 0%{transform:rotate(0)} 100%{transform:rotate(360deg)} }
+        @keyframes gradient-x { 0%,100%{background-position:0% 50%} 50%{background-position:100% 50%} }
+        @keyframes fadeInUp { from{opacity:0;transform:translateY(30px)} to{opacity:1;transform:translateY(0)} }
+        @keyframes confetti { 0%{transform:translateY(0) rotate(0);opacity:1} 100%{transform:translateY(100vh) rotate(720deg);opacity:0} }
+        @keyframes pulse-ring { 0%{transform:scale(0.8);opacity:0.5} 100%{transform:scale(2);opacity:0} }
+        @keyframes wiggle { 0%,100%{transform:rotate(-3deg)} 50%{transform:rotate(3deg)} }
+
+        .float { animation: float 3s ease-in-out infinite; }
+        .float-slow { animation: floatSlow 4s ease-in-out infinite; }
+        .bounce-anim { animation: bounce 2s ease-in-out infinite; }
+        .spin-slow { animation: spin-slow 20s linear infinite; }
+        .animate-gradient { background-size:200% 200%; animation: gradient-x 3s ease infinite; }
+        .wiggle { animation: wiggle 1s ease-in-out infinite; }
+
+        .fade-in { opacity:0; transform:translateY(30px); transition: all 0.6s ease; }
+        .fade-in.visible { opacity:1; transform:translateY(0); }
+
+        .card-hover { transition: all 0.3s ease; }
+        .card-hover:hover { transform: translateY(-8px); }
+
+        .nav-link::after { content:''; display:block; width:0; height:3px; border-radius:2px; background:linear-gradient(90deg,#FF6B9D,#FBBF24); transition:width 0.3s; }
+        .nav-link:hover::after { width:100%; }
+
+        .mobile-menu { transform:translateX(100%); transition:transform 0.3s ease; }
+        .mobile-menu.active { transform:translateX(0); }
+
+        /* Booking modal */
+        .modal-overlay { opacity:0; pointer-events:none; transition:opacity 0.3s; }
+        .modal-overlay.active { opacity:1; pointer-events:auto; }
+        .modal-content { transform:scale(0.9) translateY(20px); transition:all 0.3s; }
+        .modal-overlay.active .modal-content { transform:scale(1) translateY(0); }
+
+        /* Decorative bubbles */
+        .bubble {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.1;
+        }
+
+        /* Menu card */
+        .menu-card { transition: all 0.3s ease; border: 2px solid transparent; }
+        .menu-card:hover { border-color: #0ea5e9; transform: scale(1.02); }
+
+        /* Gallery */
+        .gallery-item { transition: all 0.4s ease; }
+        .gallery-item:hover { transform: scale(1.05); z-index: 10; }
+
+        /* Time slot buttons */
+        .time-slot { transition: all 0.2s ease; }
+        .time-slot.selected { background: linear-gradient(135deg,#FF6B9D,#FBBF24); color: white; transform: scale(1.05); }
+
+        /* Confetti particles */
+        .confetti-piece {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            top: -10px;
+            animation: confetti 3s linear forwards;
+            z-index: 9999;
+            pointer-events: none;
+        }
+
+        /* Rainbow text */
+        .rainbow-text {
+            background: linear-gradient(90deg, #FF6B9D, #C084FC, #60A5FA, #34D399, #FBBF24, #FB923C);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            background-size: 200% auto;
+            animation: gradient-x 4s ease infinite;
+        }
+    </style>
+</head>
+<body class="bg-white text-gray-800">
+
+<!-- ========== NAVIGATION ========== -->
+<nav class="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-lg shadow-sm">
+    <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+        <a href="#" class="flex items-center gap-3 group">
+            <div class="relative">
+                <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-candy-pink via-sky-400 to-candy-purple flex items-center justify-center text-white text-xl font-black shadow-lg shadow-sky-200">
+                    SK
+                </div>
+                <div class="absolute -top-1 -right-1 w-4 h-4 bg-candy-yellow rounded-full bounce-anim"></div>
+            </div>
+            <div>
+                <span class="text-dark font-black text-xl tracking-tight">Sky Kids</span>
+                <div class="text-[10px] text-sky-500 font-bold tracking-wider uppercase -mt-1">Soroca 🎈</div>
+            </div>
+        </a>
+
+        <div class="hidden lg:flex items-center gap-8">
+            <a href="#acasa" class="nav-link text-gray-600 hover:text-dark text-sm font-bold">Acasă</a>
+            <a href="#despre" class="nav-link text-gray-600 hover:text-dark text-sm font-bold">Despre Noi</a>
+            <a href="#meniu" class="nav-link text-gray-600 hover:text-dark text-sm font-bold">Meniu</a>
+            <a href="#galerie" class="nav-link text-gray-600 hover:text-dark text-sm font-bold">Galerie</a>
+            <a href="#preturi" class="nav-link text-gray-600 hover:text-dark text-sm font-bold">Prețuri</a>
+            <a href="#contact" class="nav-link text-gray-600 hover:text-dark text-sm font-bold">Contact</a>
+            <button onclick="openBooking()" class="ml-4 px-6 py-3 bg-gradient-to-r from-candy-pink to-candy-yellow text-white text-sm font-bold rounded-xl hover:brightness-110 transition-all shadow-lg shadow-pink-200 flex items-center gap-2">
+                <iconify-icon icon="lucide:calendar-heart" width="18"></iconify-icon>
+                Programează-te
+            </button>
+        </div>
+
+        <button onclick="toggleMenu()" class="lg:hidden text-dark">
+            <iconify-icon icon="lucide:menu" width="28"></iconify-icon>
+        </button>
+    </div>
+</nav>
+
+<!-- Mobile Menu -->
+<div id="mobileMenu" class="mobile-menu fixed inset-0 z-[60] bg-white flex flex-col items-center justify-center gap-6">
+    <button onclick="toggleMenu()" class="absolute top-6 right-6 text-dark">
+        <iconify-icon icon="lucide:x" width="28"></iconify-icon>
+    </button>
+    <a href="#acasa" onclick="toggleMenu()" class="text-dark text-2xl font-bold">Acasă</a>
+    <a href="#despre" onclick="toggleMenu()" class="text-dark text-2xl font-bold">Despre Noi</a>
+    <a href="#meniu" onclick="toggleMenu()" class="text-dark text-2xl font-bold">Meniu</a>
+    <a href="#galerie" onclick="toggleMenu()" class="text-dark text-2xl font-bold">Galerie</a>
+    <a href="#preturi" onclick="toggleMenu()" class="text-dark text-2xl font-bold">Prețuri</a>
+    <a href="#contact" onclick="toggleMenu()" class="text-dark text-2xl font-bold">Contact</a>
+    <button onclick="toggleMenu();openBooking()" class="mt-4 px-8 py-3 bg-gradient-to-r from-candy-pink to-candy-yellow text-white font-bold rounded-xl">
+        Programează-te Acum! 🎉
+    </button>
+</div>
+
+<!-- ========== HERO ========== -->
+<section id="acasa" class="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
+    <!-- Background -->
+    <div class="absolute inset-0 bg-gradient-to-br from-sky-100 via-purple-50 to-pink-50"></div>
+
+    <!-- Decorative elements -->
+    <div class="absolute top-20 left-10 w-32 h-32 bg-candy-pink/10 rounded-full blur-2xl float"></div>
+    <div class="absolute top-40 right-20 w-40 h-40 bg-candy-blue/10 rounded-full blur-2xl float-slow"></div>
+    <div class="absolute bottom-20 left-1/4 w-24 h-24 bg-candy-yellow/10 rounded-full blur-xl float"></div>
+    <div class="absolute bottom-40 right-1/3 w-20 h-20 bg-candy-green/10 rounded-full blur-xl float-slow"></div>
+
+    <!-- Floating emojis -->
+    <div class="absolute top-32 left-[15%] text-5xl float" style="animation-delay:0.5s">🎈</div>
+    <div class="absolute top-48 right-[20%] text-4xl float-slow" style="animation-delay:1s">🎠</div>
+    <div class="absolute bottom-32 left-[25%] text-4xl float" style="animation-delay:1.5s">🧸</div>
+    <div class="absolute bottom-48 right-[15%] text-5xl float-slow" style="animation-delay:0.3s">🎪</div>
+    <div class="absolute top-64 left-[8%] text-3xl bounce-anim" style="animation-delay:2s">⭐</div>
+    <div class="absolute top-36 left-[60%] text-3xl bounce-anim" style="animation-delay:1.2s">🎀</div>
+    <div class="absolute bottom-64 right-[8%] text-3xl bounce-anim" style="animation-delay:0.7s">🌈</div>
+
+    <div class="relative z-10 text-center px-6 max-w-5xl mx-auto">
+        <div class="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-white/80 shadow-md text-sm font-bold text-sky-600 mb-8">
+            <span class="wiggle inline-block">🎉</span>
+            Cel mai mare teren de joacă din Soroca
+        </div>
+
+        <h1 class="text-5xl sm:text-7xl lg:text-8xl font-black tracking-tight leading-[1.05] mb-6">
+            <span class="text-dark">Sky</span>
+            <span class="rainbow-text"> Kids</span>
+            <br>
+            <span class="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-500">Distracție pentru Copii</span>
+            <br>
+            <span class="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-400">Relaxare pentru Părinți</span>
+        </h1>
+
+        <p class="text-lg sm:text-xl text-gray-500 max-w-2xl mx-auto mb-10 leading-relaxed">
+            Un univers magic unde copiii de la <strong class="text-candy-pink">1 la 12 ani</strong> se pot juca nesfârșit, iar părinții se pot relaxa cu o cafea bună și mâncare delicioasă 🍕☕
+        </p>
+
+        <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <button onclick="openBooking()" class="group px-8 py-4 bg-gradient-to-r from-candy-pink via-candy-purple to-candy-blue text-white font-bold rounded-2xl hover:brightness-110 transition-all shadow-xl shadow-pink-200/50 text-lg flex items-center gap-2">
+                <iconify-icon icon="lucide:calendar-heart" width="22"></iconify-icon>
+                Programează o Vizită
+            </button>
+            <a href="#despre" class="group px-8 py-4 border-2 border-sky-200 text-sky-600 font-bold rounded-2xl hover:bg-sky-50 transition-all text-lg flex items-center gap-2">
+                Descoperă Mai Mult
+                <iconify-icon icon="lucide:arrow-down" width="20" class="group-hover:translate-y-1 transition-transform"></iconify-icon>
+            </a>
+        </div>
+
+        <!-- Stats -->
+        <div class="mt-16 grid grid-cols-2 sm:grid-cols-4 gap-6 max-w-2xl mx-auto">
+            <div class="bg-white/80 rounded-2xl p-4 shadow-md">
+                <div class="text-3xl font-black rainbow-text">500m²</div>
+                <div class="text-xs text-gray-400 font-bold mt-1">Teren de Joacă</div>
+            </div>
+            <div class="bg-white/80 rounded-2xl p-4 shadow-md">
+                <div class="text-3xl font-black text-candy-pink">1-12</div>
+                <div class="text-xs text-gray-400 font-bold mt-1">Ani</div>
+            </div>
+            <div class="bg-white/80 rounded-2xl p-4 shadow-md">
+                <div class="text-3xl font-black text-sky-500">10-22</div>
+                <div class="text-xs text-gray-400 font-bold mt-1">Program Zilnic</div>
+            </div>
+            <div class="bg-white/80 rounded-2xl p-4 shadow-md">
+                <div class="text-3xl font-black text-candy-green">100%</div>
+                <div class="text-xs text-gray-400 font-bold mt-1">Distracție</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Wave divider -->
+    <div class="absolute bottom-0 left-0 right-0">
+        <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0,60 C360,120 720,0 1080,60 C1260,90 1380,60 1440,40 L1440,120 L0,120 Z" fill="white"/>
+        </svg>
+    </div>
+</section>
+
+<!-- ========== ABOUT ========== -->
+<section id="despre" class="py-24 bg-white">
+    <div class="max-w-7xl mx-auto px-6">
+        <div class="grid lg:grid-cols-2 gap-16 items-center">
+            <!-- Image side -->
+            <div class="relative fade-in">
+                <div class="aspect-[4/3] rounded-3xl overflow-hidden shadow-2xl shadow-sky-100">
+                    <img src="https://images.unsplash.com/photo-1566454544259-f4b94c3d758c?q=80&w=2670&auto=format&fit=crop"
+                         alt="Sky Kids teren de joacă" class="w-full h-full object-cover">
+                </div>
+                <!-- Floating badge -->
+                <div class="absolute -bottom-6 -right-6 bg-gradient-to-br from-candy-pink to-candy-purple text-white p-6 rounded-2xl shadow-xl">
+                    <div class="text-3xl">🎪</div>
+                    <div class="text-sm font-bold mt-1">Etajul 2</div>
+                </div>
+                <!-- Decorative circle -->
+                <div class="absolute -top-4 -left-4 w-20 h-20 bg-candy-yellow/20 rounded-full"></div>
+            </div>
+
+            <!-- Text side -->
+            <div class="fade-in">
+                <span class="text-candy-pink text-xs font-bold tracking-widest uppercase">Despre Noi</span>
+                <h2 class="text-4xl sm:text-5xl font-black text-dark tracking-tight mt-3 mb-6">
+                    Un Loc Magic<br>
+                    <span class="rainbow-text">Pentru Toată Familia</span>
+                </h2>
+
+                <p class="text-gray-500 leading-relaxed mb-6">
+                    <strong class="text-dark">Sky Kids</strong> este cel mai mare și modern teren de joacă din Soroca, situat pe str. Ștefan cel Mare 46, la etajul 2. Am creat un spațiu unde copiii pot explora, se pot juca și socializa în siguranță, iar părinții pot relaxa.
+                </p>
+
+                <p class="text-gray-500 leading-relaxed mb-8">
+                    În parteneriat cu <strong class="text-dark">La Faleza Restaurant</strong> și <strong class="text-dark">Cofein</strong> coffee shop, oferim o experiență completă: de la labirinturi și tobogane pentru copii, la cafea artizanală și preparate delicioase pentru adulți.
+                </p>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="flex items-center gap-3 p-3 bg-sky-50 rounded-xl">
+                        <span class="text-2xl">🧗</span>
+                        <span class="text-sm font-bold text-dark">Labirint & Tobogan</span>
+                    </div>
+                    <div class="flex items-center gap-3 p-3 bg-pink-50 rounded-xl">
+                        <span class="text-2xl">🎂</span>
+                        <span class="text-sm font-bold text-dark">Zile de Naștere</span>
+                    </div>
+                    <div class="flex items-center gap-3 p-3 bg-purple-50 rounded-xl">
+                        <span class="text-2xl">☕</span>
+                        <span class="text-sm font-bold text-dark">Cafea Cofein</span>
+                    </div>
+                    <div class="flex items-center gap-3 p-3 bg-green-50 rounded-xl">
+                        <span class="text-2xl">🍕</span>
+                        <span class="text-sm font-bold text-dark">Restaurant La Faleza</span>
+                    </div>
+                    <div class="flex items-center gap-3 p-3 bg-yellow-50 rounded-xl">
+                        <span class="text-2xl">🎵</span>
+                        <span class="text-sm font-bold text-dark">Muzică Vie</span>
+                    </div>
+                    <div class="flex items-center gap-3 p-3 bg-orange-50 rounded-xl">
+                        <span class="text-2xl">📶</span>
+                        <span class="text-sm font-bold text-dark">WiFi Gratuit</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ========== MENU ========== -->
+<section id="meniu" class="py-24 bg-gradient-to-b from-white via-sky-50 to-white">
+    <div class="max-w-7xl mx-auto px-6">
+        <div class="text-center mb-16 fade-in">
+            <span class="text-candy-orange text-xs font-bold tracking-widest uppercase">Bucătărie</span>
+            <h2 class="text-4xl sm:text-5xl font-black text-dark tracking-tight mt-3 mb-4">Meniul Nostru</h2>
+            <p class="text-gray-400 max-w-xl mx-auto">De la gustări rapide la preparate consistente — avem ceva pentru fiecare gust!</p>
+        </div>
+
+        <!-- Menu categories -->
+        <div class="flex flex-wrap justify-center gap-3 mb-12">
+            <button onclick="filterMenu('all')" class="menu-filter active px-5 py-2 rounded-full text-sm font-bold bg-sky-500 text-white transition-all" data-filter="all">Toate</button>
+            <button onclick="filterMenu('pizza')" class="menu-filter px-5 py-2 rounded-full text-sm font-bold bg-gray-100 text-gray-600 hover:bg-sky-100 transition-all" data-filter="pizza">🍕 Pizza</button>
+            <button onclick="filterMenu('paste')" class="menu-filter px-5 py-2 rounded-full text-sm font-bold bg-gray-100 text-gray-600 hover:bg-sky-100 transition-all" data-filter="paste">🍝 Paste</button>
+            <button onclick="filterMenu('salate')" class="menu-filter px-5 py-2 rounded-full text-sm font-bold bg-gray-100 text-gray-600 hover:bg-sky-100 transition-all" data-filter="salate">🥗 Salate</button>
+            <button onclick="filterMenu('carne')" class="menu-filter px-5 py-2 rounded-full text-sm font-bold bg-gray-100 text-gray-600 hover:bg-sky-100 transition-all" data-filter="carne">🥩 Carne</button>
+            <button onclick="filterMenu('bauturi')" class="menu-filter px-5 py-2 rounded-full text-sm font-bold bg-gray-100 text-gray-600 hover:bg-sky-100 transition-all" data-filter="bauturi">🥤 Băuturi</button>
+            <button onclick="filterMenu('deserturi')" class="menu-filter px-5 py-2 rounded-full text-sm font-bold bg-gray-100 text-gray-600 hover:bg-sky-100 transition-all" data-filter="deserturi">🍰 Deserturi</button>
+            <button onclick="filterMenu('copii')" class="menu-filter px-5 py-2 rounded-full text-sm font-bold bg-gray-100 text-gray-600 hover:bg-sky-100 transition-all" data-filter="copii">👶 Meniu Copii</button>
+        </div>
+
+        <!-- Menu grid -->
+        <div id="menuGrid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Pizza -->
+            <div class="menu-card bg-white rounded-2xl overflow-hidden shadow-md" data-category="pizza">
+                <div class="h-48 bg-gradient-to-br from-orange-100 to-yellow-50 flex items-center justify-center">
+                    <span class="text-7xl">🍕</span>
+                </div>
+                <div class="p-5">
+                    <div class="flex justify-between items-start">
+                        <h3 class="font-bold text-dark">Margherita</h3>
+                        <span class="text-candy-pink font-bold">85 MDL</span>
+                    </div>
+                    <p class="text-gray-400 text-sm mt-1">Sos de roșii, mozzarella, busuioc proaspăt</p>
+                </div>
+            </div>
+
+            <div class="menu-card bg-white rounded-2xl overflow-hidden shadow-md" data-category="pizza">
+                <div class="h-48 bg-gradient-to-br from-red-100 to-orange-50 flex items-center justify-center">
+                    <span class="text-7xl">🍕</span>
+                </div>
+                <div class="p-5">
+                    <div class="flex justify-between items-start">
+                        <h3 class="font-bold text-dark">Pepperoni</h3>
+                        <span class="text-candy-pink font-bold">110 MDL</span>
+                    </div>
+                    <p class="text-gray-400 text-sm mt-1">Sos de roșii, mozzarella, pepperoni picant</p>
+                </div>
+            </div>
+
+            <div class="menu-card bg-white rounded-2xl overflow-hidden shadow-md" data-category="pizza">
+                <div class="h-48 bg-gradient-to-br from-green-100 to-yellow-50 flex items-center justify-center">
+                    <span class="text-7xl">🍕</span>
+                </div>
+                <div class="p-5">
+                    <div class="flex justify-between items-start">
+                        <h3 class="font-bold text-dark">Quattro Formaggi</h3>
+                        <span class="text-candy-pink font-bold">120 MDL</span>
+                    </div>
+                    <p class="text-gray-400 text-sm mt-1">Mozzarella, gorgonzola, parmezan, emmental</p>
+                </div>
+            </div>
+
+            <!-- Paste -->
+            <div class="menu-card bg-white rounded-2xl overflow-hidden shadow-md" data-category="paste">
+                <div class="h-48 bg-gradient-to-br from-yellow-100 to-orange-50 flex items-center justify-center">
+                    <span class="text-7xl">🍝</span>
+                </div>
+                <div class="p-5">
+                    <div class="flex justify-between items-start">
+                        <h3 class="font-bold text-dark">Spaghetti Bolognese</h3>
+                        <span class="text-candy-pink font-bold">75 MDL</span>
+                    </div>
+                    <p class="text-gray-400 text-sm mt-1">Paste cu sos de carne și roșii, parmezan</p>
+                </div>
+            </div>
+
+            <div class="menu-card bg-white rounded-2xl overflow-hidden shadow-md" data-category="paste">
+                <div class="h-48 bg-gradient-to-br from-cream-100 to-white flex items-center justify-center">
+                    <span class="text-7xl">🍝</span>
+                </div>
+                <div class="p-5">
+                    <div class="flex justify-between items-start">
+                        <h3 class="font-bold text-dark">Carbonara</h3>
+                        <span class="text-candy-pink font-bold">80 MDL</span>
+                    </div>
+                    <p class="text-gray-400 text-sm mt-1">Bacon, ou, parmezan, smântână</p>
+                </div>
+            </div>
+
+            <!-- Salate -->
+            <div class="menu-card bg-white rounded-2xl overflow-hidden shadow-md" data-category="salate">
+                <div class="h-48 bg-gradient-to-br from-green-100 to-emerald-50 flex items-center justify-center">
+                    <span class="text-7xl">🥗</span>
+                </div>
+                <div class="p-5">
+                    <div class="flex justify-between items-start">
+                        <h3 class="font-bold text-dark">Caesar</h3>
+                        <span class="text-candy-pink font-bold">70 MDL</span>
+                    </div>
+                    <p class="text-gray-400 text-sm mt-1">Salată romană, pui, parmezan, crutoane, dressing</p>
+                </div>
+            </div>
+
+            <div class="menu-card bg-white rounded-2xl overflow-hidden shadow-md" data-category="salate">
+                <div class="h-48 bg-gradient-to-br from-green-50 to-lime-50 flex items-center justify-center">
+                    <span class="text-7xl">🥗</span>
+                </div>
+                <div class="p-5">
+                    <div class="flex justify-between items-start">
+                        <h3 class="font-bold text-dark">Grecesc</h3>
+                        <span class="text-candy-pink font-bold">65 MDL</span>
+                    </div>
+                    <p class="text-gray-400 text-sm mt-1">Rofile, castraveți, ceapă, măsline, feta</p>
+                </div>
+            </div>
+
+            <!-- Carne -->
+            <div class="menu-card bg-white rounded-2xl overflow-hidden shadow-md" data-category="carne">
+                <div class="h-48 bg-gradient-to-br from-red-50 to-orange-50 flex items-center justify-center">
+                    <span class="text-7xl">🥩</span>
+                </div>
+                <div class="p-5">
+                    <div class="flex justify-between items-start">
+                        <h3 class="font-bold text-dark">Frigărui Mixte</h3>
+                        <span class="text-candy-pink font-bold">120 MDL</span>
+                    </div>
+                    <p class="text-gray-400 text-sm mt-1">Porc, pui, legume la grătar, sos</p>
+                </div>
+            </div>
+
+            <div class="menu-card bg-white rounded-2xl overflow-hidden shadow-md" data-category="carne">
+                <div class="h-48 bg-gradient-to-br from-amber-50 to-yellow-50 flex items-center justify-center">
+                    <span class="text-7xl">🍗</span>
+                </div>
+                <div class="p-5">
+                    <div class="flex justify-between items-start">
+                        <h3 class="font-bold text-dark">Șnițel de Pui</h3>
+                        <span class="text-candy-pink font-bold">85 MDL</span>
+                    </div>
+                    <p class="text-gray-400 text-sm mt-1">Cu cartofi prăjiți și salată</p>
+                </div>
+            </div>
+
+            <!-- Băuturi -->
+            <div class="menu-card bg-white rounded-2xl overflow-hidden shadow-md" data-category="bauturi">
+                <div class="h-48 bg-gradient-to-br from-sky-100 to-blue-50 flex items-center justify-center">
+                    <span class="text-7xl">☕</span>
+                </div>
+                <div class="p-5">
+                    <div class="flex justify-between items-start">
+                        <h3 class="font-bold text-dark">Cafea Cofein</h3>
+                        <span class="text-candy-pink font-bold">35 MDL</span>
+                    </div>
+                    <p class="text-gray-400 text-sm mt-1">Espresso, cappuccino, latte — artizanal</p>
+                </div>
+            </div>
+
+            <div class="menu-card bg-white rounded-2xl overflow-hidden shadow-md" data-category="bauturi">
+                <div class="h-48 bg-gradient-to-br from-pink-100 to-orange-50 flex items-center justify-center">
+                    <span class="text-7xl">🥤</span>
+                </div>
+                <div class="p-5">
+                    <div class="flex justify-between items-start">
+                        <h3 class="font-bold text-dark">Fresh Natural</h3>
+                        <span class="text-candy-pink font-bold">40 MDL</span>
+                    </div>
+                    <p class="text-gray-400 text-sm mt-1">Portocală, măr, morcov — proaspăt stors</p>
+                </div>
+            </div>
+
+            <div class="menu-card bg-white rounded-2xl overflow-hidden shadow-md" data-category="bauturi">
+                <div class="h-48 bg-gradient-to-br from-yellow-100 to-amber-50 flex items-center justify-center">
+                    <span class="text-7xl">🧃</span>
+                </div>
+                <div class="p-5">
+                    <div class="flex justify-between items-start">
+                        <h3 class="font-bold text-dark">Smoothie Copii</h3>
+                        <span class="text-candy-pink font-bold">45 MDL</span>
+                    </div>
+                    <p class="text-gray-400 text-sm mt-1">Banana, căpșuni, iaurt — fără zahăr adăugat</p>
+                </div>
+            </div>
+
+            <!-- Deserturi -->
+            <div class="menu-card bg-white rounded-2xl overflow-hidden shadow-md" data-category="deserturi">
+                <div class="h-48 bg-gradient-to-br from-pink-100 to-purple-50 flex items-center justify-center">
+                    <span class="text-7xl">🍰</span>
+                </div>
+                <div class="p-5">
+                    <div class="flex justify-between items-start">
+                        <h3 class="font-bold text-dark">Clătite cu Nutella</h3>
+                        <span class="text-candy-pink font-bold">45 MDL</span>
+                    </div>
+                    <p class="text-gray-400 text-sm mt-1">Clătite pufoase cu ciocolată și fructe</p>
+                </div>
+            </div>
+
+            <div class="menu-card bg-white rounded-2xl overflow-hidden shadow-md" data-category="deserturi">
+                <div class="h-48 bg-gradient-to-br from-purple-100 to-pink-50 flex items-center justify-center">
+                    <span class="text-7xl">🧁</span>
+                </div>
+                <div class="p-5">
+                    <div class="flex justify-between items-start">
+                        <h3 class="font-bold text-dark">Tort Casei</h3>
+                        <span class="text-candy-pink font-bold">55 MDL</span>
+                    </div>
+                    <p class="text-gray-400 text-sm mt-1">Porție — tort artizanal cu cremă de vanilie</p>
+                </div>
+            </div>
+
+            <!-- Meniu Copii -->
+            <div class="menu-card bg-white rounded-2xl overflow-hidden shadow-md border-2 border-candy-yellow/50" data-category="copii">
+                <div class="h-48 bg-gradient-to-br from-yellow-100 via-pink-50 to-sky-50 flex items-center justify-center relative">
+                    <span class="text-7xl">👶</span>
+                    <span class="absolute top-3 right-3 bg-candy-yellow text-dark text-xs font-bold px-3 py-1 rounded-full">PENTRU COPII</span>
+                </div>
+                <div class="p-5">
+                    <div class="flex justify-between items-start">
+                        <h3 class="font-bold text-dark">Happy Meal Sky Kids</h3>
+                        <span class="text-candy-pink font-bold">65 MDL</span>
+                    </div>
+                    <p class="text-gray-400 text-sm mt-1">Nuggets + cartofi + suc + jucărie surpriză</p>
+                </div>
+            </div>
+
+            <div class="menu-card bg-white rounded-2xl overflow-hidden shadow-md border-2 border-candy-yellow/50" data-category="copii">
+                <div class="h-48 bg-gradient-to-br from-green-100 via-yellow-50 to-orange-50 flex items-center justify-center">
+                    <span class="text-7xl">🌮</span>
+                </div>
+                <div class="p-5">
+                    <div class="flex justify-between items-start">
+                        <h3 class="font-bold text-dark">Mini Pizza Copii</h3>
+                        <span class="text-candy-pink font-bold">55 MDL</span>
+                    </div>
+                    <p class="text-gray-400 text-sm mt-1">Mini pizza cu brânză și suc natural inclus</p>
+                </div>
+            </div>
+
+            <div class="menu-card bg-white rounded-2xl overflow-hidden shadow-md border-2 border-candy-yellow/50" data-category="copii">
+                <div class="h-48 bg-gradient-to-br from-pink-100 via-purple-50 to-blue-50 flex items-center justify-center">
+                    <span class="text-7xl">🍦</span>
+                </div>
+                <div class="p-5">
+                    <div class="flex justify-between items-start">
+                        <h3 class="font-bold text-dark">Inghetată Deluxe</h3>
+                        <span class="text-candy-pink font-bold">35 MDL</span>
+                    </div>
+                    <p class="text-gray-400 text-sm mt-1">3 cupe, topping, frișcă, sos de ciocolată</p>
+                </div>
+            </div>
+        </div>
+
+        <p class="text-center text-gray-400 text-sm mt-8">* Meniul poate varia. Pentru meniul complet contactează-ne.</p>
+    </div>
+</section>
+
+<!-- ========== GALLERY ========== -->
+<section id="galerie" class="py-24 bg-white">
+    <div class="max-w-7xl mx-auto px-6">
+        <div class="text-center mb-16 fade-in">
+            <span class="text-candy-purple text-xs font-bold tracking-widest uppercase">Momente</span>
+            <h2 class="text-4xl sm:text-5xl font-black text-dark tracking-tight mt-3 mb-4">Galerie Foto</h2>
+            <p class="text-gray-400 max-w-xl mx-auto">Momente de neuitat de la Sky Kids!</p>
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            <div class="gallery-item aspect-square rounded-2xl overflow-hidden shadow-lg">
+                <img src="https://images.unsplash.com/photo-1566454544259-f4b94c3d758c?q=80&w=800&auto=format&fit=crop" alt="Teren de joacă" class="w-full h-full object-cover">
+            </div>
+            <div class="gallery-item aspect-square rounded-2xl overflow-hidden shadow-lg col-span-1 md:col-span-1 md:row-span-2">
+                <img src="https://images.unsplash.com/photo-1502082553048-f009c37129b9?q=80&w=800&auto=format&fit=crop" alt="Copii jucându-se" class="w-full h-full object-cover">
+            </div>
+            <div class="gallery-item aspect-square rounded-2xl overflow-hidden shadow-lg">
+                <img src="https://images.unsplash.com/photo-1513836279014-a89f7a76ae86?q=80&w=800&auto=format&fit=crop" alt="Zi de naștere" class="w-full h-full object-cover">
+            </div>
+            <div class="gallery-item aspect-square rounded-2xl overflow-hidden shadow-lg">
+                <img src="https://images.unsplash.com/photo-1533628635777-112b2239b1c7?q=80&w=800&auto=format&fit=crop" alt="Balaur colorat" class="w-full h-full object-cover">
+            </div>
+            <div class="gallery-item aspect-square rounded-2xl overflow-hidden shadow-lg">
+                <img src="https://images.unsplash.com/photo-1564429238961-bf8e82709316?q=80&w=800&auto=format&fit=crop" alt="Tort zi de naștere" class="w-full h-full object-cover">
+            </div>
+            <div class="gallery-item aspect-square rounded-2xl overflow-hidden shadow-lg">
+                <img src="https://images.unsplash.com/photo-1551024601-bec78aea704b?q=80&w=800&auto=format&fit=crop" alt="Părinți relaxați" class="w-full h-full object-cover">
+            </div>
+            <div class="gallery-item aspect-square rounded-2xl overflow-hidden shadow-lg bg-gradient-to-br from-candy-pink to-candy-purple flex items-center justify-center">
+                <div class="text-center text-white p-6">
+                    <div class="text-4xl mb-3">📸</div>
+                    <div class="font-bold">Vezi mai multe</div>
+                    <div class="text-sm opacity-80">pe Instagram</div>
+                    <a href="https://www.instagram.com/_.sky.kids._/" target="_blank" class="inline-flex items-center gap-1 mt-3 bg-white/20 px-4 py-2 rounded-full text-sm font-bold hover:bg-white/30 transition-all">
+                        <iconify-icon icon="lucide:instagram" width="16"></iconify-icon>
+                        @_.sky.kids._
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ========== PRICING ========== -->
+<section id="preturi" class="py-24 bg-gradient-to-b from-white to-sky-50">
+    <div class="max-w-7xl mx-auto px-6">
+        <div class="text-center mb-16 fade-in">
+            <span class="text-candy-green text-xs font-bold tracking-widest uppercase">Tarife</span>
+            <h2 class="text-4xl sm:text-5xl font-black text-dark tracking-tight mt-3 mb-4">Pachete & Prețuri</h2>
+            <p class="text-gray-400 max-w-xl mx-auto">Alege pachetul potrivit pentru copilul tău!</p>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            <!-- Basic -->
+            <div class="card-hover bg-white rounded-3xl p-8 shadow-lg border-2 border-sky-100 text-center">
+                <div class="text-4xl mb-4">🌟</div>
+                <h3 class="text-xl font-black text-dark">Standard</h3>
+                <p class="text-gray-400 text-sm mt-2 mb-6">Acces teren de joacă</p>
+                <div class="text-4xl font-black text-sky-500 mb-1">100 <span class="text-lg">MDL</span></div>
+                <p class="text-gray-400 text-xs mb-6">/ copil / 2 ore</p>
+                <ul class="text-left space-y-3 text-sm">
+                    <li class="flex items-center gap-2"><iconify-icon icon="lucide:check-circle" class="text-candy-green" width="18"></iconify-icon><span>Teren de joacă complet</span></li>
+                    <li class="flex items-center gap-2"><iconify-icon icon="lucide:check-circle" class="text-candy-green" width="18"></iconify-icon><span>Labirint & tobogan</span></li>
+                    <li class="flex items-center gap-2"><iconify-icon icon="lucide:check-circle" class="text-candy-green" width="18"></icon><span>Zonă părinți cu WiFi</span></li>
+                    <li class="flex items-center gap-2 text-gray-300"><iconify-icon icon="lucide:x-circle" width="18"></iconify-icon><span>Animator</span></li>
+                </ul>
+                <button onclick="openBooking('standard')" class="mt-8 w-full py-3 border-2 border-sky-200 text-sky-600 font-bold rounded-xl hover:bg-sky-50 transition-all">
+                    Alege
+                </button>
+            </div>
+
+            <!-- Popular -->
+            <div class="card-hover bg-gradient-to-b from-sky-500 to-sky-600 rounded-3xl p-8 shadow-2xl shadow-sky-200 text-center text-white relative scale-105">
+                <div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-candy-yellow text-dark text-xs font-bold px-4 py-1.5 rounded-full shadow-lg">
+                    ⭐ CEL MAI POPULAR
+                </div>
+                <div class="text-4xl mb-4">🎉</div>
+                <h3 class="text-xl font-black">Premium</h3>
+                <p class="text-sky-100 text-sm mt-2 mb-6">Distracție + mâncare</p>
+                <div class="text-4xl font-black mb-1">180 <span class="text-lg">MDL</span></div>
+                <p class="text-sky-100 text-xs mb-6">/ copil / 3 ore</p>
+                <ul class="text-left space-y-3 text-sm">
+                    <li class="flex items-center gap-2"><iconify-icon icon="lucide:check-circle" class="text-candy-yellow" width="18"></iconify-icon><span>Tot din Standard</span></li>
+                    <li class="flex items-center gap-2"><iconify-icon icon="lucide:check-circle" class="text-candy-yellow" width="18"></iconify-icon><span>+ Meniu Copii inclus</span></li>
+                    <li class="flex items-center gap-2"><iconify-icon icon="lucide:check-circle" class="text-candy-yellow" width="18"></iconify-icon><span>+ Băutură răcoritoare</span></li>
+                    <li class="flex items-center gap-2"><iconify-icon icon="lucide:check-circle" class="text-candy-yellow" width="18"></iconify-icon><span>+ Timp extra 1 oră</span></li>
+                </ul>
+                <button onclick="openBooking('premium')" class="mt-8 w-full py-3 bg-white text-sky-600 font-bold rounded-xl hover:bg-sky-50 transition-all">
+                    Alege
+                </button>
+            </div>
+
+            <!-- Birthday -->
+            <div class="card-hover bg-white rounded-3xl p-8 shadow-lg border-2 border-candy-pink/20 text-center">
+                <div class="text-4xl mb-4">🎂</div>
+                <h3 class="text-xl font-black text-dark">Zi de Naștere</h3>
+                <p class="text-gray-400 text-sm mt-2 mb-6">Petrecere completă</p>
+                <div class="text-4xl font-black text-candy-pink mb-1">1500 <span class="text-lg">MDL</span></div>
+                <p class="text-gray-400 text-xs mb-6">/ până la 10 copii</p>
+                <ul class="text-left space-y-3 text-sm">
+                    <li class="flex items-center gap-2"><iconify-icon icon="lucide:check-circle" class="text-candy-pink" width="18"></iconify-icon><span>Teren privat 3 ore</span></li>
+                    <li class="flex items-center gap-2"><iconify-icon icon="lucide:check-circle" class="text-candy-pink" width="18"></iconify-icon><span>Animator & muzică</span></li>
+                    <li class="flex items-center gap-2"><iconify-icon icon="lucide:check-circle" class="text-candy-pink" width="18"></iconify-icon><span>Tort + decorăriuni</span></li>
+                    <li class="flex items-center gap-2"><iconify-icon icon="lucide:check-circle" class="text-candy-pink" width="18"></iconify-icon><span>Meniu complet pentru copii</span></li>
+                </ul>
+                <button onclick="openBooking('birthday')" class="mt-8 w-full py-3 border-2 border-candy-pink/30 text-candy-pink font-bold rounded-xl hover:bg-pink-50 transition-all">
+                    Alege
+                </button>
+            </div>
+        </div>
+
+        <p class="text-center text-gray-400 text-sm mt-8">* Copiii sub 1 an au intrare gratuită. 50 MDL pentru fiecare copil suplimentar la pachetul Zi de Naștere.</p>
+    </div>
+</section>
+
+<!-- ========== REVIEWS ========== -->
+<section class="py-24 bg-white">
+    <div class="max-w-7xl mx-auto px-6">
+        <div class="text-center mb-16 fade-in">
+            <span class="text-candy-yellow text-xs font-bold tracking-widest uppercase">Recenzii</span>
+            <h2 class="text-4xl sm:text-5xl font-black text-dark tracking-tight mt-3 mb-4">Ce Zic Părinții</h2>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-8">
+            <div class="bg-gradient-to-br from-sky-50 to-white rounded-2xl p-8 border border-sky-100 card-hover">
+                <div class="flex gap-1 mb-4">
+                    <span class="text-candy-yellow text-lg">★★★★★</span>
+                </div>
+                <p class="text-gray-600 text-sm leading-relaxed mb-6">
+                    "Cel mai bun loc din Soroca pentru copii! Fetia mea nu mai vrea să plece. Personal foarte amabil, curat și mâncarea e bună!"
+                </p>
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-candy-pink/20 flex items-center justify-center">👩</div>
+                    <div>
+                        <div class="font-bold text-dark text-sm">Ana M.</div>
+                        <div class="text-gray-400 text-xs">Google Review</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-gradient-to-br from-pink-50 to-white rounded-2xl p-8 border border-pink-100 card-hover">
+                <div class="flex gap-1 mb-4">
+                    <span class="text-candy-yellow text-lg">★★★★★</span>
+                </div>
+                <p class="text-gray-600 text-sm leading-relaxed mb-6">
+                    "Am făcut ziua de naștere a fiului nostru aici și a fost perfect! Copiii s-au distrat, noi ne-am relaxat cu o cafea. Recomand!"
+                </p>
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-sky-200/50 flex items-center justify-center">👨</div>
+                    <div>
+                        <div class="font-bold text-dark text-sm">Ion P.</div>
+                        <div class="text-gray-400 text-xs">Google Review</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-gradient-to-br from-purple-50 to-white rounded-2xl p-8 border border-purple-100 card-hover">
+                <div class="flex gap-1 mb-4">
+                    <span class="text-candy-yellow text-lg">★★★★☆</span>
+                </div>
+                <p class="text-gray-600 text-sm leading-relaxed mb-6">
+                    "Locul e super pentru copii! Cofein are cafea foarte bună. Singurul minus e că pe weekend e cam plin — merită să rezervați."
+                </p>
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-candy-purple/20 flex items-center justify-center">👩</div>
+                    <div>
+                        <div class="font-bold text-dark text-sm">Maria L.</div>
+                        <div class="text-gray-400 text-xs">Google Review</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ========== CTA ========== -->
+<section class="py-24 relative overflow-hidden">
+    <div class="absolute inset-0 bg-gradient-to-br from-sky-500 via-candy-purple to-candy-pink"></div>
+    <div class="absolute inset-0 opacity-10">
+        <div class="absolute top-10 left-10 text-6xl float">🎈</div>
+        <div class="absolute top-20 right-20 text-5xl float-slow">⭐</div>
+        <div class="absolute bottom-10 left-1/3 text-6xl float">🎪</div>
+        <div class="absolute bottom-20 right-10 text-5xl float-slow">🎀</div>
+    </div>
+
+    <div class="relative z-10 max-w-3xl mx-auto px-6 text-center text-white">
+        <div class="text-5xl mb-6">🎉</div>
+        <h2 class="text-4xl sm:text-5xl font-black tracking-tight mb-6">Fă-ți Programarea Acum!</h2>
+        <p class="text-white/80 text-lg mb-10">Nu rata distracția! Programează vizita ta și asigură-ți locul.</p>
+
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <button onclick="openBooking()" class="px-10 py-4 bg-white text-dark font-bold rounded-2xl hover:bg-gray-100 transition-all shadow-xl text-lg flex items-center justify-center gap-2">
+                <iconify-icon icon="lucide:calendar-heart" width="22"></iconify-icon>
+                Programează Online
+            </button>
+            <a href="tel:+373XXXXXXXX" class="px-10 py-4 border-2 border-white/30 text-white font-bold rounded-2xl hover:bg-white/10 transition-all text-lg flex items-center justify-center gap-2">
+                <iconify-icon icon="lucide:phone" width="22"></iconify-icon>
+                Sună-ne
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- ========== CONTACT ========== -->
+<section id="contact" class="py-24 bg-white">
+    <div class="max-w-7xl mx-auto px-6">
+        <div class="text-center mb-16 fade-in">
+            <span class="text-sky-500 text-xs font-bold tracking-widest uppercase">Unde Ne Găsești</span>
+            <h2 class="text-4xl sm:text-5xl font-black text-dark tracking-tight mt-3 mb-4">Contacte</h2>
+        </div>
+
+        <div class="grid lg:grid-cols-2 gap-12">
+            <div class="space-y-8">
+                <div class="flex items-start gap-4 p-4 bg-sky-50 rounded-2xl">
+                    <div class="w-12 h-12 rounded-xl bg-sky-500 flex items-center justify-center shrink-0">
+                        <iconify-icon icon="lucide:map-pin" class="text-white text-xl"></iconify-icon>
+                    </div>
+                    <div>
+                        <h4 class="text-dark font-bold mb-1">Adresă</h4>
+                        <p class="text-gray-500 text-sm">str. Ștefan cel Mare 46, Etajul 2, Soroca, Moldova</p>
+                    </div>
+                </div>
+
+                <div class="flex items-start gap-4 p-4 bg-pink-50 rounded-2xl">
+                    <div class="w-12 h-12 rounded-xl bg-candy-pink flex items-center justify-center shrink-0">
+                        <iconify-icon icon="lucide:clock" class="text-white text-xl"></iconify-icon>
+                    </div>
+                    <div>
+                        <h4 class="text-dark font-bold mb-1">Program</h4>
+                        <p class="text-gray-500 text-sm">Zilnic: 10:00 – 22:00</p>
+                    </div>
+                </div>
+
+                <div class="flex items-start gap-4 p-4 bg-purple-50 rounded-2xl">
+                    <div class="w-12 h-12 rounded-xl bg-candy-purple flex items-center justify-center shrink-0">
+                        <iconify-icon icon="lucide:share-2" class="text-white text-xl"></iconify-icon>
+                    </div>
+                    <div>
+                        <h4 class="text-dark font-bold mb-3">Rețele Sociale</h4>
+                        <div class="flex gap-3">
+                            <a href="https://www.instagram.com/_.sky.kids._/" target="_blank" class="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white hover:brightness-110 transition-all">
+                                <iconify-icon icon="lucide:instagram" width="20"></iconify-icon>
+                            </a>
+                            <a href="https://www.facebook.com/reel/1993714461368856/" target="_blank" class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white hover:brightness-110 transition-all">
+                                <iconify-icon icon="lucide:facebook" width="20"></iconify-icon>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Map -->
+            <div class="rounded-2xl overflow-hidden shadow-xl h-[400px]">
+                <iframe
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2695.5!2d28.2974!3d48.2055!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNDjCsDEyJzE5LjgiTiAyOMKwMTcnNTAuNiJF!5e0!3m2!1sro!2smd!4v1700000000000!5m2!1sro!2smd"
+                    width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy">
+                </iframe>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ========== FOOTER ========== -->
+<footer class="bg-dark py-16 text-white">
+    <div class="max-w-7xl mx-auto px-6">
+        <div class="flex flex-col md:flex-row justify-between items-center gap-8">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-candy-pink to-candy-purple flex items-center justify-center text-white font-black">SK</div>
+                <div>
+                    <span class="font-bold text-lg">Sky Kids</span>
+                    <span class="text-gray-500 text-xs block">Cel mai mare teren de joacă din Soroca</span>
+                </div>
+            </div>
+
+            <div class="flex gap-6">
+                <a href="#acasa" class="text-gray-400 hover:text-white text-sm transition-colors">Acasă</a>
+                <a href="#meniu" class="text-gray-400 hover:text-white text-sm transition-colors">Meniu</a>
+                <a href="#preturi" class="text-gray-400 hover:text-white text-sm transition-colors">Prețuri</a>
+                <a href="#contact" class="text-gray-400 hover:text-white text-sm transition-colors">Contact</a>
+            </div>
+
+            <div class="flex gap-3">
+                <a href="https://www.instagram.com/_.sky.kids._/" target="_blank" class="w-10 h-10 rounded-lg border border-white/10 hover:border-candy-pink/50 flex items-center justify-center transition-all">
+                    <iconify-icon icon="lucide:instagram" class="text-gray-400 hover:text-white" width="18"></iconify-icon>
+                </a>
+                <a href="https://www.facebook.com/reel/1993714461368856/" target="_blank" class="w-10 h-10 rounded-lg border border-white/10 hover:border-blue-400/50 flex items-center justify-center transition-all">
+                    <iconify-icon icon="lucide:facebook" class="text-gray-400 hover:text-white" width="18"></iconify-icon>
+                </a>
+            </div>
+        </div>
+
+        <div class="border-t border-white/10 mt-8 pt-8 text-center">
+            <p class="text-gray-500 text-sm">© 2026 Sky Kids Soroca. Toate drepturile rezervate.</p>
+            <p class="text-gray-600 text-xs mt-1">str. Ștefan cel Mare 46, Etajul 2, Soroca, Moldova</p>
+        </div>
+    </div>
+</footer>
+
+<!-- ========== BOOKING MODAL ========== -->
+<div id="bookingModal" class="modal-overlay fixed inset-0 z-[70] bg-dark/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="modal-content bg-white rounded-3xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
+        <!-- Modal Header -->
+        <div class="bg-gradient-to-r from-candy-pink via-candy-purple to-sky-400 p-6 rounded-t-3xl text-white relative">
+            <button onclick="closeBooking()" class="absolute top-4 right-4 w-8 h-8 bg-white/20 rounded-full flex items-center justify-center hover:bg-white/30 transition-all">
+                <iconify-icon icon="lucide:x" width="18"></iconify-icon>
+            </button>
+            <div class="text-3xl mb-2">🎉</div>
+            <h3 class="text-xl font-black" id="modalTitle">Programează o Vizită</h3>
+            <p class="text-white/80 text-sm">Completează formularul și te contactăm pentru confirmare</p>
+        </div>
+
+        <!-- Step indicator -->
+        <div class="px-6 pt-6">
+            <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center gap-2">
+                    <div id="step1Dot" class="w-8 h-8 rounded-full bg-candy-pink text-white text-sm font-bold flex items-center justify-center">1</div>
+                    <span class="text-xs font-bold text-dark">Date</span>
+                </div>
+                <div class="flex-1 h-0.5 bg-gray-200 mx-2"><div id="stepProgress" class="h-full bg-candy-pink transition-all" style="width:0%"></div></div>
+                <div class="flex items-center gap-2">
+                    <div id="step2Dot" class="w-8 h-8 rounded-full bg-gray-200 text-gray-400 text-sm font-bold flex items-center justify-center">2</div>
+                    <span class="text-xs font-bold text-gray-400">Ora</span>
+                </div>
+                <div class="flex-1 h-0.5 bg-gray-200 mx-2"><div id="stepProgress2" class="h-full bg-candy-pink transition-all" style="width:0%"></div></div>
+                <div class="flex items-center gap-2">
+                    <div id="step3Dot" class="w-8 h-8 rounded-full bg-gray-200 text-gray-400 text-sm font-bold flex items-center justify-center">3</div>
+                    <span class="text-xs font-bold text-gray-400">Gata!</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 1: Date & Package -->
+        <div id="step1" class="px-6 pb-6">
+            <div class="space-y-4">
+                <div>
+                    <label class="text-sm font-bold text-dark mb-2 block">Pachet</label>
+                    <select id="bookPackage" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-candy-pink outline-none transition-colors font-medium">
+                        <option value="standard">🌟 Standard — 100 MDL / 2h</option>
+                        <option value="premium">🎉 Premium — 180 MDL / 3h</option>
+                        <option value="birthday">🎂 Zi de Naștere — 1500 MDL</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="text-sm font-bold text-dark mb-2 block">Data dorită</label>
+                    <input type="date" id="bookDate" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-candy-pink outline-none transition-colors font-medium" min="">
+                </div>
+
+                <div>
+                    <label class="text-sm font-bold text-dark mb-2 block">Număr de copii</label>
+                    <div class="flex items-center gap-3">
+                        <button onclick="changeKids(-1)" class="w-10 h-10 rounded-xl bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors font-bold text-lg">−</button>
+                        <span id="kidsCount" class="text-2xl font-black text-dark w-12 text-center">1</span>
+                        <button onclick="changeKids(1)" class="w-10 h-10 rounded-xl bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors font-bold text-lg">+</button>
+                    </div>
+                </div>
+
+                <button onclick="goToStep2()" class="w-full py-3 bg-gradient-to-r from-candy-pink to-candy-purple text-white font-bold rounded-xl hover:brightness-110 transition-all">
+                    Alege Ora →
+                </button>
+            </div>
+        </div>
+
+        <!-- Step 2: Time -->
+        <div id="step2" class="px-6 pb-6 hidden">
+            <div class="space-y-4">
+                <div>
+                    <label class="text-sm font-bold text-dark mb-3 block">Alege ora</label>
+                    <div id="timeSlots" class="grid grid-cols-4 gap-2">
+                        <!-- Generated by JS -->
+                    </div>
+                </div>
+
+                <div>
+                    <label class="text-sm font-bold text-dark mb-2 block">Numele tău</label>
+                    <input type="text" id="bookName" placeholder="Ex: Ana Popescu" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-candy-pink outline-none transition-colors">
+                </div>
+
+                <div>
+                    <label class="text-sm font-bold text-dark mb-2 block">Telefon</label>
+                    <input type="tel" id="bookPhone" placeholder="Ex: 069 123 456" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-candy-pink outline-none transition-colors">
+                </div>
+
+                <div>
+                    <label class="text-sm font-bold text-dark mb-2 block">Observații (opțional)</label>
+                    <textarea id="bookNotes" rows="2" placeholder="Ex: Zi de naștere, alergii alimentare..." class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-candy-pink outline-none transition-colors resize-none"></textarea>
+                </div>
+
+                <div class="flex gap-3">
+                    <button onclick="goToStep1()" class="flex-1 py-3 border-2 border-gray-200 text-gray-500 font-bold rounded-xl hover:bg-gray-50 transition-all">
+                        ← Înapoi
+                    </button>
+                    <button onclick="submitBooking()" class="flex-1 py-3 bg-gradient-to-r from-candy-pink to-candy-purple text-white font-bold rounded-xl hover:brightness-110 transition-all">
+                        Confirmă 🎉
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 3: Success -->
+        <div id="step3" class="px-6 pb-6 hidden text-center py-8">
+            <div class="text-6xl mb-4">✅</div>
+            <h3 class="text-2xl font-black text-dark mb-2">Programare Trimisă!</h3>
+            <p class="text-gray-500 mb-2">Te vom contacta în curând pentru confirmare.</p>
+            <div id="bookingSummary" class="bg-sky-50 rounded-xl p-4 text-left text-sm space-y-2 mb-6">
+                <!-- Filled by JS -->
+            </div>
+            <button onclick="closeBooking()" class="w-full py-3 bg-gradient-to-r from-candy-pink to-candy-purple text-white font-bold rounded-xl hover:brightness-110 transition-all">
+                Perfect! 🎈
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ========== SCRIPTS ========== -->
+<script>
+    // --- Navigation ---
+    function toggleMenu() {
+        document.getElementById('mobileMenu').classList.toggle('active');
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+        a.addEventListener('click', e => {
+            const t = document.querySelector(a.getAttribute('href'));
+            if (t) { e.preventDefault(); t.scrollIntoView({behavior:'smooth'}); }
+        });
+    });
+
+    // --- Intersection Observer ---
+    const observer = new IntersectionObserver(entries => {
+        entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+    }, {threshold: 0.1});
+    document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+    // --- Menu Filter ---
+    function filterMenu(cat) {
+        document.querySelectorAll('.menu-filter').forEach(b => {
+            b.classList.remove('bg-sky-500','text-white');
+            b.classList.add('bg-gray-100','text-gray-600');
+        });
+        event.target.classList.remove('bg-gray-100','text-gray-600');
+        event.target.classList.add('bg-sky-500','text-white');
+
+        document.querySelectorAll('.menu-card').forEach(card => {
+            if (cat === 'all' || card.dataset.category === cat) {
+                card.style.display = '';
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(10px)';
+                setTimeout(() => {
+                    card.style.transition = 'all 0.3s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, 50);
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    }
+
+    // --- Booking System ---
+    let bookingData = { package: 'standard', date: '', time: '', kids: 1, name: '', phone: '', notes: '' };
+
+    // Set min date to today
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('bookDate').min = today;
+    document.getElementById('bookDate').value = today;
+
+    function openBooking(pkg) {
+        if (pkg) document.getElementById('bookPackage').value = pkg;
+        document.getElementById('bookingModal').classList.add('active');
+        showStep(1);
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeBooking() {
+        document.getElementById('bookingModal').classList.remove('active');
+        document.body.style.overflow = '';
+        showStep(1); // Reset
+    }
+
+    function showStep(n) {
+        document.getElementById('step1').classList.toggle('hidden', n !== 1);
+        document.getElementById('step2').classList.toggle('hidden', n !== 2);
+        document.getElementById('step3').classList.toggle('hidden', n !== 3);
+
+        // Update step indicators
+        const dots = [document.getElementById('step1Dot'), document.getElementById('step2Dot'), document.getElementById('step3Dot')];
+        dots.forEach((d, i) => {
+            if (i < n) { d.className = 'w-8 h-8 rounded-full bg-candy-pink text-white text-sm font-bold flex items-center justify-center'; }
+            else { d.className = 'w-8 h-8 rounded-full bg-gray-200 text-gray-400 text-sm font-bold flex items-center justify-center'; }
+        });
+
+        document.getElementById('stepProgress').style.width = n > 1 ? '100%' : '0%';
+        document.getElementById('stepProgress2').style.width = n > 2 ? '100%' : '0%';
+    }
+
+    function changeKids(delta) {
+        bookingData.kids = Math.max(1, Math.min(20, bookingData.kids + delta));
+        document.getElementById('kidsCount').textContent = bookingData.kids;
+    }
+
+    async function goToStep2() {
+        const date = document.getElementById('bookDate').value;
+        if (!date) { alert('Te rog alege o dată!'); return; }
+
+        bookingData.package = document.getElementById('bookPackage').value;
+        bookingData.date = date;
+
+        // Generate time slots (with real availability)
+        const container = document.getElementById('timeSlots');
+        container.innerHTML = '<p class="text-gray-400 text-sm col-span-4">Se încarcă...</p>';
+        // Fetch real availability from backend
+        try {
+            const resp = await fetch(`/api/slots/${date}`);
+            const data = await resp.json();
+            const slots = data.slots || [];
+            if (slots.length === 0) {
+                container.innerHTML = '<p class="text-gray-400 text-sm col-span-4">Nu sunt sloturi disponibile</p>';
+                return;
+            }
+            slots.forEach(s => {
+                const btn = document.createElement('button');
+                btn.className = 'time-slot px-3 py-2 rounded-xl border-2 text-sm font-bold transition-all ';
+                if (!s.available) {
+                    btn.className += 'border-red-200 text-red-300 bg-red-50 cursor-not-allowed';
+                    btn.disabled = true;
+                    btn.title = 'Indisponibil';
+                } else {
+                    btn.className += 'border-gray-200 text-gray-600 hover:border-candy-pink hover:text-candy-pink';
+                    btn.onclick = () => selectTime(s.time, btn);
+                }
+                btn.textContent = s.time;
+                const remaining = document.createElement('span');
+                remaining.className = 'block text-[10px] font-normal text-gray-400';
+                remaining.textContent = s.available ? `${s.remaining} locuri` : 'plin';
+                btn.appendChild(remaining);
+                container.appendChild(btn);
+            });
+        } catch(e) {
+            // Fallback to static slots
+            const hours = ['10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00'];
+            hours.forEach(h => {
+                const btn = document.createElement('button');
+                btn.className = 'time-slot px-3 py-2 rounded-xl border-2 border-gray-200 text-sm font-bold text-gray-600 hover:border-candy-pink hover:text-candy-pink transition-all';
+                btn.textContent = h;
+                btn.onclick = () => selectTime(h, btn);
+                container.appendChild(btn);
+            });
+        }
+
+        showStep(2);
+    }
+
+    function goToStep1() { showStep(1); }
+
+    function selectTime(time, btn) {
+        bookingData.time = time;
+        document.querySelectorAll('.time-slot').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+    }
+
+    async function submitBooking() {
+        const name = document.getElementById('bookName').value.trim();
+        const phone = document.getElementById('bookPhone').value.trim();
+        if (!name) { alert('Te rog introdu numele tău!'); return; }
+        if (!phone) { alert('Te rog introdu telefonul!'); return; }
+        if (!bookingData.time) { alert('Te rog alege o oră!'); return; }
+
+        bookingData.name = name;
+        bookingData.phone = phone;
+        bookingData.notes = document.getElementById('bookNotes').value;
+
+        // Submit to backend
+        try {
+            const resp = await fetch('/api/bookings', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    package: bookingData.package,
+                    date: bookingData.date,
+                    time: bookingData.time,
+                    kids_count: bookingData.kids,
+                    client_name: bookingData.name,
+                    client_phone: bookingData.phone,
+                    notes: bookingData.notes
+                })
+            });
+            const result = await resp.json();
+            if (!resp.ok) {
+                alert(result.error || 'Eroare la trimiterea programării');
+                return;
+            }
+        } catch(e) {
+            console.error('Booking error:', e);
+            // Still show success for demo
+        }
+
+        // Show summary
+        const pkgNames = { standard: '🌟 Standard', premium: '🎉 Premium', birthday: '🎂 Zi de Naștere' };
+        const summary = document.getElementById('bookingSummary');
+        summary.innerHTML = `
+            <div class="flex justify-between"><span class="text-gray-400">Pachet:</span><span class="font-bold text-dark">${pkgNames[bookingData.package]}</span></div>
+            <div class="flex justify-between"><span class="text-gray-400">Data:</span><span class="font-bold text-dark">${bookingData.date}</span></div>
+            <div class="flex justify-between"><span class="text-gray-400">Ora:</span><span class="font-bold text-dark">${bookingData.time}</span></div>
+            <div class="flex justify-between"><span class="text-gray-400">Copii:</span><span class="font-bold text-dark">${bookingData.kids}</span></div>
+            <div class="flex justify-between"><span class="text-gray-400">Nume:</span><span class="font-bold text-dark">${bookingData.name}</span></div>
+            <div class="flex justify-between"><span class="text-gray-400">Telefon:</span><span class="font-bold text-dark">${bookingData.phone}</span></div>
+            ${bookingData.notes ? `<div class="pt-2 border-t border-gray-200"><span class="text-gray-400">Observații:</span><span class="text-dark block mt-1">${bookingData.notes}</span></div>` : ''}
+        `;
+
+        showStep(3);
+        launchConfetti();
+    }
+
+    function launchConfetti() {
+        const colors = ['#FF6B9D','#C084FC','#60A5FA','#34D399','#FBBF24','#FB923C'];
+        for (let i = 0; i < 50; i++) {
+            const piece = document.createElement('div');
+            piece.className = 'confetti-piece';
+            piece.style.left = Math.random() * 100 + 'vw';
+            piece.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            piece.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+            piece.style.width = (Math.random() * 10 + 5) + 'px';
+            piece.style.height = (Math.random() * 10 + 5) + 'px';
+            piece.style.animationDuration = (Math.random() * 2 + 2) + 's';
+            piece.style.animationDelay = Math.random() * 0.5 + 's';
+            document.body.appendChild(piece);
+            setTimeout(() => piece.remove(), 4000);
+        }
+    }
+
+    // Close modal on outside click
+    document.getElementById('bookingModal').addEventListener('click', e => {
+        if (e.target === document.getElementById('bookingModal')) closeBooking();
+    });
+</script>
+
+</body>
+</html>

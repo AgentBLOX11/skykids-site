@@ -1,0 +1,5 @@
+node_modules/
+skykids.db
+*.db
+.DS_Store
+.env

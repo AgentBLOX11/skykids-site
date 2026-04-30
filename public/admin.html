@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sky Kids — Admin Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Nunito', 'sans-serif'] },
+                    colors: {
+                        dark: '#1a1a2e',
+                        candy: { pink:'#FF6B9D', purple:'#C084FC', blue:'#60A5FA', green:'#34D399', yellow:'#FBBF24', orange:'#FB923C' }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Nunito', sans-serif; }
+        .fade-in { animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+        .stat-card { transition: all 0.3s ease; }
+        .stat-card:hover { transform: translateY(-4px); }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+
+<!-- LOGIN -->
+<div id="loginScreen" class="min-h-screen flex items-center justify-center bg-gradient-to-br from-sky-400 via-purple-400 to-pink-400 p-6">
+    <div class="bg-white rounded-3xl shadow-2xl p-8 max-w-md w-full fade-in">
+        <div class="text-center mb-8">
+            <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-candy-pink to-candy-purple flex items-center justify-center text-white text-2xl font-black mx-auto mb-4 shadow-lg">SK</div>
+            <h1 class="text-2xl font-black text-dark">Sky Kids Admin</h1>
+            <p class="text-gray-400 text-sm mt-1">Panou de administrare</p>
+        </div>
+        <div id="loginError" class="hidden bg-red-50 text-red-600 text-sm font-medium p-3 rounded-xl mb-4"></div>
+        <div class="space-y-4">
+            <input id="loginUser" type="text" value="admin" placeholder="Username" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-candy-pink outline-none transition-colors font-bold">
+            <input id="loginPass" type="password" placeholder="Parolă" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-candy-pink outline-none transition-colors font-bold"
+                   onkeydown="if(event.key==='Enter')login()">
+            <button onclick="login()" class="w-full py-3 bg-gradient-to-r from-candy-pink to-candy-purple text-white font-bold rounded-xl hover:brightness-110 transition-all">
+                Intră 🔐
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard" class="hidden">
+    <nav class="bg-white shadow-sm border-b px-6 py-4 flex items-center justify-between sticky top-0 z-40">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-candy-pink to-candy-purple flex items-center justify-center text-white font-black">SK</div>
+            <span class="font-bold text-dark">Admin Dashboard</span>
+        </div>
+        <div class="flex items-center gap-2">
+            <button onclick="refreshData()" class="p-2 hover:bg-gray-100 rounded-lg" title="Refresh">
+                <iconify-icon icon="lucide:refresh-cw" width="18" class="text-gray-500"></iconify-icon>
+            </button>
+            <button onclick="logout()" class="px-4 py-2 text-sm font-bold text-red-500 hover:bg-red-50 rounded-lg flex items-center gap-1">
+                <iconify-icon icon="lucide:log-out" width="16"></iconify-icon> Ieși
+            </button>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto px-6 py-8">
+        <!-- Stats -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+            <div class="stat-card bg-white rounded-2xl p-5 shadow-sm border">
+                <div class="flex items-center justify-between mb-2"><div class="w-10 h-10 rounded-xl bg-sky-100 flex items-center justify-center"><iconify-icon icon="lucide:calendar" class="text-sky-500" width="20"></iconify-icon></div><span class="text-xs text-gray-400 font-bold">Total</span></div>
+                <div id="statTotal" class="text-3xl font-black text-dark">0</div>
+                <div class="text-xs text-gray-400">Programări</div>
+            </div>
+            <div class="stat-card bg-white rounded-2xl p-5 shadow-sm border">
+                <div class="flex items-center justify-between mb-2"><div class="w-10 h-10 rounded-xl bg-orange-100 flex items-center justify-center"><iconify-icon icon="lucide:clock" class="text-candy-orange" width="20"></iconify-icon></div><span class="text-xs text-gray-400 font-bold">Pending</span></div>
+                <div id="statPending" class="text-3xl font-black text-candy-orange">0</div>
+                <div class="text-xs text-gray-400">De confirmat</div>
+            </div>
+            <div class="stat-card bg-white rounded-2xl p-5 shadow-sm border">
+                <div class="flex items-center justify-between mb-2"><div class="w-10 h-10 rounded-xl bg-pink-100 flex items-center justify-center"><iconify-icon icon="lucide:baby" class="text-candy-pink" width="20"></iconify-icon></div><span class="text-xs text-gray-400 font-bold">Azi</span></div>
+                <div id="statToday" class="text-3xl font-black text-candy-pink">0</div>
+                <div class="text-xs text-gray-400">Copii azi</div>
+            </div>
+            <div class="stat-card bg-white rounded-2xl p-5 shadow-sm border">
+                <div class="flex items-center justify-between mb-2"><div class="w-10 h-10 rounded-xl bg-green-100 flex items-center justify-center"><iconify-icon icon="lucide:banknote" class="text-candy-green" width="20"></iconify-icon></div><span class="text-xs text-gray-400 font-bold">Venit</span></div>
+                <div id="statRevenue" class="text-3xl font-black text-candy-green">0</div>
+                <div class="text-xs text-gray-400">MDL estimat</div>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="flex gap-2 mb-6">
+            <button onclick="switchTab('bookings')" class="tab-btn px-5 py-2 rounded-full text-sm font-bold bg-dark text-white" data-tab="bookings">📋 Programări</button>
+            <button onclick="switchTab('upcoming')" class="tab-btn px-5 py-2 rounded-full text-sm font-bold bg-gray-100 text-gray-600" data-tab="upcoming">📅 Următoarele</button>
+            <button onclick="switchTab('settings')" class="tab-btn px-5 py-2 rounded-full text-sm font-bold bg-gray-100 text-gray-600" data-tab="settings">⚙️ Setări</button>
+        </div>
+
+        <!-- Bookings Tab -->
+        <div id="tabBookings" class="tab-content">
+            <div class="flex flex-wrap gap-3 mb-4">
+                <select id="filterStatus" onchange="loadBookings()" class="px-4 py-2 rounded-xl border text-sm font-bold">
+                    <option value="all">Toate</option>
+                    <option value="pending">⏳ Pending</option>
+                    <option value="confirmed">✅ Confirmată</option>
+                    <option value="cancelled">❌ Anulată</option>
+                    <option value="completed">🎉 Completată</option>
+                </select>
+                <input id="filterDate" type="date" onchange="loadBookings()" class="px-4 py-2 rounded-xl border text-sm font-bold">
+                <button onclick="document.getElementById('filterDate').value='';loadBookings()" class="px-4 py-2 text-sm font-bold text-gray-500 hover:text-dark">✕ Reset</button>
+            </div>
+            <div class="bg-white rounded-2xl shadow-sm border overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead><tr class="bg-gray-50 text-gray-500 text-xs font-bold uppercase">
+                            <th class="px-4 py-3 text-left">Data / Ora</th>
+                            <th class="px-4 py-3 text-left">Client</th>
+                            <th class="px-4 py-3 text-left">Pachet</th>
+                            <th class="px-4 py-3 text-center">👶</th>
+                            <th class="px-4 py-3 text-left">Status</th>
+                            <th class="px-4 py-3 text-left">Observații</th>
+                            <th class="px-4 py-3 text-right">Acțiuni</th>
+                        </tr></thead>
+                        <tbody id="bookingsTable"><tr><td colspan="7" class="px-4 py-8 text-center text-gray-400">Se încarcă...</td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Upcoming Tab -->
+        <div id="tabUpcoming" class="tab-content hidden">
+            <div id="upcomingList" class="grid gap-4"><div class="text-center text-gray-400 py-8">Se încarcă...</div></div>
+        </div>
+
+        <!-- Settings Tab -->
+        <div id="tabSettings" class="tab-content hidden">
+            <div class="max-w-lg space-y-6">
+                <div class="bg-white rounded-2xl p-6 shadow-sm border">
+                    <h3 class="font-bold text-dark mb-4">🕐 Program</h3>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div><label class="text-xs font-bold text-gray-400 block mb-1">Ora deschidere</label><input id="setOpenHour" type="number" min="6" max="23" class="w-full px-4 py-2 rounded-xl border text-sm font-bold"></div>
+                        <div><label class="text-xs font-bold text-gray-400 block mb-1">Ora închidere</label><input id="setCloseHour" type="number" min="6" max="23" class="w-full px-4 py-2 rounded-xl border text-sm font-bold"></div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-2xl p-6 shadow-sm border">
+                    <h3 class="font-bold text-dark mb-4">🎪 Capacitate</h3>
+                    <label class="text-xs font-bold text-gray-400 block mb-1">Max copii per oră</label>
+                    <input id="setMaxKids" type="number" min="1" max="100" class="w-full px-4 py-2 rounded-xl border text-sm font-bold">
+                </div>
+                <div class="bg-white rounded-2xl p-6 shadow-sm border">
+                    <h3 class="font-bold text-dark mb-4">🔐 Schimbă Parola</h3>
+                    <div class="flex gap-3">
+                        <input id="newPassword" type="password" placeholder="Parolă nouă" class="flex-1 px-4 py-2 rounded-xl border text-sm font-bold">
+                        <button onclick="changePassword()" class="px-6 py-2 bg-dark text-white font-bold rounded-xl text-sm">Schimbă</button>
+                    </div>
+                </div>
+                <button onclick="saveSettings()" class="w-full py-3 bg-gradient-to-r from-candy-pink to-candy-purple text-white font-bold rounded-xl hover:brightness-110 transition-all">
+                    💾 Salvează Setările
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let token = localStorage.getItem('skykids_token') || '';
+if (token) showDashboard();
+
+async function api(method, path, body) {
+    const opts = { method, headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` } };
+    if (body) opts.body = JSON.stringify(body);
+    const r = await fetch(path, opts);
+    if (r.status === 401) { logout(); throw new Error('Unauthorized'); }
+    return r.json();
+}
+
+async function login() {
+    const username = document.getElementById('loginUser').value;
+    const password = document.getElementById('loginPass').value;
+    const err = document.getElementById('loginError');
+    try {
+        const res = await fetch('/api/admin/login', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({username,password}) });
+        const data = await res.json();
+        if (!res.ok) { err.textContent = data.error; err.classList.remove('hidden'); return; }
+        token = data.token;
+        localStorage.setItem('skykids_token', token);
+        showDashboard();
+    } catch(e) { err.textContent = 'Server indisponibil'; err.classList.remove('hidden'); }
+}
+
+function logout() {
+    token = '';
+    localStorage.removeItem('skykids_token');
+    location.reload();
+}
+
+async function showDashboard() {
+    document.getElementById('loginScreen').classList.add('hidden');
+    document.getElementById('dashboard').classList.remove('hidden');
+    await refreshData();
+}
+
+async function refreshData() {
+    try {
+        const s = await api('GET', '/api/admin/stats');
+        document.getElementById('statTotal').textContent = s.totalBookings;
+        document.getElementById('statPending').textContent = s.pendingBookings;
+        document.getElementById('statToday').textContent = s.todayKids;
+        document.getElementById('statRevenue').textContent = s.revenue.toLocaleString();
+        renderUpcoming(s.upcomingBookings);
+        loadBookings();
+        loadSettings();
+    } catch(e) { console.error(e); }
+}
+
+async function loadBookings() {
+    const status = document.getElementById('filterStatus').value;
+    const date = document.getElementById('filterDate').value;
+    let url = `/api/admin/bookings?status=${status}`;
+    if (date) url += `&date=${date}`;
+    try {
+        const data = await api('GET', url);
+        renderBookings(data.bookings);
+    } catch(e) { console.error(e); }
+}
+
+const pkgLabels = { standard:'🌟 Standard', premium:'🎉 Premium', birthday:'🎂 Zi de Naștere' };
+const statusColors = { pending:'bg-yellow-100 text-yellow-700', confirmed:'bg-green-100 text-green-700', cancelled:'bg-red-100 text-red-700', completed:'bg-blue-100 text-blue-700' };
+const statusLabels = { pending:'⏳ Pending', confirmed:'✅ Confirmată', cancelled:'❌ Anulată', completed:'🎉 Completată' };
+
+function renderBookings(bookings) {
+    const tb = document.getElementById('bookingsTable');
+    if (!bookings || bookings.length === 0) {
+        tb.innerHTML = '<tr><td colspan="7" class="px-4 py-8 text-center text-gray-400">Nicio programare găsită</td></tr>';
+        return;
+    }
+    tb.innerHTML = bookings.map(b => `
+        <tr class="booking-row border-b border-gray-50 hover:bg-gray-50">
+            <td class="px-4 py-3"><div class="font-bold text-dark">${b.date}</div><div class="text-xs text-gray-400">${b.time}</div></td>
+            <td class="px-4 py-3"><div class="font-bold">${b.client_name}</div><div class="text-xs text-gray-400">${b.client_phone}</div></td>
+            <td class="px-4 py-3 font-bold">${pkgLabels[b.package] || b.package}</td>
+            <td class="px-4 py-3 text-center font-bold">${b.kids_count}</td>
+            <td class="px-4 py-3"><span class="px-2 py-1 rounded-full text-xs font-bold ${statusColors[b.status]}">${statusLabels[b.status]}</span></td>
+            <td class="px-4 py-3 text-xs text-gray-400 max-w-[150px] truncate">${b.notes || '-'}</td>
+            <td class="px-4 py-3 text-right">
+                <div class="flex gap-1 justify-end">
+                    ${b.status === 'pending' ? `<button onclick="updateStatus('${b.id}','confirmed')" class="px-2 py-1 bg-green-100 text-green-700 text-xs font-bold rounded-lg hover:bg-green-200">✅</button>` : ''}
+                    ${b.status === 'confirmed' ? `<button onclick="updateStatus('${b.id}','completed')" class="px-2 py-1 bg-blue-100 text-blue-700 text-xs font-bold rounded-lg hover:bg-blue-200">🎉</button>` : ''}
+                    ${b.status !== 'cancelled' && b.status !== 'completed' ? `<button onclick="updateStatus('${b.id}','cancelled')" class="px-2 py-1 bg-red-100 text-red-700 text-xs font-bold rounded-lg hover:bg-red-200">❌</button>` : ''}
+                    <button onclick="deleteBooking('${b.id}')" class="px-2 py-1 bg-gray-100 text-gray-500 text-xs font-bold rounded-lg hover:bg-gray-200">🗑</button>
+                </div>
+            </td>
+        </tr>
+    `).join('');
+}
+
+function renderUpcoming(bookings) {
+    const el = document.getElementById('upcomingList');
+    if (!bookings || bookings.length === 0) {
+        el.innerHTML = '<div class="text-center text-gray-400 py-8">Nicio programare viitoare</div>';
+        return;
+    }
+    el.innerHTML = bookings.map(b => `
+        <div class="bg-white rounded-2xl p-5 shadow-sm border flex items-center gap-4">
+            <div class="w-14 h-14 rounded-xl bg-sky-100 flex flex-col items-center justify-center shrink-0">
+                <span class="text-lg font-black text-sky-600">${b.date.split('-')[2]}</span>
+                <span class="text-[10px] text-sky-400 font-bold">${['Ian','Feb','Mar','Apr','Mai','Iun','Iul','Aug','Sep','Oct','Nov','Dec'][parseInt(b.date.split('-')[1])-1]}</span>
+            </div>
+            <div class="flex-1 min-w-0">
+                <div class="font-bold text-dark">${b.client_name} — ${b.time}</div>
+                <div class="text-xs text-gray-400">${pkgLabels[b.package]} · ${b.kids_count} copii · ${b.client_phone}</div>
+                ${b.notes ? `<div class="text-xs text-gray-400 mt-1 truncate">📝 ${b.notes}</div>` : ''}
+            </div>
+            <span class="px-2 py-1 rounded-full text-xs font-bold ${statusColors[b.status]}">${statusLabels[b.status]}</span>
+        </div>
+    `).join('');
+}
+
+async function updateStatus(id, status) {
+    await api('PATCH', `/api/admin/bookings/${id}`, { status });
+    refreshData();
+}
+
+async function deleteBooking(id) {
+    if (!confirm('Sigur vrei să ștergi această programare?')) return;
+    await api('DELETE', `/api/admin/bookings/${id}`);
+    refreshData();
+}
+
+async function loadSettings() {
+    try {
+        const s = await api('GET', '/api/admin/settings');
+        document.getElementById('setOpenHour').value = s.open_hour || '10';
+        document.getElementById('setCloseHour').value = s.close_hour || '22';
+        document.getElementById('setMaxKids').value = s.max_kids_per_slot || '20';
+    } catch(e) {}
+}
+
+async function saveSettings() {
+    await api('PUT', '/api/admin/settings', {
+        open_hour: document.getElementById('setOpenHour').value,
+        close_hour: document.getElementById('setCloseHour').value,
+        max_kids_per_slot: document.getElementById('setMaxKids').value,
+    });
+    alert('✅ Setări salvate!');
+}
+
+async function changePassword() {
+    const pw = document.getElementById('newPassword').value;
+    if (!pw || pw.length < 4) { alert('Parola prea scurtă'); return; }
+    // Simple approach: update via settings
+    alert('Pentru a schimba parola, contactează administratorul serverului.');
+}
+
+function switchTab(tab) {
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.add('hidden'));
+    document.querySelectorAll('.tab-btn').forEach(b => { b.className = 'tab-btn px-5 py-2 rounded-full text-sm font-bold bg-gray-100 text-gray-600'; });
+    document.getElementById('tab' + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.remove('hidden');
+    document.querySelector(`[data-tab="${tab}"]`).className = 'tab-btn px-5 py-2 rounded-full text-sm font-bold bg-dark text-white';
+}
+</script>
+</body>
+</html>
