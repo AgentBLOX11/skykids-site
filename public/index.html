@@ -79,6 +79,31 @@
         .menu-card { transition: all 0.3s ease; border: 2px solid transparent; }
         .menu-card:hover { border-color: #0ea5e9; transform: scale(1.02); }
 
+        /* Carousel (Pizza Pe Vatra style) */
+        .menu-carousel {
+            display: flex;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            gap: 16px;
+            padding-bottom: 12px;
+            -webkit-overflow-scrolling: touch;
+        }
+        .menu-carousel::-webkit-scrollbar { height: 6px; }
+        .menu-carousel::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 3px; }
+        .menu-carousel::-webkit-scrollbar-thumb { background: #0ea5e9; border-radius: 3px; }
+        .menu-carousel > .menu-item {
+            flex: 0 0 260px;
+            scroll-snap-align: start;
+            min-height: 160px;
+        }
+        .menu-carousel > .menu-item.wide-card {
+            flex: 0 0 200px;
+        }
+        .menu-carousel > .see-all-card {
+            flex: 0 0 160px;
+            scroll-snap-align: start;
+        }
+
         /* Gallery */
         .gallery-item { transition: all 0.4s ease; }
         .gallery-item:hover { transform: scale(1.05); z-index: 10; }
@@ -343,10 +368,16 @@
                 <span class="text-3xl">🍣</span>
                 <h3 class="text-2xl font-black text-dark">Asian Menu — Sushi</h3>
             </div>
-            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4" id="grid-sushi">
+            <div class="menu-carousel" id="grid-sushi">
                 <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
                     <div><h4 class="font-bold text-dark text-lg">Philadelphia</h4><p class="text-gray-400 text-sm mt-1">Somon, castraveți, avocado, cremă de brânză</p></div>
                     <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">140 lei</span></div>
+                <div class="see-all-card flex items-center justify-center bg-gradient-to-br from-sky-50 to-sky-100 rounded-xl border-2 border-dashed border-sky-300 cursor-pointer hover:bg-sky-100 transition-all min-h-[160px]" onclick="expandCategory(this)">
+                    <div class="text-center">
+                        <iconify-icon icon="lucide:chevrons-right" width="28" class="text-sky-400"></iconify-icon>
+                        <p class="text-sky-500 font-bold text-sm mt-2">toate opțiunile</p>
+                    </div>
+                </div>
                 </div>
                 <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
                     <div><h4 class="font-bold text-dark text-lg">Tempura cu somon</h4><p class="text-gray-400 text-sm mt-1">Somon, cremă de brânză, castraveți, avocado, sos unagi</p></div>
@@ -381,10 +412,16 @@
                 <span class="text-3xl">🍱</span>
                 <h3 class="text-2xl font-black text-dark">Sushi Set</h3>
             </div>
-            <div class="grid sm:grid-cols-2 gap-4">
+            <div class="menu-carousel">
                 <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
                     <div><h4 class="font-bold text-dark text-lg">Set Family Sushi</h4><p class="text-gray-400 text-sm mt-1">Philadelphia, tempura cu somon, tempura cu creveți, tempura cu tipar, roll dublu</p></div>
                     <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">750 lei</span></div>
+                <div class="see-all-card flex items-center justify-center bg-gradient-to-br from-sky-50 to-sky-100 rounded-xl border-2 border-dashed border-sky-300 cursor-pointer hover:bg-sky-100 transition-all min-h-[160px]" onclick="expandCategory(this)">
+                    <div class="text-center">
+                        <iconify-icon icon="lucide:chevrons-right" width="28" class="text-sky-400"></iconify-icon>
+                        <p class="text-sky-500 font-bold text-sm mt-2">toate opțiunile</p>
+                    </div>
+                </div>
                 </div>
                 <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
                     <div><h4 class="font-bold text-dark text-lg">Mini Set Family Sushi</h4><p class="text-gray-400 text-sm mt-1">Philadelphia, tempura cu somon, tempura cu creveți, tempura cu tipar, roll dublu</p></div>
@@ -407,10 +444,16 @@
                 <span class="text-3xl">🍔</span>
                 <h3 class="text-2xl font-black text-dark">Sushi Burger</h3>
             </div>
-            <div class="grid sm:grid-cols-2 gap-4">
+            <div class="menu-carousel">
                 <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
                     <div><h4 class="font-bold text-dark text-lg">Sushi burger cu somon</h4><p class="text-gray-400 text-sm mt-1">Somon, salată, castraveți, icre masago, cașcaval cheddar</p><span class="text-xs text-gray-300">400g</span></div>
                     <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">170 lei</span></div>
+                <div class="see-all-card flex items-center justify-center bg-gradient-to-br from-sky-50 to-sky-100 rounded-xl border-2 border-dashed border-sky-300 cursor-pointer hover:bg-sky-100 transition-all min-h-[160px]" onclick="expandCategory(this)">
+                    <div class="text-center">
+                        <iconify-icon icon="lucide:chevrons-right" width="28" class="text-sky-400"></iconify-icon>
+                        <p class="text-sky-500 font-bold text-sm mt-2">toate opțiunile</p>
+                    </div>
+                </div>
                 </div>
                 <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
                     <div><h4 class="font-bold text-dark text-lg">Sushi burger cu creveți</h4><p class="text-gray-400 text-sm mt-1">Creveți, salată, castraveți, avocado, icre masago, cremă de brânză, cașcaval cheddar</p><span class="text-xs text-gray-300">400g</span></div>
@@ -425,10 +468,16 @@
                 <span class="text-3xl">🍔</span>
                 <h3 class="text-2xl font-black text-dark">Burger</h3>
             </div>
-            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div class="menu-carousel">
                 <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
                     <div><h4 class="font-bold text-dark text-lg">Crispy Black Burger</h4><p class="text-gray-400 text-sm mt-1">Cotlet de pui/vită/porc/crispy, chiflă neagră, roșii, ceapă marinată, salată, sos ketchup, cartofi pai</p></div>
                     <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">140 lei</span></div>
+                <div class="see-all-card flex items-center justify-center bg-gradient-to-br from-sky-50 to-sky-100 rounded-xl border-2 border-dashed border-sky-300 cursor-pointer hover:bg-sky-100 transition-all min-h-[160px]" onclick="expandCategory(this)">
+                    <div class="text-center">
+                        <iconify-icon icon="lucide:chevrons-right" width="28" class="text-sky-400"></iconify-icon>
+                        <p class="text-sky-500 font-bold text-sm mt-2">toate opțiunile</p>
+                    </div>
+                </div>
                 </div>
                 <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
                     <div><h4 class="font-bold text-dark text-lg">Clasic Burger</h4><p class="text-gray-400 text-sm mt-1">Cotlet de pui/vită/porc/crispy, chiflă albă, roșii, ceapă marinată, salată, sos</p></div>
@@ -447,10 +496,16 @@
                 <span class="text-3xl">🥦</span>
                 <h3 class="text-2xl font-black text-dark">Legume</h3>
             </div>
-            <div class="grid sm:grid-cols-2 gap-4">
+            <div class="menu-carousel">
                 <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
                     <div><h4 class="font-bold text-dark text-lg">Legume la grătar</h4><p class="text-gray-400 text-sm mt-1">Roșii cherry, ciuperci, dovlecel, ardei</p></div>
                     <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">70 lei</span></div>
+                <div class="see-all-card flex items-center justify-center bg-gradient-to-br from-sky-50 to-sky-100 rounded-xl border-2 border-dashed border-sky-300 cursor-pointer hover:bg-sky-100 transition-all min-h-[160px]" onclick="expandCategory(this)">
+                    <div class="text-center">
+                        <iconify-icon icon="lucide:chevrons-right" width="28" class="text-sky-400"></iconify-icon>
+                        <p class="text-sky-500 font-bold text-sm mt-2">toate opțiunile</p>
+                    </div>
+                </div>
                 </div>
                 <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
                     <div><h4 class="font-bold text-dark text-lg">Legume proaspete</h4><p class="text-gray-400 text-sm mt-1">Castraveți, ardei, morcov</p></div>
@@ -465,10 +520,16 @@
                 <span class="text-3xl">🧀</span>
                 <h3 class="text-2xl font-black text-dark">Antipasti</h3>
             </div>
-            <div class="grid sm:grid-cols-2 gap-4">
+            <div class="menu-carousel">
                 <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
                     <div><h4 class="font-bold text-dark text-lg">Antipasti</h4><p class="text-gray-400 text-sm mt-1">Prosciutto crudo, mortadella, salami Milano, brie, gorgonzola, grissini, miere, nucă de cocos, struguri</p></div>
                     <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">300 lei</span></div>
+                <div class="see-all-card flex items-center justify-center bg-gradient-to-br from-sky-50 to-sky-100 rounded-xl border-2 border-dashed border-sky-300 cursor-pointer hover:bg-sky-100 transition-all min-h-[160px]" onclick="expandCategory(this)">
+                    <div class="text-center">
+                        <iconify-icon icon="lucide:chevrons-right" width="28" class="text-sky-400"></iconify-icon>
+                        <p class="text-sky-500 font-bold text-sm mt-2">toate opțiunile</p>
+                    </div>
+                </div>
                 </div>
             </div>
         </div>
@@ -479,10 +540,16 @@
                 <span class="text-3xl">🍝</span>
                 <h3 class="text-2xl font-black text-dark">Paste</h3>
             </div>
-            <div class="grid sm:grid-cols-2 gap-4">
+            <div class="menu-carousel">
                 <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
                     <div><h4 class="font-bold text-dark text-lg">Paste Carbonara</h4><p class="text-gray-400 text-sm mt-1">Paste, piept de pui, șuncă, ciuperci, frișcă, parmezan</p><span class="text-xs text-gray-300">250g</span></div>
                     <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">140 lei</span></div>
+                <div class="see-all-card flex items-center justify-center bg-gradient-to-br from-sky-50 to-sky-100 rounded-xl border-2 border-dashed border-sky-300 cursor-pointer hover:bg-sky-100 transition-all min-h-[160px]" onclick="expandCategory(this)">
+                    <div class="text-center">
+                        <iconify-icon icon="lucide:chevrons-right" width="28" class="text-sky-400"></iconify-icon>
+                        <p class="text-sky-500 font-bold text-sm mt-2">toate opțiunile</p>
+                    </div>
+                </div>
                 </div>
             </div>
         </div>
@@ -493,10 +560,16 @@
                 <span class="text-3xl">🥟</span>
                 <h3 class="text-2xl font-black text-dark">Colțunași</h3>
             </div>
-            <div class="grid sm:grid-cols-2 gap-4">
+            <div class="menu-carousel">
                 <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
                     <div><h4 class="font-bold text-dark text-lg">Colțunași cu brânză</h4><span class="text-xs text-gray-300">250g</span></div>
                     <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">85 lei</span></div>
+                <div class="see-all-card flex items-center justify-center bg-gradient-to-br from-sky-50 to-sky-100 rounded-xl border-2 border-dashed border-sky-300 cursor-pointer hover:bg-sky-100 transition-all min-h-[160px]" onclick="expandCategory(this)">
+                    <div class="text-center">
+                        <iconify-icon icon="lucide:chevrons-right" width="28" class="text-sky-400"></iconify-icon>
+                        <p class="text-sky-500 font-bold text-sm mt-2">toate opțiunile</p>
+                    </div>
+                </div>
                 </div>
                 <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
                     <div><h4 class="font-bold text-dark text-lg">Colțunași cu cartofi</h4><p class="text-gray-400 text-sm mt-1">Colțunași cu cartofi, ceapă prăjită</p><span class="text-xs text-gray-300">250g</span></div>
@@ -511,10 +584,16 @@
                 <span class="text-3xl">🥞</span>
                 <h3 class="text-2xl font-black text-dark">Clătite</h3>
             </div>
-            <div class="grid sm:grid-cols-2 gap-4">
+            <div class="menu-carousel">
                 <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
                     <div><h4 class="font-bold text-dark text-lg">Clătite dulci</h4></div>
                     <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">250 lei</span></div>
+                <div class="see-all-card flex items-center justify-center bg-gradient-to-br from-sky-50 to-sky-100 rounded-xl border-2 border-dashed border-sky-300 cursor-pointer hover:bg-sky-100 transition-all min-h-[160px]" onclick="expandCategory(this)">
+                    <div class="text-center">
+                        <iconify-icon icon="lucide:chevrons-right" width="28" class="text-sky-400"></iconify-icon>
+                        <p class="text-sky-500 font-bold text-sm mt-2">toate opțiunile</p>
+                    </div>
+                </div>
                 </div>
                 <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
                     <div><h4 class="font-bold text-dark text-lg">Clătite sărate</h4></div>
@@ -529,10 +608,16 @@
                 <span class="text-3xl">🍕</span>
                 <h3 class="text-2xl font-black text-dark">Pizza</h3>
             </div>
-            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div class="menu-carousel">
                 <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
                     <div><h4 class="font-bold text-dark text-lg">Margherita</h4><p class="text-gray-400 text-sm mt-1">Sos roșu, mozzarella, parmezan, sos pesto</p></div>
                     <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">100 lei</span></div>
+                <div class="see-all-card flex items-center justify-center bg-gradient-to-br from-sky-50 to-sky-100 rounded-xl border-2 border-dashed border-sky-300 cursor-pointer hover:bg-sky-100 transition-all min-h-[160px]" onclick="expandCategory(this)">
+                    <div class="text-center">
+                        <iconify-icon icon="lucide:chevrons-right" width="28" class="text-sky-400"></iconify-icon>
+                        <p class="text-sky-500 font-bold text-sm mt-2">toate opțiunile</p>
+                    </div>
+                </div>
                 </div>
                 <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
                     <div><h4 class="font-bold text-dark text-lg">Quattro formaggi</h4><p class="text-gray-400 text-sm mt-1">Sos roșu, mozzarella, brie, gorgonzola, parmezan</p></div>
@@ -595,10 +680,16 @@
                 <span class="text-3xl">🍟</span>
                 <h3 class="text-2xl font-black text-dark">Fries &amp; Snacks</h3>
             </div>
-            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div class="menu-carousel">
                 <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
                     <div><h4 class="font-bold text-dark text-lg">Cartofi pai</h4><span class="text-xs text-gray-300">150g</span></div>
                     <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">45 lei</span></div>
+                <div class="see-all-card flex items-center justify-center bg-gradient-to-br from-sky-50 to-sky-100 rounded-xl border-2 border-dashed border-sky-300 cursor-pointer hover:bg-sky-100 transition-all min-h-[160px]" onclick="expandCategory(this)">
+                    <div class="text-center">
+                        <iconify-icon icon="lucide:chevrons-right" width="28" class="text-sky-400"></iconify-icon>
+                        <p class="text-sky-500 font-bold text-sm mt-2">toate opțiunile</p>
+                    </div>
+                </div>
                 </div>
                 <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
                     <div><h4 class="font-bold text-dark text-lg">Cartofi biluțe</h4><span class="text-xs text-gray-300">180g</span></div>
@@ -653,10 +744,16 @@
                 <span class="text-3xl">🥫</span>
                 <h3 class="text-2xl font-black text-dark">Sosuri</h3>
             </div>
-            <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="menu-carousel">
                 <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 text-center">
                     <h4 class="font-bold text-dark text-lg">Ketchup</h4>
                     <span class="text-candy-pink font-bold text-lg mt-2 block">10 lei</span>
+                <div class="see-all-card flex items-center justify-center bg-gradient-to-br from-sky-50 to-sky-100 rounded-xl border-2 border-dashed border-sky-300 cursor-pointer hover:bg-sky-100 transition-all min-h-[160px]" onclick="expandCategory(this)">
+                    <div class="text-center">
+                        <iconify-icon icon="lucide:chevrons-right" width="28" class="text-sky-400"></iconify-icon>
+                        <p class="text-sky-500 font-bold text-sm mt-2">toate opțiunile</p>
+                    </div>
+                </div>
                 </div>
                 <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 text-center">
                     <h4 class="font-bold text-dark text-lg">Maioneză</h4>
@@ -679,10 +776,16 @@
                 <span class="text-3xl">🥩</span>
                 <h3 class="text-2xl font-black text-dark">Carne & Platouri</h3>
             </div>
-            <div class="grid sm:grid-cols-2 gap-4">
+            <div class="menu-carousel">
                 <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
                     <div><h4 class="font-bold text-dark text-lg">Platou cu Ciolan</h4><p class="text-gray-400 text-sm mt-1">Ciolan, cârnăciori BBQ, ceafă de porc, mici, piept de pui, aripioare, cartofi ca acasă, murătură, sos</p><span class="text-xs text-gray-300">5kg</span></div>
                     <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">1300 lei</span></div>
+                <div class="see-all-card flex items-center justify-center bg-gradient-to-br from-sky-50 to-sky-100 rounded-xl border-2 border-dashed border-sky-300 cursor-pointer hover:bg-sky-100 transition-all min-h-[160px]" onclick="expandCategory(this)">
+                    <div class="text-center">
+                        <iconify-icon icon="lucide:chevrons-right" width="28" class="text-sky-400"></iconify-icon>
+                        <p class="text-sky-500 font-bold text-sm mt-2">toate opțiunile</p>
+                    </div>
+                </div>
                 </div>
                 <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
                     <div><h4 class="font-bold text-dark text-lg">Platou cu costițe</h4><p class="text-gray-400 text-sm mt-1">Costițe de porc, cârnăciori BBQ, piept de pui, cartofi copți, sos, ceapă marinată, verdețuri</p><span class="text-xs text-gray-300">2200g</span></div>
@@ -721,10 +824,16 @@
                 <span class="text-3xl">🥗</span>
                 <h3 class="text-2xl font-black text-dark">Salate</h3>
             </div>
-            <div class="grid sm:grid-cols-2 gap-4">
+            <div class="menu-carousel">
                 <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
                     <div><h4 class="font-bold text-dark text-lg">Caesar cu pui/creveți</h4><p class="text-gray-400 text-sm mt-1">Piept de pui/creveți, salată, sos, parmezan, roșii cherry, ou de prepeliță</p><span class="text-xs text-gray-300">260g</span></div>
                     <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">140 / 150 lei</span></div>
+                <div class="see-all-card flex items-center justify-center bg-gradient-to-br from-sky-50 to-sky-100 rounded-xl border-2 border-dashed border-sky-300 cursor-pointer hover:bg-sky-100 transition-all min-h-[160px]" onclick="expandCategory(this)">
+                    <div class="text-center">
+                        <iconify-icon icon="lucide:chevrons-right" width="28" class="text-sky-400"></iconify-icon>
+                        <p class="text-sky-500 font-bold text-sm mt-2">toate opțiunile</p>
+                    </div>
+                </div>
                 </div>
                 <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
                     <div><h4 class="font-bold text-dark text-lg">Gourmet</h4><p class="text-gray-400 text-sm mt-1">Mix de salată, prosciutto, pere caramelizate, Dor Blue, biluțe de brânză, cherry, dressing</p><span class="text-xs text-gray-300">500g</span></div>
@@ -755,10 +864,16 @@
                 <span class="text-3xl">🦞</span>
                 <h3 class="text-2xl font-black text-dark">Seafood</h3>
             </div>
-            <div class="grid sm:grid-cols-2 gap-4">
+            <div class="menu-carousel">
                 <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
                     <div><h4 class="font-bold text-dark text-lg">Somon la grătar</h4><p class="text-gray-400 text-sm mt-1">Somon la grătar, ardei, ciuperci, dovlecel, lămâie, roșii cherry, salată</p><span class="text-xs text-gray-300">700g</span></div>
                     <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">350 lei</span></div>
+                <div class="see-all-card flex items-center justify-center bg-gradient-to-br from-sky-50 to-sky-100 rounded-xl border-2 border-dashed border-sky-300 cursor-pointer hover:bg-sky-100 transition-all min-h-[160px]" onclick="expandCategory(this)">
+                    <div class="text-center">
+                        <iconify-icon icon="lucide:chevrons-right" width="28" class="text-sky-400"></iconify-icon>
+                        <p class="text-sky-500 font-bold text-sm mt-2">toate opțiunile</p>
+                    </div>
+                </div>
                 </div>
                 <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
                     <div><h4 class="font-bold text-dark text-lg">Platou marin rece</h4><p class="text-gray-400 text-sm mt-1">Somon afumat, pește alb afumat, creveți fierți, măsline, lămâie, frunze de salată</p><span class="text-xs text-gray-300">700g</span></div>
@@ -1242,6 +1357,22 @@
         if (activeTab) {
             activeTab.scrollIntoView({behavior:'smooth', block:'nearest', inline:'center'});
         }
+    }
+
+    // --- Expand Category (toate optiunile) ---
+    function expandCategory(el) {
+        const carousel = el.parentElement;
+        const items = carousel.querySelectorAll('.menu-item');
+        // Show all items by removing the flex scroll and making it a grid
+        carousel.classList.remove('menu-carousel');
+        carousel.style.display = 'grid';
+        carousel.style.gridTemplateColumns = 'repeat(auto-fill, minmax(260px, 1fr))';
+        carousel.style.gap = '16px';
+        items.forEach(item => {
+            item.style.flex = '';
+        });
+        // Remove the see-all card
+        el.remove();
     }
 
     // --- Booking System ---
