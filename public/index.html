@@ -310,257 +310,382 @@
 <!-- ========== MENU ========== -->
 <section id="meniu" class="py-24 bg-gradient-to-b from-white via-sky-50 to-white">
     <div class="max-w-7xl mx-auto px-6">
-        <div class="text-center mb-16 fade-in">
+        <div class="text-center mb-12 fade-in">
             <span class="text-candy-orange text-xs font-bold tracking-widest uppercase">Bucătărie</span>
             <h2 class="text-4xl sm:text-5xl font-black text-dark tracking-tight mt-3 mb-4">Meniul Nostru</h2>
-            <p class="text-gray-400 max-w-xl mx-auto">De la gustări rapide la preparate consistente — avem ceva pentru fiecare gust!</p>
+            <p class="text-gray-400 max-w-xl mx-auto">De la sushi și pizza la preparate pe grătar — avem ceva pentru fiecare gust!</p>
         </div>
 
-        <!-- Menu categories -->
-        <div class="flex flex-wrap justify-center gap-3 mb-12">
-            <button onclick="filterMenu('all')" class="menu-filter active px-5 py-2 rounded-full text-sm font-bold bg-sky-500 text-white transition-all" data-filter="all">Toate</button>
-            <button onclick="filterMenu('pizza')" class="menu-filter px-5 py-2 rounded-full text-sm font-bold bg-gray-100 text-gray-600 hover:bg-sky-100 transition-all" data-filter="pizza">🍕 Pizza</button>
-            <button onclick="filterMenu('paste')" class="menu-filter px-5 py-2 rounded-full text-sm font-bold bg-gray-100 text-gray-600 hover:bg-sky-100 transition-all" data-filter="paste">🍝 Paste</button>
-            <button onclick="filterMenu('salate')" class="menu-filter px-5 py-2 rounded-full text-sm font-bold bg-gray-100 text-gray-600 hover:bg-sky-100 transition-all" data-filter="salate">🥗 Salate</button>
-            <button onclick="filterMenu('carne')" class="menu-filter px-5 py-2 rounded-full text-sm font-bold bg-gray-100 text-gray-600 hover:bg-sky-100 transition-all" data-filter="carne">🥩 Carne</button>
-            <button onclick="filterMenu('bauturi')" class="menu-filter px-5 py-2 rounded-full text-sm font-bold bg-gray-100 text-gray-600 hover:bg-sky-100 transition-all" data-filter="bauturi">🥤 Băuturi</button>
-            <button onclick="filterMenu('deserturi')" class="menu-filter px-5 py-2 rounded-full text-sm font-bold bg-gray-100 text-gray-600 hover:bg-sky-100 transition-all" data-filter="deserturi">🍰 Deserturi</button>
-            <button onclick="filterMenu('copii')" class="menu-filter px-5 py-2 rounded-full text-sm font-bold bg-gray-100 text-gray-600 hover:bg-sky-100 transition-all" data-filter="copii">👶 Meniu Copii</button>
+        <!-- Category tabs — Pizza Pe Vatra style -->
+        <div class="sticky top-20 z-30 bg-white/90 backdrop-blur-lg py-4 -mx-6 px-6 mb-10 shadow-sm">
+            <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-hide" id="categoryTabs">
+                <button onclick="showCategory('sushi')" class="cat-tab active whitespace-nowrap px-5 py-2.5 rounded-full text-sm font-bold bg-sky-500 text-white transition-all shadow-md" data-cat="sushi">🍣 Sushi</button>
+                <button onclick="showCategory('sushi-set')" class="cat-tab whitespace-nowrap px-5 py-2.5 rounded-full text-sm font-bold bg-gray-100 text-gray-600 hover:bg-sky-100 transition-all" data-cat="sushi-set">🍱 Seturi Sushi</button>
+                <button onclick="showCategory('sushi-burger')" class="cat-tab whitespace-nowrap px-5 py-2.5 rounded-full text-sm font-bold bg-gray-100 text-gray-600 hover:bg-sky-100 transition-all" data-cat="sushi-burger">🍔 Sushi Burger</button>
+                <button onclick="showCategory('burger')" class="cat-tab whitespace-nowrap px-5 py-2.5 rounded-full text-sm font-bold bg-gray-100 text-gray-600 hover:bg-sky-100 transition-all" data-cat="burger">🍔 Burger</button>
+                <button onclick="showCategory('legume')" class="cat-tab whitespace-nowrap px-5 py-2.5 rounded-full text-sm font-bold bg-gray-100 text-gray-600 hover:bg-sky-100 transition-all" data-cat="legume">🥦 Legume</button>
+                <button onclick="showCategory('antipasti')" class="cat-tab whitespace-nowrap px-5 py-2.5 rounded-full text-sm font-bold bg-gray-100 text-gray-600 hover:bg-sky-100 transition-all" data-cat="antipasti">🧀 Antipasti</button>
+                <button onclick="showCategory('paste')" class="cat-tab whitespace-nowrap px-5 py-2.5 rounded-full text-sm font-bold bg-gray-100 text-gray-600 hover:bg-sky-100 transition-all" data-cat="paste">🍝 Paste</button>
+                <button onclick="showCategory('coltunasi')" class="cat-tab whitespace-nowrap px-5 py-2.5 rounded-full text-sm font-bold bg-gray-100 text-gray-600 hover:bg-sky-100 transition-all" data-cat="coltunasi">🥟 Colțunași</button>
+                <button onclick="showCategory('clatite')" class="cat-tab whitespace-nowrap px-5 py-2.5 rounded-full text-sm font-bold bg-gray-100 text-gray-600 hover:bg-sky-100 transition-all" data-cat="clatite">🥞 Clătite</button>
+                <button onclick="showCategory('pizza')" class="cat-tab whitespace-nowrap px-5 py-2.5 rounded-full text-sm font-bold bg-gray-100 text-gray-600 hover:bg-sky-100 transition-all" data-cat="pizza">🍕 Pizza</button>
+                <button onclick="showCategory('fries')" class="cat-tab whitespace-nowrap px-5 py-2.5 rounded-full text-sm font-bold bg-gray-100 text-gray-600 hover:bg-sky-100 transition-all" data-cat="fries">🍟 Fries</button>
+                <button onclick="showCategory('sosuri')" class="cat-tab whitespace-nowrap px-5 py-2.5 rounded-full text-sm font-bold bg-gray-100 text-gray-600 hover:bg-sky-100 transition-all" data-cat="sosuri">🥫 Sosuri</button>
+                <button onclick="showCategory('carne')" class="cat-tab whitespace-nowrap px-5 py-2.5 rounded-full text-sm font-bold bg-gray-100 text-gray-600 hover:bg-sky-100 transition-all" data-cat="carne">🥩 Carne</button>
+            </div>
         </div>
 
-        <!-- Menu grid -->
-        <div id="menuGrid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            <!-- Pizza -->
-            <div class="menu-card bg-white rounded-2xl overflow-hidden shadow-md" data-category="pizza">
-                <div class="h-48 bg-gradient-to-br from-orange-100 to-yellow-50 flex items-center justify-center">
-                    <span class="text-7xl">🍕</span>
-                </div>
-                <div class="p-5">
-                    <div class="flex justify-between items-start">
-                        <h3 class="font-bold text-dark">Margherita</h3>
-                        <span class="text-candy-pink font-bold">85 MDL</span>
-                    </div>
-                    <p class="text-gray-400 text-sm mt-1">Sos de roșii, mozzarella, busuioc proaspăt</p>
-                </div>
+        <!-- ============ SUSHI ============ -->
+        <div class="menu-category" id="cat-sushi">
+            <div class="flex items-center gap-3 mb-8">
+                <span class="text-3xl">🍣</span>
+                <h3 class="text-2xl font-black text-dark">Asian Menu — Sushi</h3>
             </div>
-
-            <div class="menu-card bg-white rounded-2xl overflow-hidden shadow-md" data-category="pizza">
-                <div class="h-48 bg-gradient-to-br from-red-100 to-orange-50 flex items-center justify-center">
-                    <span class="text-7xl">🍕</span>
+            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4" id="grid-sushi">
+                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
+                    <div><h4 class="font-bold text-dark text-lg">Philadelphia</h4><p class="text-gray-400 text-sm mt-1">Somon, castraveți, avocado, cremă de brânză</p></div>
+                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">140 lei</span></div>
                 </div>
-                <div class="p-5">
-                    <div class="flex justify-between items-start">
-                        <h3 class="font-bold text-dark">Pepperoni</h3>
-                        <span class="text-candy-pink font-bold">110 MDL</span>
-                    </div>
-                    <p class="text-gray-400 text-sm mt-1">Sos de roșii, mozzarella, pepperoni picant</p>
+                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
+                    <div><h4 class="font-bold text-dark text-lg">Tempura cu somon</h4><p class="text-gray-400 text-sm mt-1">Somon, cremă de brânză, castraveți, avocado, sos unagi</p></div>
+                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">150 lei</span></div>
                 </div>
-            </div>
-
-            <div class="menu-card bg-white rounded-2xl overflow-hidden shadow-md" data-category="pizza">
-                <div class="h-48 bg-gradient-to-br from-green-100 to-yellow-50 flex items-center justify-center">
-                    <span class="text-7xl">🍕</span>
+                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
+                    <div><h4 class="font-bold text-dark text-lg">Tempura cu creveți</h4><p class="text-gray-400 text-sm mt-1">Creveți, cremă de brânză, castraveți, avocado, sos unagi</p></div>
+                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">160 lei</span></div>
                 </div>
-                <div class="p-5">
-                    <div class="flex justify-between items-start">
-                        <h3 class="font-bold text-dark">Quattro Formaggi</h3>
-                        <span class="text-candy-pink font-bold">120 MDL</span>
-                    </div>
-                    <p class="text-gray-400 text-sm mt-1">Mozzarella, gorgonzola, parmezan, emmental</p>
+                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
+                    <div><h4 class="font-bold text-dark text-lg">California cu crab</h4><p class="text-gray-400 text-sm mt-1">Crab, castraveți, avocado, cremă de brânză, masago roșu, sos spicy</p></div>
+                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">160 lei</span></div>
                 </div>
-            </div>
-
-            <!-- Paste -->
-            <div class="menu-card bg-white rounded-2xl overflow-hidden shadow-md" data-category="paste">
-                <div class="h-48 bg-gradient-to-br from-yellow-100 to-orange-50 flex items-center justify-center">
-                    <span class="text-7xl">🍝</span>
+                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
+                    <div><h4 class="font-bold text-dark text-lg">California cu creveți</h4><p class="text-gray-400 text-sm mt-1">Creveți, castraveți, avocado, cremă de brânză, masago roșu, sos unagi</p></div>
+                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">160 lei</span></div>
                 </div>
-                <div class="p-5">
-                    <div class="flex justify-between items-start">
-                        <h3 class="font-bold text-dark">Spaghetti Bolognese</h3>
-                        <span class="text-candy-pink font-bold">75 MDL</span>
-                    </div>
-                    <p class="text-gray-400 text-sm mt-1">Paste cu sos de carne și roșii, parmezan</p>
+                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
+                    <div><h4 class="font-bold text-dark text-lg">California cu somon/tipar</h4><p class="text-gray-400 text-sm mt-1">Somon/tipar, cremă de brânză, castraveți, avocado, susan, sos spicy</p></div>
+                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">140 lei</span></div>
                 </div>
-            </div>
-
-            <div class="menu-card bg-white rounded-2xl overflow-hidden shadow-md" data-category="paste">
-                <div class="h-48 bg-gradient-to-br from-cream-100 to-white flex items-center justify-center">
-                    <span class="text-7xl">🍝</span>
-                </div>
-                <div class="p-5">
-                    <div class="flex justify-between items-start">
-                        <h3 class="font-bold text-dark">Carbonara</h3>
-                        <span class="text-candy-pink font-bold">80 MDL</span>
-                    </div>
-                    <p class="text-gray-400 text-sm mt-1">Bacon, ou, parmezan, smântână</p>
-                </div>
-            </div>
-
-            <!-- Salate -->
-            <div class="menu-card bg-white rounded-2xl overflow-hidden shadow-md" data-category="salate">
-                <div class="h-48 bg-gradient-to-br from-green-100 to-emerald-50 flex items-center justify-center">
-                    <span class="text-7xl">🥗</span>
-                </div>
-                <div class="p-5">
-                    <div class="flex justify-between items-start">
-                        <h3 class="font-bold text-dark">Caesar</h3>
-                        <span class="text-candy-pink font-bold">70 MDL</span>
-                    </div>
-                    <p class="text-gray-400 text-sm mt-1">Salată romană, pui, parmezan, crutoane, dressing</p>
-                </div>
-            </div>
-
-            <div class="menu-card bg-white rounded-2xl overflow-hidden shadow-md" data-category="salate">
-                <div class="h-48 bg-gradient-to-br from-green-50 to-lime-50 flex items-center justify-center">
-                    <span class="text-7xl">🥗</span>
-                </div>
-                <div class="p-5">
-                    <div class="flex justify-between items-start">
-                        <h3 class="font-bold text-dark">Grecesc</h3>
-                        <span class="text-candy-pink font-bold">65 MDL</span>
-                    </div>
-                    <p class="text-gray-400 text-sm mt-1">Rofile, castraveți, ceapă, măsline, feta</p>
-                </div>
-            </div>
-
-            <!-- Carne -->
-            <div class="menu-card bg-white rounded-2xl overflow-hidden shadow-md" data-category="carne">
-                <div class="h-48 bg-gradient-to-br from-red-50 to-orange-50 flex items-center justify-center">
-                    <span class="text-7xl">🥩</span>
-                </div>
-                <div class="p-5">
-                    <div class="flex justify-between items-start">
-                        <h3 class="font-bold text-dark">Frigărui Mixte</h3>
-                        <span class="text-candy-pink font-bold">120 MDL</span>
-                    </div>
-                    <p class="text-gray-400 text-sm mt-1">Porc, pui, legume la grătar, sos</p>
-                </div>
-            </div>
-
-            <div class="menu-card bg-white rounded-2xl overflow-hidden shadow-md" data-category="carne">
-                <div class="h-48 bg-gradient-to-br from-amber-50 to-yellow-50 flex items-center justify-center">
-                    <span class="text-7xl">🍗</span>
-                </div>
-                <div class="p-5">
-                    <div class="flex justify-between items-start">
-                        <h3 class="font-bold text-dark">Șnițel de Pui</h3>
-                        <span class="text-candy-pink font-bold">85 MDL</span>
-                    </div>
-                    <p class="text-gray-400 text-sm mt-1">Cu cartofi prăjiți și salată</p>
-                </div>
-            </div>
-
-            <!-- Băuturi -->
-            <div class="menu-card bg-white rounded-2xl overflow-hidden shadow-md" data-category="bauturi">
-                <div class="h-48 bg-gradient-to-br from-sky-100 to-blue-50 flex items-center justify-center">
-                    <span class="text-7xl">☕</span>
-                </div>
-                <div class="p-5">
-                    <div class="flex justify-between items-start">
-                        <h3 class="font-bold text-dark">Cafea Cofein</h3>
-                        <span class="text-candy-pink font-bold">35 MDL</span>
-                    </div>
-                    <p class="text-gray-400 text-sm mt-1">Espresso, cappuccino, latte — artizanal</p>
-                </div>
-            </div>
-
-            <div class="menu-card bg-white rounded-2xl overflow-hidden shadow-md" data-category="bauturi">
-                <div class="h-48 bg-gradient-to-br from-pink-100 to-orange-50 flex items-center justify-center">
-                    <span class="text-7xl">🥤</span>
-                </div>
-                <div class="p-5">
-                    <div class="flex justify-between items-start">
-                        <h3 class="font-bold text-dark">Fresh Natural</h3>
-                        <span class="text-candy-pink font-bold">40 MDL</span>
-                    </div>
-                    <p class="text-gray-400 text-sm mt-1">Portocală, măr, morcov — proaspăt stors</p>
-                </div>
-            </div>
-
-            <div class="menu-card bg-white rounded-2xl overflow-hidden shadow-md" data-category="bauturi">
-                <div class="h-48 bg-gradient-to-br from-yellow-100 to-amber-50 flex items-center justify-center">
-                    <span class="text-7xl">🧃</span>
-                </div>
-                <div class="p-5">
-                    <div class="flex justify-between items-start">
-                        <h3 class="font-bold text-dark">Smoothie Copii</h3>
-                        <span class="text-candy-pink font-bold">45 MDL</span>
-                    </div>
-                    <p class="text-gray-400 text-sm mt-1">Banana, căpșuni, iaurt — fără zahăr adăugat</p>
-                </div>
-            </div>
-
-            <!-- Deserturi -->
-            <div class="menu-card bg-white rounded-2xl overflow-hidden shadow-md" data-category="deserturi">
-                <div class="h-48 bg-gradient-to-br from-pink-100 to-purple-50 flex items-center justify-center">
-                    <span class="text-7xl">🍰</span>
-                </div>
-                <div class="p-5">
-                    <div class="flex justify-between items-start">
-                        <h3 class="font-bold text-dark">Clătite cu Nutella</h3>
-                        <span class="text-candy-pink font-bold">45 MDL</span>
-                    </div>
-                    <p class="text-gray-400 text-sm mt-1">Clătite pufoase cu ciocolată și fructe</p>
-                </div>
-            </div>
-
-            <div class="menu-card bg-white rounded-2xl overflow-hidden shadow-md" data-category="deserturi">
-                <div class="h-48 bg-gradient-to-br from-purple-100 to-pink-50 flex items-center justify-center">
-                    <span class="text-7xl">🧁</span>
-                </div>
-                <div class="p-5">
-                    <div class="flex justify-between items-start">
-                        <h3 class="font-bold text-dark">Tort Casei</h3>
-                        <span class="text-candy-pink font-bold">55 MDL</span>
-                    </div>
-                    <p class="text-gray-400 text-sm mt-1">Porție — tort artizanal cu cremă de vanilie</p>
-                </div>
-            </div>
-
-            <!-- Meniu Copii -->
-            <div class="menu-card bg-white rounded-2xl overflow-hidden shadow-md border-2 border-candy-yellow/50" data-category="copii">
-                <div class="h-48 bg-gradient-to-br from-yellow-100 via-pink-50 to-sky-50 flex items-center justify-center relative">
-                    <span class="text-7xl">👶</span>
-                    <span class="absolute top-3 right-3 bg-candy-yellow text-dark text-xs font-bold px-3 py-1 rounded-full">PENTRU COPII</span>
-                </div>
-                <div class="p-5">
-                    <div class="flex justify-between items-start">
-                        <h3 class="font-bold text-dark">Happy Meal Sky Kids</h3>
-                        <span class="text-candy-pink font-bold">65 MDL</span>
-                    </div>
-                    <p class="text-gray-400 text-sm mt-1">Nuggets + cartofi + suc + jucărie surpriză</p>
-                </div>
-            </div>
-
-            <div class="menu-card bg-white rounded-2xl overflow-hidden shadow-md border-2 border-candy-yellow/50" data-category="copii">
-                <div class="h-48 bg-gradient-to-br from-green-100 via-yellow-50 to-orange-50 flex items-center justify-center">
-                    <span class="text-7xl">🌮</span>
-                </div>
-                <div class="p-5">
-                    <div class="flex justify-between items-start">
-                        <h3 class="font-bold text-dark">Mini Pizza Copii</h3>
-                        <span class="text-candy-pink font-bold">55 MDL</span>
-                    </div>
-                    <p class="text-gray-400 text-sm mt-1">Mini pizza cu brânză și suc natural inclus</p>
-                </div>
-            </div>
-
-            <div class="menu-card bg-white rounded-2xl overflow-hidden shadow-md border-2 border-candy-yellow/50" data-category="copii">
-                <div class="h-48 bg-gradient-to-br from-pink-100 via-purple-50 to-blue-50 flex items-center justify-center">
-                    <span class="text-7xl">🍦</span>
-                </div>
-                <div class="p-5">
-                    <div class="flex justify-between items-start">
-                        <h3 class="font-bold text-dark">Inghetată Deluxe</h3>
-                        <span class="text-candy-pink font-bold">35 MDL</span>
-                    </div>
-                    <p class="text-gray-400 text-sm mt-1">3 cupe, topping, frișcă, sos de ciocolată</p>
+                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
+                    <div><h4 class="font-bold text-dark text-lg">Canada</h4><p class="text-gray-400 text-sm mt-1">Somon, cremă de brânză, avocado, susan, sos unagi</p></div>
+                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">130 lei</span></div>
                 </div>
             </div>
         </div>
 
-        <p class="text-center text-gray-400 text-sm mt-8">* Meniul poate varia. Pentru meniul complet contactează-ne.</p>
+        <!-- ============ SUSHI SET ============ -->
+        <div class="menu-category hidden" id="cat-sushi-set">
+            <div class="flex items-center gap-3 mb-8">
+                <span class="text-3xl">🍱</span>
+                <h3 class="text-2xl font-black text-dark">Sushi Set</h3>
+            </div>
+            <div class="grid sm:grid-cols-2 gap-4">
+                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
+                    <div><h4 class="font-bold text-dark text-lg">Set Family Sushi</h4><p class="text-gray-400 text-sm mt-1">Philadelphia, tempura cu somon, tempura cu creveți, tempura cu tipar, roll dublu</p></div>
+                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">750 lei</span></div>
+                </div>
+                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
+                    <div><h4 class="font-bold text-dark text-lg">Mini Set Family Sushi</h4><p class="text-gray-400 text-sm mt-1">Philadelphia, tempura cu somon, tempura cu creveți, tempura cu tipar, roll dublu</p></div>
+                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">375 lei</span></div>
+                </div>
+                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
+                    <div><h4 class="font-bold text-dark text-lg">Philadelphia Set</h4><p class="text-gray-400 text-sm mt-1">Philadelphia clasic, Philadelphia tipar, Philadelphia dublu</p></div>
+                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">440 lei</span></div>
+                </div>
+                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
+                    <div><h4 class="font-bold text-dark text-lg">Californian Set</h4><p class="text-gray-400 text-sm mt-1">California cu crab, california cu creveți, california cu somon, california cu tipar</p></div>
+                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">170 lei</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============ SUSHI BURGER ============ -->
+        <div class="menu-category hidden" id="cat-sushi-burger">
+            <div class="flex items-center gap-3 mb-8">
+                <span class="text-3xl">🍔</span>
+                <h3 class="text-2xl font-black text-dark">Sushi Burger</h3>
+            </div>
+            <div class="grid sm:grid-cols-2 gap-4">
+                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
+                    <div><h4 class="font-bold text-dark text-lg">Sushi burger cu somon</h4><p class="text-gray-400 text-sm mt-1">Somon, salată, castraveți, icre masago, cașcaval cheddar</p><span class="text-xs text-gray-300">400g</span></div>
+                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">170 lei</span></div>
+                </div>
+                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
+                    <div><h4 class="font-bold text-dark text-lg">Sushi burger cu creveți</h4><p class="text-gray-400 text-sm mt-1">Creveți, salată, castraveți, avocado, icre masago, cremă de brânză, cașcaval cheddar</p><span class="text-xs text-gray-300">400g</span></div>
+                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">190 lei</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============ BURGER ============ -->
+        <div class="menu-category hidden" id="cat-burger">
+            <div class="flex items-center gap-3 mb-8">
+                <span class="text-3xl">🍔</span>
+                <h3 class="text-2xl font-black text-dark">Burger</h3>
+            </div>
+            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
+                    <div><h4 class="font-bold text-dark text-lg">Crispy Black Burger</h4><p class="text-gray-400 text-sm mt-1">Cotlet de pui/vită/porc/crispy, chiflă neagră, roșii, ceapă marinată, salată, sos ketchup, cartofi pai</p></div>
+                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">140 lei</span></div>
+                </div>
+                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
+                    <div><h4 class="font-bold text-dark text-lg">Clasic Burger</h4><p class="text-gray-400 text-sm mt-1">Cotlet de pui/vită/porc/crispy, chiflă albă, roșii, ceapă marinată, salată, sos</p></div>
+                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">150 lei</span></div>
+                </div>
+                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between border-2 border-candy-yellow/40">
+                    <div><span class="inline-block bg-candy-yellow text-dark text-xs font-bold px-2 py-0.5 rounded-full mb-2">PENTRU COPII</span><h4 class="font-bold text-dark text-lg">Kids Burger</h4><p class="text-gray-400 text-sm mt-1">Cotlet de pui, chiflă albă, roșii, ceapă marinată, salată, sos</p></div>
+                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">80 lei</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============ LEGUME ============ -->
+        <div class="menu-category hidden" id="cat-legume">
+            <div class="flex items-center gap-3 mb-8">
+                <span class="text-3xl">🥦</span>
+                <h3 class="text-2xl font-black text-dark">Legume</h3>
+            </div>
+            <div class="grid sm:grid-cols-2 gap-4">
+                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
+                    <div><h4 class="font-bold text-dark text-lg">Legume la grătar</h4><p class="text-gray-400 text-sm mt-1">Roșii cherry, ciuperci, dovlecel, ardei</p></div>
+                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">70 lei</span></div>
+                </div>
+                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
+                    <div><h4 class="font-bold text-dark text-lg">Legume proaspete</h4><p class="text-gray-400 text-sm mt-1">Castraveți, ardei, morcov</p></div>
+                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">120 lei</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============ ANTIPASTI ============ -->
+        <div class="menu-category hidden" id="cat-antipasti">
+            <div class="flex items-center gap-3 mb-8">
+                <span class="text-3xl">🧀</span>
+                <h3 class="text-2xl font-black text-dark">Antipasti</h3>
+            </div>
+            <div class="grid sm:grid-cols-2 gap-4">
+                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
+                    <div><h4 class="font-bold text-dark text-lg">Antipasti</h4><p class="text-gray-400 text-sm mt-1">Prosciutto crudo, mortadella, salami Milano, brie, gorgonzola, grissini, miere, nucă de cocos, struguri</p></div>
+                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">300 lei</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============ PASTE ============ -->
+        <div class="menu-category hidden" id="cat-paste">
+            <div class="flex items-center gap-3 mb-8">
+                <span class="text-3xl">🍝</span>
+                <h3 class="text-2xl font-black text-dark">Paste</h3>
+            </div>
+            <div class="grid sm:grid-cols-2 gap-4">
+                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
+                    <div><h4 class="font-bold text-dark text-lg">Paste Carbonara</h4><p class="text-gray-400 text-sm mt-1">Paste, piept de pui, șuncă, ciuperci, frișcă, parmezan</p><span class="text-xs text-gray-300">250g</span></div>
+                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">140 lei</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============ COLȚUNAȘI ============ -->
+        <div class="menu-category hidden" id="cat-coltunasi">
+            <div class="flex items-center gap-3 mb-8">
+                <span class="text-3xl">🥟</span>
+                <h3 class="text-2xl font-black text-dark">Colțunași</h3>
+            </div>
+            <div class="grid sm:grid-cols-2 gap-4">
+                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
+                    <div><h4 class="font-bold text-dark text-lg">Colțunași cu brânză</h4><span class="text-xs text-gray-300">250g</span></div>
+                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">85 lei</span></div>
+                </div>
+                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
+                    <div><h4 class="font-bold text-dark text-lg">Colțunași cu cartofi</h4><p class="text-gray-400 text-sm mt-1">Colțunași cu cartofi, ceapă prăjită</p><span class="text-xs text-gray-300">250g</span></div>
+                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">85 lei</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============ CLĂTITE ============ -->
+        <div class="menu-category hidden" id="cat-clatite">
+            <div class="flex items-center gap-3 mb-8">
+                <span class="text-3xl">🥞</span>
+                <h3 class="text-2xl font-black text-dark">Clătite</h3>
+            </div>
+            <div class="grid sm:grid-cols-2 gap-4">
+                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
+                    <div><h4 class="font-bold text-dark text-lg">Clătite dulci</h4></div>
+                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">250 lei</span></div>
+                </div>
+                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
+                    <div><h4 class="font-bold text-dark text-lg">Clătite sărate</h4></div>
+                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">250 lei</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============ PIZZA ============ -->
+        <div class="menu-category hidden" id="cat-pizza">
+            <div class="flex items-center gap-3 mb-8">
+                <span class="text-3xl">🍕</span>
+                <h3 class="text-2xl font-black text-dark">Pizza</h3>
+            </div>
+            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
+                    <div><h4 class="font-bold text-dark text-lg">Margherita</h4><p class="text-gray-400 text-sm mt-1">Sos roșu, mozzarella, parmezan, sos pesto</p></div>
+                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">100 lei</span></div>
+                </div>
+                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
+                    <div><h4 class="font-bold text-dark text-lg">Quattro formaggi</h4><p class="text-gray-400 text-sm mt-1">Sos roșu, mozzarella, brie, gorgonzola, parmezan</p></div>
+                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">150 lei</span></div>
+                </div>
+                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
+                    <div><h4 class="font-bold text-dark text-lg">Pepperoni</h4><p class="text-gray-400 text-sm mt-1">Sos roșu, salam, mozzarella, porumb</p></div>
+                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">140 lei</span></div>
+                </div>
+                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
+                    <div><h4 class="font-bold text-dark text-lg">Neapolitana</h4><p class="text-gray-400 text-sm mt-1">Șuncă, ciuperci, măsline, mozzarella</p></div>
+                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">140 lei</span></div>
+                </div>
+                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
+                    <div><h4 class="font-bold text-dark text-lg">Carnivora</h4><p class="text-gray-400 text-sm mt-1">Sos roșu, șuncă, piept de pui, mozzarella, sos BBQ</p></div>
+                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">160 lei</span></div>
+                </div>
+                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
+                    <div><h4 class="font-bold text-dark text-lg">Family</h4><p class="text-gray-400 text-sm mt-1">Sos roșu, mozzarella, șuncă, salami, bacon, piept de pui, cârnaciori BBQ</p></div>
+                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">140 lei</span></div>
+                </div>
+                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between border-2 border-candy-yellow/40">
+                    <div><span class="inline-block bg-candy-yellow text-dark text-xs font-bold px-2 py-0.5 rounded-full mb-2">PENTRU COPII</span><h4 class="font-bold text-dark text-lg">Kids pizza</h4><p class="text-gray-400 text-sm mt-1">Sos roșu, piept de pui, mozzarella, parmezan</p></div>
+                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">130 lei</span></div>
+                </div>
+                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
+                    <div><h4 class="font-bold text-dark text-lg">Capricciosa</h4><p class="text-gray-400 text-sm mt-1">Vânătă, brânză de oi, mozzarella, șuncă, ciuperci marinate</p></div>
+                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">150 lei</span></div>
+                </div>
+                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
+                    <div><h4 class="font-bold text-dark text-lg">Carbonara</h4><p class="text-gray-400 text-sm mt-1">Sos alb, mozzarella, bacon, gălbenuș, parmezan, piper negru</p></div>
+                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">150 lei</span></div>
+                </div>
+                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
+                    <div><h4 class="font-bold text-dark text-lg">Pizza Sky Kids</h4><p class="text-gray-400 text-sm mt-1">Sos roșu, mozzarella, salami, piept de pui</p></div>
+                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">140 lei</span></div>
+                </div>
+                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
+                    <div><h4 class="font-bold text-dark text-lg">Prosciutto Crudo</h4><p class="text-gray-400 text-sm mt-1">Sos roșu, prosciutto, mozzarella, parmezan, pesto, cherry, rucola</p></div>
+                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">170 lei</span></div>
+                </div>
+                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
+                    <div><h4 class="font-bold text-dark text-lg">Diavola 🌶️</h4><p class="text-gray-400 text-sm mt-1">Sos roșu, mozzarella, napoli picant, sos iute, parmezan</p></div>
+                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">140 lei</span></div>
+                </div>
+                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
+                    <div><h4 class="font-bold text-dark text-lg">Tonno</h4><p class="text-gray-400 text-sm mt-1">Ton, ceapă marinată, mozzarella, rucola, parmezan</p></div>
+                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">140 lei</span></div>
+                </div>
+                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
+                    <div><h4 class="font-bold text-dark text-lg">Pizza Del Mare</h4><p class="text-gray-400 text-sm mt-1">Creveți, midii, calmar, somon, sos de usturoi</p></div>
+                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">170 lei</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============ FRIES ============ -->
+        <div class="menu-category hidden" id="cat-fries">
+            <div class="flex items-center gap-3 mb-8">
+                <span class="text-3xl">🍟</span>
+                <h3 class="text-2xl font-black text-dark">Fries &amp; Snacks</h3>
+            </div>
+            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
+                    <div><h4 class="font-bold text-dark text-lg">Cartofi pai</h4><span class="text-xs text-gray-300">150g</span></div>
+                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">45 lei</span></div>
+                </div>
+                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
+                    <div><h4 class="font-bold text-dark text-lg">Cartofi biluțe</h4><span class="text-xs text-gray-300">180g</span></div>
+                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">45 lei</span></div>
+                </div>
+                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
+                    <div><h4 class="font-bold text-dark text-lg">Cartofi ca acasă</h4><span class="text-xs text-gray-300">180g</span></div>
+                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">45 lei</span></div>
+                </div>
+                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
+                    <div><h4 class="font-bold text-dark text-lg">Crispy</h4><span class="text-xs text-gray-300">250g</span></div>
+                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">75 lei</span></div>
+                </div>
+                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
+                    <div><h4 class="font-bold text-dark text-lg">Nughete</h4><span class="text-xs text-gray-300">250g</span></div>
+                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">75 lei</span></div>
+                </div>
+                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
+                    <div><h4 class="font-bold text-dark text-lg">Aripioare de pui</h4><span class="text-xs text-gray-300">500g</span></div>
+                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">120 lei</span></div>
+                </div>
+                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
+                    <div><h4 class="font-bold text-dark text-lg">Inelușe de ceapă</h4><span class="text-xs text-gray-300">200g</span></div>
+                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">60 lei</span></div>
+                </div>
+                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
+                    <div><h4 class="font-bold text-dark text-lg">Cartofi pai/biluțe cu nughete</h4><span class="text-xs text-gray-300">450g</span></div>
+                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">120 lei</span></div>
+                </div>
+                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
+                    <div><h4 class="font-bold text-dark text-lg">Cartofi pai/biluțe cu aripioare</h4><span class="text-xs text-gray-300">450g</span></div>
+                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">120 lei</span></div>
+                </div>
+                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
+                    <div><h4 class="font-bold text-dark text-lg">Assorti de cartofi</h4><span class="text-xs text-gray-300">500g</span></div>
+                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">135 lei</span></div>
+                </div>
+                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
+                    <div><h4 class="font-bold text-dark text-lg">Cartofi assorti cu nughete și aripioare</h4><span class="text-xs text-gray-300">740g</span></div>
+                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">220 lei</span></div>
+                </div>
+                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
+                    <div><h4 class="font-bold text-dark text-lg">Mozarella sticks</h4><p class="text-gray-400 text-sm mt-1">Bastonașe de cașcaval cu dulceață/sos de cașcaval</p><span class="text-xs text-gray-300">250g</span></div>
+                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">75 lei</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============ SOSURI ============ -->
+        <div class="menu-category hidden" id="cat-sosuri">
+            <div class="flex items-center gap-3 mb-8">
+                <span class="text-3xl">🥫</span>
+                <h3 class="text-2xl font-black text-dark">Sosuri</h3>
+            </div>
+            <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 text-center">
+                    <h4 class="font-bold text-dark text-lg">Ketchup</h4>
+                    <span class="text-candy-pink font-bold text-lg mt-2 block">10 lei</span>
+                </div>
+                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 text-center">
+                    <h4 class="font-bold text-dark text-lg">Maioneză</h4>
+                    <span class="text-candy-pink font-bold text-lg mt-2 block">10 lei</span>
+                </div>
+                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 text-center">
+                    <h4 class="font-bold text-dark text-lg">Sos de ciuperci</h4>
+                    <span class="text-candy-pink font-bold text-lg mt-2 block">10 lei</span>
+                </div>
+                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 text-center">
+                    <h4 class="font-bold text-dark text-lg">Sos de cașcaval</h4>
+                    <span class="text-candy-pink font-bold text-lg mt-2 block">10 lei</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============ CARNE ============ -->
+        <div class="menu-category hidden" id="cat-carne">
+            <div class="flex items-center gap-3 mb-8">
+                <span class="text-3xl">🥩</span>
+                <h3 class="text-2xl font-black text-dark">Carne</h3>
+            </div>
+            <div class="grid sm:grid-cols-2 gap-4">
+                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
+                    <div><h4 class="font-bold text-dark text-lg">Platou cu Ciolan</h4><span class="text-xs text-gray-300">5kg</span></div>
+                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">1300 lei</span></div>
+                </div>
+            </div>
+        </div>
+
+        <p class="text-center text-gray-400 text-sm mt-12">* Meniul poate varia. Pentru meniul complet contactează-ne.</p>
     </div>
 </section>
 
@@ -998,29 +1123,39 @@
     }, {threshold: 0.1});
     document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
 
-    // --- Menu Filter ---
-    function filterMenu(cat) {
-        document.querySelectorAll('.menu-filter').forEach(b => {
-            b.classList.remove('bg-sky-500','text-white');
-            b.classList.add('bg-gray-100','text-gray-600');
+    // --- Menu Category Tabs (Pizza Pe Vatra style) ---
+    function showCategory(cat) {
+        // Update tabs
+        document.querySelectorAll('.cat-tab').forEach(tab => {
+            tab.classList.remove('bg-sky-500','text-white','shadow-md');
+            tab.classList.add('bg-gray-100','text-gray-600');
         });
-        event.target.classList.remove('bg-gray-100','text-gray-600');
-        event.target.classList.add('bg-sky-500','text-white');
+        const activeTab = document.querySelector(`.cat-tab[data-cat="${cat}"]`);
+        if (activeTab) {
+            activeTab.classList.remove('bg-gray-100','text-gray-600');
+            activeTab.classList.add('bg-sky-500','text-white','shadow-md');
+        }
 
-        document.querySelectorAll('.menu-card').forEach(card => {
-            if (cat === 'all' || card.dataset.category === cat) {
-                card.style.display = '';
-                card.style.opacity = '0';
-                card.style.transform = 'translateY(10px)';
+        // Show/hide categories with animation
+        document.querySelectorAll('.menu-category').forEach(section => {
+            if (section.id === `cat-${cat}`) {
+                section.classList.remove('hidden');
+                section.style.opacity = '0';
+                section.style.transform = 'translateY(15px)';
                 setTimeout(() => {
-                    card.style.transition = 'all 0.3s ease';
-                    card.style.opacity = '1';
-                    card.style.transform = 'translateY(0)';
+                    section.style.transition = 'all 0.4s ease';
+                    section.style.opacity = '1';
+                    section.style.transform = 'translateY(0)';
                 }, 50);
             } else {
-                card.style.display = 'none';
+                section.classList.add('hidden');
             }
         });
+
+        // Scroll tabs so active tab is visible
+        if (activeTab) {
+            activeTab.scrollIntoView({behavior:'smooth', block:'nearest', inline:'center'});
+        }
     }
 
     // --- Booking System ---
