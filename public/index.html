@@ -332,6 +332,8 @@
                 <button onclick="showCategory('fries')" class="cat-tab whitespace-nowrap px-5 py-2.5 rounded-full text-sm font-bold bg-gray-100 text-gray-600 hover:bg-sky-100 transition-all" data-cat="fries">🍟 Fries</button>
                 <button onclick="showCategory('sosuri')" class="cat-tab whitespace-nowrap px-5 py-2.5 rounded-full text-sm font-bold bg-gray-100 text-gray-600 hover:bg-sky-100 transition-all" data-cat="sosuri">🥫 Sosuri</button>
                 <button onclick="showCategory('carne')" class="cat-tab whitespace-nowrap px-5 py-2.5 rounded-full text-sm font-bold bg-gray-100 text-gray-600 hover:bg-sky-100 transition-all" data-cat="carne">🥩 Carne</button>
+                <button onclick="showCategory('salate')" class="cat-tab whitespace-nowrap px-5 py-2.5 rounded-full text-sm font-bold bg-gray-100 text-gray-600 hover:bg-sky-100 transition-all" data-cat="salate">🥗 Salate</button>
+                <button onclick="showCategory('seafood')" class="cat-tab whitespace-nowrap px-5 py-2.5 rounded-full text-sm font-bold bg-gray-100 text-gray-600 hover:bg-sky-100 transition-all" data-cat="seafood">🦞 Seafood</button>
             </div>
         </div>
 
@@ -675,12 +677,96 @@
         <div class="menu-category hidden" id="cat-carne">
             <div class="flex items-center gap-3 mb-8">
                 <span class="text-3xl">🥩</span>
-                <h3 class="text-2xl font-black text-dark">Carne</h3>
+                <h3 class="text-2xl font-black text-dark">Carne & Platouri</h3>
             </div>
             <div class="grid sm:grid-cols-2 gap-4">
                 <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
-                    <div><h4 class="font-bold text-dark text-lg">Platou cu Ciolan</h4><span class="text-xs text-gray-300">5kg</span></div>
+                    <div><h4 class="font-bold text-dark text-lg">Platou cu Ciolan</h4><p class="text-gray-400 text-sm mt-1">Ciolan, cârnăciori BBQ, ceafă de porc, mici, piept de pui, aripioare, cartofi ca acasă, murătură, sos</p><span class="text-xs text-gray-300">5kg</span></div>
                     <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">1300 lei</span></div>
+                </div>
+                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
+                    <div><h4 class="font-bold text-dark text-lg">Platou cu costițe</h4><p class="text-gray-400 text-sm mt-1">Costițe de porc, cârnăciori BBQ, piept de pui, cartofi copți, sos, ceapă marinată, verdețuri</p><span class="text-xs text-gray-300">2200g</span></div>
+                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">650 lei</span></div>
+                </div>
+                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
+                    <div><h4 class="font-bold text-dark text-lg">Platou Family</h4><p class="text-gray-400 text-sm mt-1">Cârnăciori BBQ, ceafă de porc, piept de pui, cartofi ca acasă, sos, ceapă marinată, salată</p><span class="text-xs text-gray-300">1100g</span></div>
+                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">480 lei</span></div>
+                </div>
+                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between border-2 border-candy-yellow/40">
+                    <div><span class="inline-block bg-candy-yellow text-dark text-xs font-bold px-2 py-0.5 rounded-full mb-2">SKY KIDS</span><h4 class="font-bold text-dark text-lg">Platou Sky Kids</h4><p class="text-gray-400 text-sm mt-1">Cârnăciori BBQ, piept de pui, aripioare, cartofi ca acasă, sos, ceapă marinată</p><span class="text-xs text-gray-300">1000g</span></div>
+                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">420 lei</span></div>
+                </div>
+                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between border-2 border-candy-yellow/40">
+                    <div><span class="inline-block bg-candy-yellow text-dark text-xs font-bold px-2 py-0.5 rounded-full mb-2">SKY KIDS MINI</span><h4 class="font-bold text-dark text-lg">Platou Mini Sky Kids</h4><p class="text-gray-400 text-sm mt-1">Piept de pui, aripioare BBQ, ciuperci, dovlecel, cherry, salată, sos</p><span class="text-xs text-gray-300">800g</span></div>
+                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">250 lei</span></div>
+                </div>
+                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
+                    <div><h4 class="font-bold text-dark text-lg">Ceafă de porc cu salată</h4><p class="text-gray-400 text-sm mt-1">Ceafă de porc, salată proaspătă, cherry</p><span class="text-xs text-gray-300">300g</span></div>
+                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">180 lei</span></div>
+                </div>
+                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
+                    <div><h4 class="font-bold text-dark text-lg">Steak de pui la grătar</h4><p class="text-gray-400 text-sm mt-1">Pui, sos de ciuperci, salată proaspătă</p><span class="text-xs text-gray-300">300g</span></div>
+                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">110 lei</span></div>
+                </div>
+                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
+                    <div><h4 class="font-bold text-dark text-lg">Cârnăciori BBQ</h4></div>
+                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">240 lei</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============ SALATE ============ -->
+        <div class="menu-category hidden" id="cat-salate">
+            <div class="flex items-center gap-3 mb-8">
+                <span class="text-3xl">🥗</span>
+                <h3 class="text-2xl font-black text-dark">Salate</h3>
+            </div>
+            <div class="grid sm:grid-cols-2 gap-4">
+                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
+                    <div><h4 class="font-bold text-dark text-lg">Caesar cu pui/creveți</h4><p class="text-gray-400 text-sm mt-1">Piept de pui/creveți, salată, sos, parmezan, roșii cherry, ou de prepeliță</p><span class="text-xs text-gray-300">260g</span></div>
+                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">140 / 150 lei</span></div>
+                </div>
+                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
+                    <div><h4 class="font-bold text-dark text-lg">Gourmet</h4><p class="text-gray-400 text-sm mt-1">Mix de salată, prosciutto, pere caramelizate, Dor Blue, biluțe de brânză, cherry, dressing</p><span class="text-xs text-gray-300">500g</span></div>
+                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">160 lei</span></div>
+                </div>
+                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
+                    <div><h4 class="font-bold text-dark text-lg">Italiana</h4><p class="text-gray-400 text-sm mt-1">Salată, prosciutto, mozzarella, cherry, ulei de măsline, sos soia</p><span class="text-xs text-gray-300">300g</span></div>
+                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">120 lei</span></div>
+                </div>
+                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
+                    <div><h4 class="font-bold text-dark text-lg">Salată caldă</h4><p class="text-gray-400 text-sm mt-1">Piept de pui, fasole verzi, broccoli, ardei gras, cherry, dressing</p><span class="text-xs text-gray-300">300g</span></div>
+                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">140 lei</span></div>
+                </div>
+                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
+                    <div><h4 class="font-bold text-dark text-lg">Salată fresh</h4><p class="text-gray-400 text-sm mt-1">Mix de salată, roșii cherry, roșii uscate, cremă de brânză, fulgi de migdale</p><span class="text-xs text-gray-300">250g</span></div>
+                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">120 lei</span></div>
+                </div>
+                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
+                    <div><h4 class="font-bold text-dark text-lg">Salată grecească</h4><p class="text-gray-400 text-sm mt-1">Roșii, castraveți, ardei, ceapă marinată, olive calamata, brânză feta</p><span class="text-xs text-gray-300">250g</span></div>
+                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">100 lei</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============ SEAFOOD ============ -->
+        <div class="menu-category hidden" id="cat-seafood">
+            <div class="flex items-center gap-3 mb-8">
+                <span class="text-3xl">🦞</span>
+                <h3 class="text-2xl font-black text-dark">Seafood</h3>
+            </div>
+            <div class="grid sm:grid-cols-2 gap-4">
+                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
+                    <div><h4 class="font-bold text-dark text-lg">Somon la grătar</h4><p class="text-gray-400 text-sm mt-1">Somon la grătar, ardei, ciuperci, dovlecel, lămâie, roșii cherry, salată</p><span class="text-xs text-gray-300">700g</span></div>
+                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">350 lei</span></div>
+                </div>
+                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
+                    <div><h4 class="font-bold text-dark text-lg">Platou marin rece</h4><p class="text-gray-400 text-sm mt-1">Somon afumat, pește alb afumat, creveți fierți, măsline, lămâie, frunze de salată</p><span class="text-xs text-gray-300">700g</span></div>
+                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">300 lei</span></div>
+                </div>
+                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
+                    <div><h4 class="font-bold text-dark text-lg">Sote din fructe de mare</h4><p class="text-gray-400 text-sm mt-1">Midii, creveți, caracatiță, calmar, frișcă, parmezan, lămâie</p><span class="text-xs text-gray-300">1000g</span></div>
+                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">370 lei</span></div>
                 </div>
             </div>
         </div>
