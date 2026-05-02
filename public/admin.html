@@ -105,7 +105,7 @@
     }
     const statusBadge = { pending: 'badge-pending', confirmed: 'badge-confirmed', cancelled: 'badge-cancelled', completed: 'badge-completed' };
     list.innerHTML = allBookings.map(b => `
-      <div class="card p-5 flex flex-wrap items-center justify-between gap-4 cursor-pointer hover:shadow-lg transition-all" onclick="openBookingEditModal('${b.id}')">
+      <div class="card p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 cursor-pointer hover:shadow-lg transition-all"> onclick="openBookingEditModal('${b.id}')">
         <div>
           <h4 class="font-bold text-lg">${b.client_name}</h4>
           <p class="text-gray-500">${b.client_phone}</p>
@@ -282,7 +282,7 @@
     }
     const statusBadge = { pending: 'badge-pending', confirmed: 'badge-confirmed', cancelled: 'badge-cancelled', completed: 'badge-completed' };
     list.innerHTML = allBookings.map(b => `
-      <div class="card p-5 flex flex-wrap items-center justify-between gap-4 cursor-pointer hover:shadow-lg transition-all" onclick="openBookingEditModal('${b.id}')">
+      <div class="card p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 cursor-pointer hover:shadow-lg transition-all"> onclick="openBookingEditModal('${b.id}')">
         <div>
           <h4 class="font-bold text-lg">${b.client_name}</h4>
           <p class="text-gray-500">${b.client_phone}</p>
@@ -473,7 +473,7 @@
     }
     const statusBadge = { pending: 'badge-pending', confirmed: 'badge-confirmed', cancelled: 'badge-cancelled', completed: 'badge-completed' };
     list.innerHTML = allBookings.map(b => `
-      <div class="card p-5 flex flex-wrap items-center justify-between gap-4 cursor-pointer hover:shadow-lg transition-all" onclick="openBookingEditModal('${b.id}')">
+      <div class="card p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 cursor-pointer hover:shadow-lg transition-all"> onclick="openBookingEditModal('${b.id}')">
         <div>
           <h4 class="font-bold text-lg">${b.client_name}</h4>
           <p class="text-gray-500">${b.client_phone}</p>
@@ -622,7 +622,7 @@
 
   <!-- Login Screen -->
   <div id="loginScreen" class="min-h-screen flex items-center justify-center p-4">
-    <div class="card p-10 w-full max-w-md">
+    <div class="card p-6 sm:p-8 md:p-10 w-full max-w-md">
       <div class="text-center mb-8">
         <div class="w-16 h-16 bg-gradient-to-br from-candy-pink to-candy-blue rounded-2xl flex items-center justify-center mx-auto mb-4 text-white font-fredoka text-2xl shadow-lg">S</div>
         <h1 class="font-fredoka text-3xl gradient-text">Sky Kids Admin</h1>
@@ -631,11 +631,11 @@
       <form id="loginForm" class="space-y-5">
         <div>
           <label class="block text-sm font-bold text-gray-700 mb-2">Utilizator</label>
-          <input type="text" id="loginUsername" required class="w-full px-5 py-4 rounded-xl border-2 border-gray-100" placeholder="admin">
+          <input type="text" id="loginUsername" required class="w-full px-4 sm:px-5 py-3 sm:py-4 rounded-xl border-2 border-gray-100 text-base sm:text-lg" placeholder="admin">
         </div>
         <div>
           <label class="block text-sm font-bold text-gray-700 mb-2">Parolă</label>
-          <input type="password" id="loginPassword" required class="w-full px-5 py-4 rounded-xl border-2 border-gray-100" placeholder="••••••">
+          <input type="password" id="loginPassword" required class="w-full px-4 sm:px-5 py-3 sm:py-4 rounded-xl border-2 border-gray-100 text-base sm:text-lg" placeholder="••••••">
         </div>
         <button type="submit" class="btn-primary w-full flex items-center justify-center gap-2">
           <iconify-icon icon="lucide:log-in" width="18"></iconify-icon>
@@ -650,9 +650,9 @@
   <div id="adminDashboard" class="hidden">
     <!-- Top bar -->
     <div class="bg-white border-b border-gray-100 sticky top-0 z-50">
-      <div class="flex items-center justify-between px-8 py-5">
+      <div class="flex items-center justify-between px-4 sm:px-6 md:px-8 py-3 sm:py-4 md:py-5">
         <div class="flex items-center gap-4">
-          <div class="w-12 h-12 bg-gradient-to-br from-candy-pink to-candy-blue rounded-2xl flex items-center justify-center text-white font-fredoka text-xl shadow">S</div>
+          <div class="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-candy-pink to-candy-blue rounded-xl sm:rounded-2xl flex items-center justify-center text-white font-bold text-lg sm:text-xl shadow">S</div>
           <div>
             <span class="font-fredoka text-2xl gradient-text">Sky Kids Admin</span>
             <p class="text-xs text-gray-400">Panou de administrare</p>
@@ -673,41 +673,41 @@
 
     <div class="flex">
       <!-- Sidebar -->
-      <aside class="w-64 bg-white border-r border-gray-100 min-h-[calc(100vh-81px)] sticky top-[81px] p-5">
+      <aside class="w-48 sm:w-64 bg-white border-r border-gray-100 min-h-[calc(100vh-73px)] sm:min-h-[calc(100vh-81px)] sticky top-[73px] sm:top-[81px] p-3 sm:p-5">
         <nav class="space-y-2">
           <button onclick="showSection('categories')" class="sidebar-item active w-full flex items-center gap-3 px-4 py-3 font-bold text-left" data-section="categories">
             <iconify-icon icon="lucide:folder" width="20"></iconify-icon> Categorii
           </button>
-          <button onclick="showSection('products')" class="sidebar-item w-full flex items-center gap-3 px-4 py-3 font-bold text-left" data-section="products">
+          <button onclick="showSection('products')" class="sidebar-item w-full flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-3 font-bold text-left text-sm sm:text-base" data-section="products">
             <iconify-icon icon="lucide:utensils" width="20"></iconify-icon> Produse
           </button>
-          <button onclick="showSection('gallery')" class="sidebar-item w-full flex items-center gap-3 px-4 py-3 font-bold text-left" data-section="gallery">
+          <button onclick="showSection('gallery')" class="sidebar-item w-full flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-3 font-bold text-left text-sm sm:text-base" data-section="gallery">
             <iconify-icon icon="lucide:image" width="20"></iconify-icon> Galerie
           </button>
-          <button onclick="showSection('contact')" class="sidebar-item w-full flex items-center gap-3 px-4 py-3 font-bold text-left" data-section="contact">
+          <button onclick="showSection('contact')" class="sidebar-item w-full flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-3 font-bold text-left text-sm sm:text-base" data-section="contact">
             <iconify-icon icon="lucide:phone" width="20"></iconify-icon> Contact
           </button>
-          <button onclick="showSection('packages')" class="sidebar-item w-full flex items-center gap-3 px-4 py-3 font-bold text-left" data-section="packages">
+          <button onclick="showSection('packages')" class="sidebar-item w-full flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-3 font-bold text-left text-sm sm:text-base" data-section="packages">
             <iconify-icon icon="lucide:gift" width="20"></iconify-icon> Pachete
           </button>
-          <button onclick="showSection('bookings')" class="sidebar-item w-full flex items-center gap-3 px-4 py-3 font-bold text-left" data-section="bookings">
+          <button onclick="showSection('bookings')" class="sidebar-item w-full flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-3 font-bold text-left text-sm sm:text-base" data-section="bookings">
             <iconify-icon icon="lucide:calendar" width="20"></iconify-icon> Rezervări
           </button>
-          <button onclick="showSection('dashboard')" class="sidebar-item w-full flex items-center gap-3 px-4 py-3 font-bold text-left" data-section="dashboard">
+          <button onclick="showSection('dashboard')" class="sidebar-item w-full flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-3 font-bold text-left text-sm sm:text-base" data-section="dashboard">
             <iconify-icon icon="lucide:layout-dashboard" width="20"></iconify-icon> Dashboard
           </button>
-          <button onclick="showSection('settings')" class="sidebar-item w-full flex items-center gap-3 px-4 py-3 font-bold text-left" data-section="settings">
+          <button onclick="showSection('settings')" class="sidebar-item w-full flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-3 font-bold text-left text-sm sm:text-base" data-section="settings">
             <iconify-icon icon="lucide:settings" width="20"></iconify-icon> Setări
           </button>
         </nav>
       </aside>
 
       <!-- Main Content -->
-      <main class="flex-1 p-8">
+      <main class="flex-1 p-4 sm:p-6 md:p-8">
         
         <!-- ===== CATEGORIES ===== -->
         <section id="section-categories" class="section">
-          <div class="flex items-center justify-between mb-8">
+          <div class="flex items-center justify-between mb-4 sm:mb-6 md:mb-8 gap-4">
             <div>
               <h2 class="font-fredoka text-3xl text-dark">Categorii Meniu</h2>
               <p class="text-gray-400 mt-1">Adaugă și gestionează categoriile din meniu</p>
@@ -722,7 +722,7 @@
 
         <!-- ===== PRODUCTS ===== -->
         <section id="section-products" class="section hidden">
-          <div class="flex items-center justify-between mb-8">
+          <div class="flex items-center justify-between mb-4 sm:mb-6 md:mb-8 gap-4">
             <div>
               <h2 class="font-fredoka text-3xl text-dark">Produse</h2>
               <p class="text-gray-400 mt-1">Gestionează produsele din meniu</p>
@@ -737,12 +737,12 @@
               <option value="">Toate categoriile</option>
             </select>
           </div>
-          <div id="productsList" class="grid md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+          <div id="productsList" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5"></div>
         </section>
 
         <!-- ===== GALLERY ===== -->
         <section id="section-gallery" class="section hidden">
-          <div class="flex items-center justify-between mb-8">
+          <div class="flex items-center justify-between mb-4 sm:mb-6 md:mb-8 gap-4">
             <div>
               <h2 class="font-fredoka text-3xl text-dark">Galerie Foto</h2>
               <p class="text-gray-400 mt-1">Selectează imaginile care apar pe site</p>
@@ -752,7 +752,7 @@
               Adaugă imagine
             </button>
           </div>
-          <div id="galleryList" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5"></div>
+          <div id="galleryList" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-5"></div>
         </section>
 
         <!-- ===== CONTACT ===== -->
@@ -765,27 +765,27 @@
             <form id="contactForm" class="space-y-5">
               <div>
                 <label class="block text-sm font-bold text-gray-700 mb-2">Telefon</label>
-                <input type="text" name="phone" class="w-full px-5 py-4 rounded-xl border-2 border-gray-100" placeholder="+373 600 00 000">
+                <input type="text" name="phone" class="w-full px-4 sm:px-5 py-3 sm:py-4 rounded-xl border-2 border-gray-100 text-base" placeholder="+373 600 00 000">
               </div>
               <div>
                 <label class="block text-sm font-bold text-gray-700 mb-2">Adresă</label>
-                <input type="text" name="address" class="w-full px-5 py-4 rounded-xl border-2 border-gray-100" placeholder="str. Ștefan cel Mare 46, Etajul 2, Soroca">
+                <input type="text" name="address" class="w-full px-4 sm:px-5 py-3 sm:py-4 rounded-xl border-2 border-gray-100 text-base" placeholder="str. Ștefan cel Mare 46, Etajul 2, Soroca">
               </div>
               <div>
                 <label class="block text-sm font-bold text-gray-700 mb-2">Email</label>
-                <input type="email" name="email" class="w-full px-5 py-4 rounded-xl border-2 border-gray-100" placeholder="contact@skykids.md">
+                <input type="email" name="email" class="w-full px-4 sm:px-5 py-3 sm:py-4 rounded-xl border-2 border-gray-100 text-base" placeholder="contact@skykids.md">
               </div>
               <div>
                 <label class="block text-sm font-bold text-gray-700 mb-2">Facebook URL</label>
-                <input type="url" name="facebook" class="w-full px-5 py-4 rounded-xl border-2 border-gray-100" placeholder="https://facebook.com/skykids">
+                <input type="url" name="facebook" class="w-full px-4 sm:px-5 py-3 sm:py-4 rounded-xl border-2 border-gray-100 text-base" placeholder="https://facebook.com/skykids">
               </div>
               <div>
                 <label class="block text-sm font-bold text-gray-700 mb-2">Instagram</label>
-                <input type="text" name="instagram" class="w-full px-5 py-4 rounded-xl border-2 border-gray-100" placeholder="@_.sky.kids._">
+                <input type="text" name="instagram" class="w-full px-4 sm:px-5 py-3 sm:py-4 rounded-xl border-2 border-gray-100 text-base" placeholder="@_.sky.kids._">
               </div>
               <div>
                 <label class="block text-sm font-bold text-gray-700 mb-2">Cod embed hartă (Google Maps)</label>
-                <textarea name="map_embed" rows="3" class="w-full px-5 py-4 rounded-xl border-2 border-gray-100" placeholder="https://www.google.com/maps/embed?..."></textarea>
+                <textarea name="map_embed" rows="3" class="w-full px-4 sm:px-5 py-3 sm:py-4 rounded-xl border-2 border-gray-100 text-base" placeholder="https://www.google.com/maps/embed?..."></textarea>
               </div>
               <button type="submit" class="btn-primary">Salvează modificările</button>
             </form>
@@ -794,7 +794,7 @@
 
         <!-- ===== PACKAGES ===== -->
         <section id="section-packages" class="section hidden">
-          <div class="flex items-center justify-between mb-8">
+          <div class="flex items-center justify-between mb-4 sm:mb-6 md:mb-8 gap-4">
             <div>
               <h2 class="font-black text-3xl text-dark">Pachete Rezervări</h2>
               <p class="text-gray-400 mt-1">Editează pachetele care apar pe site</p>
@@ -804,7 +804,7 @@
               Adaugă pachet
             </button>
           </div>
-          <div id="packagesList" class="grid md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+          <div id="packagesList" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5"></div>
         </section>
 
         <!-- ===== DASHBOARD ===== -->
@@ -833,7 +833,7 @@
           </div>
           
           <!-- Stats cards -->
-          <div class="grid grid-cols-2 md:grid-cols-4 gap-5 mb-8">
+          <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5 mb-6 sm:mb-8">
             <div class="card p-6">
               <div class="w-12 h-12 bg-candy-pink/10 rounded-xl flex items-center justify-center mb-4">
                 <iconify-icon icon="lucide:calendar" width="24" class="text-candy-pink"></iconify-icon>
@@ -1778,7 +1778,7 @@
     }
     const statusBadge = { pending: 'badge-pending', confirmed: 'badge-confirmed', cancelled: 'badge-cancelled', completed: 'badge-completed' };
     list.innerHTML = allBookings.map(b => `
-      <div class="card p-5 flex flex-wrap items-center justify-between gap-4 cursor-pointer hover:shadow-lg transition-all" onclick="openBookingEditModal('${b.id}')">
+      <div class="card p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 cursor-pointer hover:shadow-lg transition-all"> onclick="openBookingEditModal('${b.id}')">
         <div>
           <h4 class="font-bold text-lg">${b.client_name}</h4>
           <p class="text-gray-500">${b.client_phone}</p>
