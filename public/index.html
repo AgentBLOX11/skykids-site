@@ -198,6 +198,21 @@
     }
     @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 
+    
+    /* Mobile sticky CTA */
+    @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+    
+    /* Dot navigation active state */
+    #mobileDotNav a.active { background: #ff6b9d; }
+    
+    /* Touch optimization */
+    .touch-manipulation { touch-action: manipulation; }
+    .snap-x { scroll-snap-type: x mandatory; }
+    .snap-center { scroll-snap-align: center; }
+    
+    /* Active state feedback */
+    .active\:scale-95:active { transform: scale(0.95); }
+
     /* Form inputs */
     input:focus, select:focus, textarea:focus {
       outline: none;
@@ -394,8 +409,22 @@
     <a href="#rezervari" onclick="closeMobile()" class="bg-gradient-to-r from-candy-pink to-candy-orange text-white px-8 py-4 rounded-xl font-bold">Rezervă un loc</a>
   </div>
 
-  <!-- Hero Section -->
-  <section class="hero-bg relative overflow-hidden py-20 md:py-32">
+  <!-- Mobile Sticky CTA -->
+  <div id="mobileStickyCTA" class="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-gray-100 p-4 z-50 hidden md:hidden shadow-lg">
+    <div class="flex gap-3">
+      <a href="#rezervari" onclick="closeMobile()" class="flex-1 bg-gradient-to-r from-candy-pink to-candy-orange text-white py-3 rounded-xl font-bold text-center text-sm flex items-center justify-center gap-2">
+        <iconify-icon icon="lucide:calendar" width="16"></iconify-icon>
+        Rezervă
+      </a>
+      <a href="#meniu" onclick="closeMobile()" class="flex-1 bg-gray-100 text-dark py-3 rounded-xl font-bold text-center text-sm flex items-center justify-center gap-2">
+        <iconify-icon icon="lucide:utensils" width="16"></iconify-icon>
+        Meniu
+      </a>
+    </div>
+  </div>
+
+
+  <section class="hero-bg relative overflow-hidden py-16 sm:py-20 md:py-32">
     <div class="shape-1" style="top: 10%; right: 5%;"></div>
     <div class="shape-2" style="bottom: 20%; left: -5%;"></div>
     <div class="shape-3" style="top: 50%; right: 30%;"></div>
@@ -499,7 +528,7 @@
         <p class="text-gray-500 text-lg">apasă pe orice produs pentru detalii complete</p>
       </div>
       
-      <div id="categoryTabs" class="flex flex-wrap justify-center gap-2 sm:gap-3 mb-8 sm:mb-12 fade-up"></div>
+      <div id="categoryTabs" class="flex overflow-x-auto snap-x snap-mandatory gap-2 sm:gap-3 px-4 -mx-4 sm:mx-0 sm:px-0 sm:justify-center mb-8 sm:mb-12 fade-up pb-2 sm:pb-0"></div>
       <div id="menuGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mt-8"></div>
       <div id="menuLoading" class="text-center py-16">
         <div class="spinner mx-auto mb-4"></div>
@@ -524,7 +553,7 @@
         <h2 class="font-black text-4xl md:text-5xl text-dark">Sky Kids în imagini</h2>
       </div>
       
-      <div id="galleryGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4"></div>
+      <div id="galleryGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4 overflow-x-auto pb-2 -mx-4 px-4 snap-x snap-mandatory"></div>
       <div id="galleryLoading" class="text-center py-16">
         <div class="spinner mx-auto mb-4"></div>
         <p class="text-gray-400 font-medium">Se încarcă galeria...</p>
@@ -542,7 +571,7 @@
         <h2 class="font-black text-4xl md:text-5xl text-dark">Găsește-ne</h2>
       </div>
       
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
         <div class="card shadow-card hover:shadow-hover p-8 fade-up">
           <h3 class="font-bold text-xl text-dark mb-6 flex items-center gap-3">
             <div class="w-10 h-10 bg-candy-pink/10 rounded-xl flex items-center justify-center">
@@ -839,6 +868,18 @@
     document.getElementById('date').addEventListener('change', loadSlots);
     
     observeFadeElements();
+    // Show/hide mobile sticky CTA on scroll
+    const stickyCTA = document.getElementById('mobileStickyCTA');
+    let lastScroll = 0;
+    window.addEventListener('scroll', () => {
+      const currentScroll = window.pageYOffset;
+      if (currentScroll > 300) {
+        stickyCTA.classList.remove('hidden');
+      } else {
+        stickyCTA.classList.add('hidden');
+      }
+      lastScroll = currentScroll;
+    });
   }
 
   // ===== Load packages from API =====
@@ -859,7 +900,7 @@
       return;
     }
     container.innerHTML = packages.map((p, i) => `
-      <div class="package-card bg-white rounded-2xl p-4 sm:p-6 border-2 border-gray-100 hover:border-candy-pink transition-all cursor-pointer" onclick="selectPackage('${p.name.toLowerCase().replace(/\s+/g, '-')}', ${p.id})" data-package="${p.name.toLowerCase().replace(/\s+/g, '-')}" data-id="${p.id}">
+      <div class="package-card bg-white rounded-2xl p-4 sm:p-6 border-2 border-gray-100 hover:border-candy-pink active:scale-95 transition-all cursor-pointer touch-manipulation mb-3 sm:mb-0" onclick="selectPackage('${p.name.toLowerCase().replace(/\s+/g, '-')}', ${p.id})" data-package="${p.name.toLowerCase().replace(/\s+/g, '-')}" data-id="${p.id}">
         <div class="flex items-center gap-3 sm:gap-4 mb-3 sm:mb-4">
           <div class="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-candy-pink/10 to-candy-orange/10 rounded-2xl flex items-center justify-center text-2xl sm:text-3xl shrink-0">
             ${p.icon}
