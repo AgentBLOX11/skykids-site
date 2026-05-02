@@ -429,7 +429,7 @@
   </section>
 
   <!-- About Section -->
-  <section id="despre" class="py-24 relative">
+  <section id="despre" class="py-16 sm:py-24 relative">
     <div class="max-w-6xl mx-auto px-6">
       <div class="text-center mb-16 fade-up">
         <span class="inline-block bg-candy-orange/10 text-candy-orange text-sm font-bold tracking-widest uppercase px-4 py-2 rounded-full mb-4">Despre Noi</span>
@@ -437,7 +437,7 @@
       </div>
       
       <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 md:gap-8">
-        <div class="card p-8 text-center fade-up" style="transition-delay: 0.1s">
+        <div class="card p-6 sm:p-8 text-center fade-up"> style="transition-delay: 0.1s">
           <div class="feature-icon bg-gradient-to-br from-candy-pink to-candy-orange mx-auto mb-6 text-white shadow-lg">
             <iconify-icon icon="lucide:gamepad-2" width="32"></iconify-icon>
           </div>
@@ -445,7 +445,7 @@
           <p class="text-gray-500 leading-relaxed">Echipamente sigure și verificate. Supraveghere permanentă de către personal calificat.</p>
         </div>
         
-        <div class="card p-8 text-center fade-up" style="transition-delay: 0.2s">
+        <div class="card p-6 sm:p-8 text-center fade-up"> style="transition-delay: 0.2s">
           <div class="feature-icon bg-gradient-to-br from-candy-blue to-candy-purple mx-auto mb-6 text-white shadow-lg">
             <iconify-icon icon="lucide:chef-hat" width="32"></iconify-icon>
           </div>
@@ -453,7 +453,7 @@
           <p class="text-gray-500 leading-relaxed">Preparate proaspete, făcute zilnic. Meniu variat — de la sushi și pizza la paste și salate proaspete.</p>
         </div>
         
-        <div class="card p-8 text-center fade-up" style="transition-delay: 0.3s">
+        <div class="card p-6 sm:p-8 text-center fade-up"> style="transition-delay: 0.3s">
           <div class="feature-icon bg-gradient-to-br from-candy-green to-candy-blue mx-auto mb-6 text-white shadow-lg">
             <iconify-icon icon="lucide:heart-handshake" width="32"></iconify-icon>
           </div>
@@ -471,11 +471,11 @@
     <div class="max-w-6xl mx-auto px-6">
       <div class="text-center mb-12 fade-up">
         <span class="inline-block bg-candy-pink/10 text-candy-pink text-sm font-bold tracking-widest uppercase px-4 py-2 rounded-full mb-4">Bucătărie</span>
-        <h2 class="font-black text-4xl md:text-5xl text-dark mb-4">Meniul Nostru</h2>
+        <h2 class="font-black text-3xl sm:text-4xl md:text-5xl text-dark mb-4">Meniul Nostru</h2>
         <p class="text-gray-500 text-lg">apasă pe orice produs pentru detalii complete</p>
       </div>
       
-      <div id="categoryTabs" class="flex flex-wrap justify-center gap-3 mb-12 fade-up"></div>
+      <div id="categoryTabs" class="flex flex-wrap justify-center gap-2 sm:gap-3 mb-8 sm:mb-12 fade-up"></div>
       <div id="menuGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6"></div>
       <div id="menuLoading" class="text-center py-16">
         <div class="spinner mx-auto mb-4"></div>
@@ -493,7 +493,7 @@
   <div class="section-divider max-w-6xl mx-auto"></div>
 
   <!-- Gallery Section -->
-  <section id="galerie" class="py-24 relative">
+  <section id="galerie" class="py-16 sm:py-24 relative">
     <div class="max-w-6xl mx-auto px-6">
       <div class="text-center mb-12 fade-up">
         <span class="inline-block bg-candy-green/10 text-candy-green text-sm font-bold tracking-widest uppercase px-4 py-2 rounded-full mb-4">Galerie</span>
@@ -548,7 +548,7 @@
   <div class="section-divider max-w-6xl mx-auto"></div>
 
   <!-- Booking Section -->
-  <section id="rezervari" class="py-24 relative">
+  <section id="rezervari" class="py-16 sm:py-24 relative">
     <div class="max-w-3xl mx-auto px-6">
       <div class="text-center mb-12 fade-up">
         <span class="inline-block bg-candy-blue/10 text-candy-blue text-sm font-bold tracking-widest uppercase px-4 py-2 rounded-full mb-4">Rezervări</span>
@@ -570,7 +570,7 @@
         <form id="bookingForm">
           <!-- Step 1: Package selection -->
           <div id="step1" class="booking-step">
-            <h3 class="font-bold text-xl mb-6 flex items-center gap-3">
+            <h3 class="font-bold text-lg sm:text-xl mb-4 sm:mb-6 flex items-center gap-2 sm:gap-3">
               <span class="w-8 h-8 bg-candy-pink text-white rounded-lg flex items-center justify-center text-sm">1</span>
               Alege pachetul
             </h3>
@@ -580,7 +580,7 @@
             </div>
             
             <div class="mb-6">
-              <label class="block text-sm font-bold text-gray-700 mb-3">Număr de copii *</label>
+              <label class="block text-sm sm:text-base font-bold text-gray-700 mb-2">Număr de copii *</label>
               <div class="flex items-center gap-4">
                 <button type="button" onclick="changeKids(-1)" class="w-12 h-12 bg-gray-100 hover:bg-gray-200 rounded-xl flex items-center justify-center text-xl font-bold transition-colors">−</button>
                 <input type="number" id="kids_count" value="1" min="1" max="30" class="w-20 text-center text-2xl font-bold border-2 border-gray-200 rounded-xl py-3">
@@ -590,7 +590,7 @@
             </div>
             
             <div class="mb-6">
-              <label class="block text-sm font-bold text-gray-700 mb-3">Număr de adulți</label>
+              <label class="block text-sm sm:text-base font-bold text-gray-700 mb-2">Număr de adulți</label>
               <div class="flex items-center gap-4">
                 <button type="button" onclick="changeAdults(-1)" class="w-12 h-12 bg-gray-100 hover:bg-gray-200 rounded-xl flex items-center justify-center text-xl font-bold transition-colors">−</button>
                 <input type="number" id="adults_count" value="0" min="0" max="20" class="w-20 text-center text-2xl font-bold border-2 border-gray-200 rounded-xl py-3">
@@ -607,18 +607,18 @@
           
           <!-- Step 2: Date & Time -->
           <div id="step2" class="booking-step hidden">
-            <h3 class="font-bold text-xl mb-6 flex items-center gap-3">
+            <h3 class="font-bold text-lg sm:text-xl mb-4 sm:mb-6 flex items-center gap-2 sm:gap-3">
               <span class="w-8 h-8 bg-candy-pink text-white rounded-lg flex items-center justify-center text-sm">2</span>
               Alege data și ora
             </h3>
             
             <div class="mb-6">
-              <label class="block text-sm font-bold text-gray-700 mb-3">Data *</label>
-              <input type="date" id="date" required class="w-full px-5 py-4 rounded-2xl border-2 border-gray-200 text-lg font-medium">
+              <label class="block text-sm sm:text-base font-bold text-gray-700 mb-2">Data *</label>
+              <input type="date" id="date" required class="w-full px-4 sm:px-5 py-3 sm:py-4 rounded-2xl border-2 border-gray-200 text-base sm:text-lg font-medium">
             </div>
             
             <div id="timeSlots" class="mb-8 hidden">
-              <label class="block text-sm font-bold text-gray-700 mb-3">Ora *</label>
+              <label class="block text-sm sm:text-base font-bold text-gray-700 mb-2">Ora *</label>
               <div id="slotsGrid" class="grid grid-cols-3 sm:grid-cols-4 gap-2 sm:gap-3"></div>
             </div>
             
@@ -636,7 +636,7 @@
           
           <!-- Step 3: Contact info -->
           <div id="step3" class="booking-step hidden">
-            <h3 class="font-bold text-xl mb-6 flex items-center gap-3">
+            <h3 class="font-bold text-lg sm:text-xl mb-4 sm:mb-6 flex items-center gap-2 sm:gap-3">
               <span class="w-8 h-8 bg-candy-pink text-white rounded-lg flex items-center justify-center text-sm">3</span>
               Datele tale de contact
             </h3>
@@ -840,7 +840,7 @@
           <div class="flex items-center gap-3">
             <span class="text-3xl">${p.icon}</span>
             <div>
-              <h4 class="font-bold text-lg">${p.name}</h4>
+              <h4 class="font-bold text-base sm:text-lg">${p.name}</h4>
               ${p.description ? `<p class="text-sm text-gray-500">${p.description}</p>` : ''}
             </div>
           </div>
