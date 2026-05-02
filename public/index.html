@@ -859,23 +859,24 @@
       return;
     }
     container.innerHTML = packages.map((p, i) => `
-      <div class="package-card" onclick="selectPackage('${p.name.toLowerCase().replace(/\s+/g, '-')}', ${p.id})" data-package="${p.name.toLowerCase().replace(/\s+/g, '-')}" data-id="${p.id}">
-        <div class="flex items-start justify-between mb-3">
-          <div class="flex items-center gap-3">
-            <span class="text-3xl">${p.icon}</span>
-            <div>
-              <h4 class="font-bold text-base sm:text-lg">${p.name}</h4>
-              ${p.description ? `<p class="text-sm text-gray-500">${p.description}</p>` : ''}
-            </div>
+      <div class="package-card bg-white rounded-2xl p-4 sm:p-6 border-2 border-gray-100 hover:border-candy-pink transition-all cursor-pointer" onclick="selectPackage('${p.name.toLowerCase().replace(/\s+/g, '-')}', ${p.id})" data-package="${p.name.toLowerCase().replace(/\s+/g, '-')}" data-id="${p.id}">
+        <div class="flex items-center gap-3 sm:gap-4 mb-3 sm:mb-4">
+          <div class="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-candy-pink/10 to-candy-orange/10 rounded-2xl flex items-center justify-center text-2xl sm:text-3xl shrink-0">
+            ${p.icon}
           </div>
-          <div class="text-right">
-            <p class="text-2xl font-black text-candy-pink">${p.price_per_child || p.price_group}</p>
-            ${p.price_per_child ? `<p class="text-xs text-gray-400">/copil</p>` : `<p class="text-xs text-gray-400">/grup</p>`}
+          <div class="flex-1 min-w-0">
+            <h4 class="font-bold text-base sm:text-lg text-dark truncate">${p.name}</h4>
+            ${p.description ? `<p class="text-xs sm:text-sm text-gray-500 line-clamp-2">${p.description}</p>` : ''}
           </div>
         </div>
-        ${p.includes ? `<div class="flex flex-wrap gap-2 text-sm text-gray-500">${p.includes.split(',').map(item => `<span class="flex items-center gap-1"><iconify-icon icon="lucide:check" width="14" class="text-candy-green"></iconify-icon>${item.trim()}</span>`).join('')}</div>` : ''}
-        <div class="package-check absolute top-4 right-4 w-6 h-6 rounded-full hidden items-center justify-center">
-          <iconify-icon icon="lucide:check" width="14"></iconify-icon>
+        <div class="flex items-end justify-between">
+          <div class="flex-1">
+            <p class="text-2xl sm:text-3xl font-black text-candy-pink leading-none">${p.price_per_child || p.price_group}</p>
+            <p class="text-xs text-gray-400 mt-1">${p.price_per_child ? 'per copil' : 'per grup'}</p>
+          </div>
+          ${p.includes ? `<div class="flex flex-wrap gap-x-3 gap-y-1 text-xs text-gray-500 mt-3 sm:mt-4">
+            ${p.includes.split(',').map(item => `<span class="flex items-center gap-1"><iconify-icon icon="lucide:check-circle" width="12" class="text-candy-green"></iconify-icon>${item.trim()}</span>`).join('')}
+          </div>` : ''}
         </div>
       </div>
     `).join('');
