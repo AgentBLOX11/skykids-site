@@ -126,7 +126,9 @@
       background: linear-gradient(135deg, #ff6b9d, #ff8c42);
       color: white;
       box-shadow: 0 4px 15px rgba(255,107,157,0.4);
+      transform: scale(1.05);
     }
+    .cat-tab { transition: all 0.2s ease; }
     
     /* Gradient text */
     .gradient-text {
@@ -155,11 +157,15 @@
     /* Stat card */
     .stat-card {
       background: white;
-      border-radius: 20px;
-      padding: 24px;
+      border-radius: 16px;
+      padding: 16px 8px;
       text-align: center;
       box-shadow: 0 4px 20px rgba(0,0,0,0.04);
       border: 1px solid rgba(0,0,0,0.04);
+      transition: all 0.3s ease;
+    }
+    @media (min-width: 640px) {
+      .stat-card { padding: 24px; border-radius: 20px; }
     }
     
     /* Modal */
@@ -167,7 +173,7 @@
     
     /* Gallery item */
     .gallery-item { border-radius: 20px; overflow: hidden; transition: all 0.4s ease; }
-    .gallery-item:hover { transform: scale(1.03); box-shadow: 0 20px 50px rgba(0,0,0,0.15); }
+    .gallery-item:hover { transform: scale(1.03); box-shadow: 0 20px 50px rgba(0,0,0,0.15); cursor: pointer; }
     
     /* Feature icon */
     .feature-icon {
@@ -181,7 +187,17 @@
       transition: all 0.3s ease;
     }
     .feature-icon:hover { transform: scale(1.1) rotate(5deg); }
+    .feature-icon { transition: transform 0.3s ease; }
     
+    
+    /* Loading skeleton */
+    .skeleton {
+      background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+    }
+    @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
     /* Form inputs */
     input:focus, select:focus, textarea:focus {
       outline: none;
@@ -367,11 +383,11 @@
   </nav>
 
   <!-- Mobile Menu -->
-  <div id="mobileMenu" class="fixed inset-0 z-40 bg-white hidden flex-col items-center justify-center gap-6 pt-20 pb-8 px-6">
+  <div id="mobileMenu" class="fixed inset-0 z-40 bg-white hidden flex-col items-center justify-center gap-5 sm:gap-6 pt-20 pb-8 px-4 sm:px-6">
     <button id="mobileClose" class="absolute top-6 right-6 w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center hover:bg-gray-200 transition-colors">
       <iconify-icon icon="lucide:x" width="22"></iconify-icon>
     </button>
-    <a href="#despre" onclick="closeMobile()" class="text-2xl font-bold text-dark hover:text-candy-pink transition-colors">Despre</a>
+    <a href="#despre" onclick="closeMobile()" class="text-xl sm:text-2xl font-bold text-dark hover:text-candy-pink transition-colors">Despre</a>
     <a href="#meniu" onclick="closeMobile()" class="text-2xl font-bold text-dark hover:text-candy-pink transition-colors">Meniu</a>
     <a href="#galerie" onclick="closeMobile()" class="text-2xl font-bold text-dark hover:text-candy-pink transition-colors">Galerie</a>
     <a href="#contact" onclick="closeMobile()" class="text-2xl font-bold text-dark hover:text-candy-pink transition-colors">Contact</a>
@@ -407,7 +423,7 @@
         
         <!-- CTA Buttons -->
         <div class="flex flex-col sm:flex-row gap-4 justify-center mb-16">
-          <a href="#rezervari" class="bg-gradient-to-r from-candy-pink to-candy-orange text-white px-8 py-4 rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transition-all inline-flex items-center justify-center gap-2">
+          <a href="#rezervari" class="bg-gradient-to-r from-candy-pink to-candy-orange text-white px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-bold text-base sm:text-lg shadow-lg hover:shadow-xl transition-all inline-flex items-center justify-center gap-2">
             <iconify-icon icon="lucide:calendar" width="20"></iconify-icon>
             Rezervă un loc
           </a>
@@ -437,7 +453,7 @@
   </section>
 
   <!-- About Section -->
-  <section id="despre" class="py-16 sm:py-24 relative">
+  <section id="despre" class="py-16 sm:py-24 relative scroll-mt-20">
     <div class="max-w-6xl mx-auto px-6">
       <div class="text-center mb-16 fade-up">
         <span class="inline-block bg-candy-orange/10 text-candy-orange text-sm font-bold tracking-widest uppercase px-4 py-2 rounded-full mb-4">Despre Noi</span>
@@ -445,7 +461,7 @@
       </div>
       
       <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 md:gap-8">
-        <div class="card shadow-card hover:shadow-hover p-6 sm:p-8 text-center fade-up> style="transition-delay: 0.1s">
+        <div class="card shadow-card hover:shadow-hover p-6 sm:p-8 text-center fade-up" style="transition-delay: 0.1s">
           <div class="feature-icon bg-gradient-to-br from-candy-pink to-candy-orange mx-auto mb-6 text-white shadow-lg">
             <iconify-icon icon="lucide:gamepad-2" width="32"></iconify-icon>
           </div>
@@ -453,7 +469,7 @@
           <p class="text-gray-500 leading-relaxed">Echipamente sigure și verificate. Supraveghere permanentă de către personal calificat.</p>
         </div>
         
-        <div class="card shadow-card hover:shadow-hover p-6 sm:p-8 text-center fade-up> style="transition-delay: 0.2s">
+        <div class="card shadow-card hover:shadow-hover p-6 sm:p-8 text-center fade-up" style="transition-delay: 0.2s">
           <div class="feature-icon bg-gradient-to-br from-candy-blue to-candy-purple mx-auto mb-6 text-white shadow-lg">
             <iconify-icon icon="lucide:chef-hat" width="32"></iconify-icon>
           </div>
@@ -461,7 +477,7 @@
           <p class="text-gray-500 leading-relaxed">Preparate proaspete, făcute zilnic. Meniu variat — de la sushi și pizza la paste și salate proaspete.</p>
         </div>
         
-        <div class="card shadow-card hover:shadow-hover p-6 sm:p-8 text-center fade-up> style="transition-delay: 0.3s">
+        <div class="card shadow-card hover:shadow-hover p-6 sm:p-8 text-center fade-up" style="transition-delay: 0.3s">
           <div class="feature-icon bg-gradient-to-br from-candy-green to-candy-blue mx-auto mb-6 text-white shadow-lg">
             <iconify-icon icon="lucide:heart-handshake" width="32"></iconify-icon>
           </div>
@@ -484,7 +500,7 @@
       </div>
       
       <div id="categoryTabs" class="flex flex-wrap justify-center gap-2 sm:gap-3 mb-8 sm:mb-12 fade-up"></div>
-      <div id="menuGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6"></div>
+      <div id="menuGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mt-8"></div>
       <div id="menuLoading" class="text-center py-16">
         <div class="spinner mx-auto mb-4"></div>
         <p class="text-gray-400 font-medium">Se încarcă meniul...</p>
@@ -501,7 +517,7 @@
   <div class="section-divider max-w-6xl mx-auto my-8 sm:my-16"></div>
 
   <!-- Gallery Section -->
-  <section id="galerie" class="py-16 sm:py-24 relative">
+  <section id="galerie" class="py-16 sm:py-24 relative scroll-mt-20">
     <div class="max-w-6xl mx-auto px-6">
       <div class="text-center mb-12 fade-up">
         <span class="inline-block bg-candy-green/10 text-candy-green text-sm font-bold tracking-widest uppercase px-4 py-2 rounded-full mb-4">Galerie</span>
@@ -526,7 +542,7 @@
         <h2 class="font-black text-4xl md:text-5xl text-dark">Găsește-ne</h2>
       </div>
       
-      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-8">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
         <div class="card shadow-card hover:shadow-hover p-8 fade-up">
           <h3 class="font-bold text-xl text-dark mb-6 flex items-center gap-3">
             <div class="w-10 h-10 bg-candy-pink/10 rounded-xl flex items-center justify-center">
@@ -556,7 +572,7 @@
   <div class="section-divider max-w-6xl mx-auto my-8 sm:my-16"></div>
 
   <!-- Booking Section -->
-  <section id="rezervari" class="py-16 sm:py-24 relative">
+  <section id="rezervari" class="py-16 sm:py-24 relative scroll-mt-20">
     <div class="max-w-3xl mx-auto px-6">
       <div class="text-center mb-12 fade-up">
         <span class="inline-block bg-candy-blue/10 text-candy-blue text-sm font-bold tracking-widest uppercase px-4 py-2 rounded-full mb-4">Rezervări</span>
@@ -579,7 +595,7 @@
           <!-- Step 1: Package selection -->
           <div id="step1" class="booking-step">
             <h3 class="font-bold text-lg sm:text-xl mb-4 sm:mb-6 flex items-center gap-2 sm:gap-3">
-              <span class="w-8 h-8 bg-candy-pink text-white rounded-lg flex items-center justify-center text-sm">1</span>
+              <span class="w-8 h-8 bg-candy-pink text-white rounded-lg flex items-center justify-center text-sm font-bold">1</span>
               Alege pachetul
             </h3>
             
