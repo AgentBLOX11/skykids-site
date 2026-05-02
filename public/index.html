@@ -1,1613 +1,1258 @@
 <!DOCTYPE html>
 <html lang="ro">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sky Kids — Cel Mai Mare Teren de Joacă din Soroca | Restaurant & Distracție</title>
-    <meta name="description" content="Sky Kids Soroca — teren de joacă pentru copii 1-12 ani, restaurant pentru părinți, zile de naștere, evenimente. Programează-te acum!">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        sky: { 50:'#f0f9ff', 100:'#e0f2fe', 200:'#bae6fd', 300:'#7dd3fc', 400:'#38bdf8', 500:'#0ea5e9', 600:'#0284c7', 700:'#0369a1' },
-                        candy: { pink:'#FF6B9D', purple:'#C084FC', blue:'#60A5FA', green:'#34D399', yellow:'#FBBF24', orange:'#FB923C', red:'#F87171' },
-                        dark: '#1a1a2e',
-                    },
-                    fontFamily: {
-                        sans: ['Nunito', 'sans-serif'],
-                    }
-                }
-            }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sky Kids Soroca 🎈 — Joc & Preparate Delicioase</title>
+  <meta name="description" content="Sky Kids Soroca — zonă de joacă pentru copii 1-12 ani + bucătărie delicioasă. Rezervă un loc și lasă copiii să se distreze!">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            sky: { 50:'#f0f9ff',100:'#e0f2fe',200:'#bae6fd',300:'#7dd3fc',400:'#38bdf8',500:'#0ea5e9',600:'#0284c7',700:'#0369a1',800:'#075985',900:'#0c4a6e' },
+            candy: { pink:'#ff6b9d', yellow:'#ffd93d', green:'#6bcb77', orange:'#ff8c42', blue:'#4d96ff', purple:'#9b59b6' },
+            dark: '#1a1a2e', soft: '#fafbfc',
+          },
+          fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] },
+          boxShadow: { card: '0 4px 20px rgba(0,0,0,0.06)', hover: '0 12px 40px rgba(0,0,0,0.12)', glow: '0 0 40px rgba(255,107,157,0.3)' }
         }
-    </script>
-    <style>
-        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-        html { scroll-behavior: smooth; }
-        body { font-family: 'Nunito', sans-serif; overflow-x: hidden; }
-
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #f0f9ff; }
-        ::-webkit-scrollbar-thumb { background: #0ea5e9; border-radius: 4px; }
-
-        @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
-        @keyframes floatSlow { 0%,100%{transform:translateY(0) rotate(0)} 50%{transform:translateY(-6px) rotate(5deg)} }
-        @keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-15px)} }
-        @keyframes spin-slow { 0%{transform:rotate(0)} 100%{transform:rotate(360deg)} }
-        @keyframes gradient-x { 0%,100%{background-position:0% 50%} 50%{background-position:100% 50%} }
-        @keyframes fadeInUp { from{opacity:0;transform:translateY(30px)} to{opacity:1;transform:translateY(0)} }
-        @keyframes confetti { 0%{transform:translateY(0) rotate(0);opacity:1} 100%{transform:translateY(100vh) rotate(720deg);opacity:0} }
-        @keyframes pulse-ring { 0%{transform:scale(0.8);opacity:0.5} 100%{transform:scale(2);opacity:0} }
-        @keyframes wiggle { 0%,100%{transform:rotate(-3deg)} 50%{transform:rotate(3deg)} }
-
-        .float { animation: float 3s ease-in-out infinite; }
-        .float-slow { animation: floatSlow 4s ease-in-out infinite; }
-        .bounce-anim { animation: bounce 2s ease-in-out infinite; }
-        .spin-slow { animation: spin-slow 20s linear infinite; }
-        .animate-gradient { background-size:200% 200%; animation: gradient-x 3s ease infinite; }
-        .wiggle { animation: wiggle 1s ease-in-out infinite; }
-
-        .fade-in { opacity:0; transform:translateY(30px); transition: all 0.6s ease; }
-        .fade-in.visible { opacity:1; transform:translateY(0); }
-
-        .card-hover { transition: all 0.3s ease; }
-        .card-hover:hover { transform: translateY(-8px); }
-
-        .nav-link::after { content:''; display:block; width:0; height:3px; border-radius:2px; background:linear-gradient(90deg,#FF6B9D,#FBBF24); transition:width 0.3s; }
-        .nav-link:hover::after { width:100%; }
-
-        .mobile-menu { transform:translateX(100%); transition:transform 0.3s ease; }
-        .mobile-menu.active { transform:translateX(0); }
-
-        /* Booking modal */
-        .modal-overlay { opacity:0; pointer-events:none; transition:opacity 0.3s; }
-        .modal-overlay.active { opacity:1; pointer-events:auto; }
-        .modal-content { transform:scale(0.9) translateY(20px); transition:all 0.3s; }
-        .modal-overlay.active .modal-content { transform:scale(1) translateY(0); }
-
-        /* Decorative bubbles */
-        .bubble {
-            position: absolute;
-            border-radius: 50%;
-            opacity: 0.1;
-        }
-
-        /* Menu card */
-        .menu-card { transition: all 0.3s ease; border: 2px solid transparent; }
-        .menu-card:hover { border-color: #0ea5e9; transform: scale(1.02); }
-
-        /* Carousel (Pizza Pe Vatra style) */
-        .menu-carousel {
-            display: flex;
-            overflow-x: auto;
-            scroll-snap-type: x mandatory;
-            gap: 16px;
-            padding-bottom: 12px;
-            -webkit-overflow-scrolling: touch;
-        }
-        .menu-carousel::-webkit-scrollbar { height: 6px; }
-        .menu-carousel::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 3px; }
-        .menu-carousel::-webkit-scrollbar-thumb { background: #0ea5e9; border-radius: 3px; }
-        .menu-carousel > .menu-item {
-            flex: 0 0 260px;
-            scroll-snap-align: start;
-            min-height: 160px;
-        }
-        .menu-carousel > .menu-item.wide-card {
-            flex: 0 0 200px;
-        }
-        .menu-carousel > .see-all-card {
-            flex: 0 0 160px;
-            scroll-snap-align: start;
-        }
-
-        /* Gallery */
-        .gallery-item { transition: all 0.4s ease; }
-        .gallery-item:hover { transform: scale(1.05); z-index: 10; }
-
-        /* Time slot buttons */
-        .time-slot { transition: all 0.2s ease; }
-        .time-slot.selected { background: linear-gradient(135deg,#FF6B9D,#FBBF24); color: white; transform: scale(1.05); }
-
-        /* Confetti particles */
-        .confetti-piece {
-            position: fixed;
-            width: 10px;
-            height: 10px;
-            top: -10px;
-            animation: confetti 3s linear forwards;
-            z-index: 9999;
-            pointer-events: none;
-        }
-
-        /* Rainbow text */
-        .rainbow-text {
-            background: linear-gradient(90deg, #FF6B9D, #C084FC, #60A5FA, #34D399, #FBBF24, #FB923C);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            background-size: 200% auto;
-            animation: gradient-x 4s ease infinite;
-        }
-    </style>
+      }
+    }
+  </script>
+  <style>
+    * { font-family: 'Inter', system-ui, sans-serif; }
+    
+    html { scroll-behavior: smooth; }
+    body { background: #fafbfc; overflow-x: hidden; }
+    
+    /* Hero */
+    .hero-bg {
+      background: linear-gradient(135deg, #fff5f8 0%, #f0f7ff 50%, #f0fff4 100%);
+      position: relative;
+    }
+    .hero-bg::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -20%;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(255,107,157,0.15) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-bg::after {
+      content: '';
+      position: absolute;
+      bottom: -30%;
+      left: -10%;
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(77,150,255,0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    
+    /* Shapes */
+    .shape-1 {
+      position: absolute;
+      width: 300px;
+      height: 300px;
+      background: linear-gradient(135deg, rgba(255,107,157,0.2), rgba(255,217,61,0.1));
+      border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+      animation: morph 8s ease-in-out infinite;
+    }
+    .shape-2 {
+      position: absolute;
+      width: 200px;
+      height: 200px;
+      background: linear-gradient(135deg, rgba(77,150,255,0.15), rgba(107,203,119,0.1));
+      border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+      animation: morph 10s ease-in-out infinite reverse;
+      animation-delay: -3s;
+    }
+    .shape-3 {
+      position: absolute;
+      width: 150px;
+      height: 150px;
+      background: linear-gradient(135deg, rgba(255,140,66,0.15), rgba(155,89,182,0.1));
+      border-radius: 50% 50% 40% 60% / 60% 40% 60% 40%;
+      animation: morph 12s ease-in-out infinite;
+      animation-delay: -6s;
+    }
+    @keyframes morph {
+      0%, 100% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; transform: translate(0, 0) rotate(0deg); }
+      50% { border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; transform: translate(20px, -20px) rotate(10deg); }
+    }
+    
+    /* Cards */
+    .card {
+      background: white;
+      border-radius: 24px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+      border: 1px solid rgba(0,0,0,0.04);
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .card:hover { transform: translateY(-6px); box-shadow: 0 20px 50px rgba(0,0,0,0.1); }
+    
+    /* Menu item */
+    .menu-item {
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: 2px solid transparent;
+    }
+    .menu-item:hover {
+      border-color: #ff6b9d;
+      transform: translateY(-4px);
+      box-shadow: 0 12px 30px rgba(255,107,157,0.15);
+    }
+    
+    /* Category tab */
+    .cat-tab { transition: all 0.3s ease; }
+    .cat-tab:hover { transform: scale(1.05); }
+    .cat-tab.active {
+      background: linear-gradient(135deg, #ff6b9d, #ff8c42);
+      color: white;
+      box-shadow: 0 4px 15px rgba(255,107,157,0.4);
+    }
+    
+    /* Gradient text */
+    .gradient-text {
+      background: linear-gradient(135deg, #ff6b9d 0%, #ff8c42 50%, #4d96ff 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    /* Nav glass */
+    .nav-glass {
+      background: rgba(255,255,255,0.9);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(0,0,0,0.05);
+    }
+    
+    /* Section divider */
+    .section-divider { height: 1px; background: linear-gradient(90deg, transparent, rgba(0,0,0,0.08), transparent); }
+    
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: linear-gradient(180deg, #ff6b9d, #4d96ff); border-radius: 10px; }
+    
+    /* Stat card */
+    .stat-card {
+      background: white;
+      border-radius: 20px;
+      padding: 24px;
+      text-align: center;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+      border: 1px solid rgba(0,0,0,0.04);
+    }
+    
+    /* Modal */
+    .modal-backdrop { background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); }
+    
+    /* Gallery item */
+    .gallery-item { border-radius: 20px; overflow: hidden; transition: all 0.4s ease; }
+    .gallery-item:hover { transform: scale(1.03); box-shadow: 0 20px 50px rgba(0,0,0,0.15); }
+    
+    /* Feature icon */
+    .feature-icon {
+      width: 64px;
+      height: 64px;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      transition: all 0.3s ease;
+    }
+    .feature-icon:hover { transform: scale(1.1) rotate(5deg); }
+    
+    /* Form inputs */
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: #ff6b9d !important;
+      box-shadow: 0 0 0 4px rgba(255,107,157,0.1);
+    }
+    
+    /* Footer wave */
+    .footer-wave { background: #1a1a2e; position: relative; }
+    
+    /* Fade up animation */
+    .fade-up { opacity: 0; transform: translateY(30px); transition: all 0.6s ease; }
+    .fade-up.visible { opacity: 1; transform: translateY(0); }
+    
+    /* Spinner */
+    .spinner {
+      width: 48px;
+      height: 48px;
+      border: 4px solid rgba(255,107,157,0.2);
+      border-top-color: #ff6b9d;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    
+    /* Price tag */
+    .price-tag {
+      background: linear-gradient(135deg, #ff6b9d, #ff8c42);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    /* ===== BOOKING WIZARD STYLES ===== */
+    .booking-step {
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    /* Package cards */
+    .package-card {
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: 2px solid #e5e7eb;
+      border-radius: 20px;
+      padding: 24px;
+      background: white;
+    }
+    .package-card:hover {
+      border-color: #ff6b9d;
+      transform: translateY(-4px);
+      box-shadow: 0 12px 30px rgba(255,107,157,0.15);
+    }
+    .package-card.selected {
+      border-color: #ff6b9d;
+      background: linear-gradient(135deg, rgba(255,107,157,0.05), rgba(255,140,66,0.05));
+      box-shadow: 0 0 0 4px rgba(255,107,157,0.2);
+    }
+    .package-card.selected .package-check {
+      background: linear-gradient(135deg, #ff6b9d, #ff8c42);
+      color: white;
+    }
+    
+    /* Step indicators */
+    .step-dot {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      transition: all 0.3s ease;
+      border: 2px solid #e5e7eb;
+      background: white;
+      color: #9ca3af;
+    }
+    .step-dot.active {
+      background: linear-gradient(135deg, #ff6b9d, #ff8c42);
+      border-color: #ff6b9d;
+      color: white;
+      box-shadow: 0 4px 15px rgba(255,107,157,0.3);
+    }
+    .step-dot.completed {
+      background: #6bcb77;
+      border-color: #6bcb77;
+      color: white;
+    }
+    
+    /* Time slot buttons */
+    .time-slot {
+      padding: 10px 16px;
+      border-radius: 12px;
+      border: 2px solid #e5e7eb;
+      background: white;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .time-slot:hover:not(:disabled) {
+      border-color: #4d96ff;
+      background: rgba(77,150,255,0.05);
+    }
+    .time-slot.selected {
+      background: #4d96ff;
+      border-color: #4d96ff;
+      color: white;
+    }
+    .time-slot:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      background: #f3f4f6;
+    }
+    
+    /* Input with icon */
+    .input-icon {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #9ca3af;
+    }
+    
+    /* Success animation */
+    @keyframes checkmark {
+      0% { transform: scale(0); opacity: 0; }
+      50% { transform: scale(1.2); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .animate-checkmark {
+      animation: checkmark 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+    
+    /* Floating label */
+    .floating-label {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #9ca3af;
+      transition: all 0.2s ease;
+      pointer-events: none;
+    }
+    input:focus + .floating-label,
+    input:not(:placeholder-shown) + .floating-label {
+      top: 8px;
+      transform: translateY(0);
+      font-size: 11px;
+      color: #ff6b9d;
+    }
+  </style>
 </head>
-<body class="bg-white text-gray-800">
+<body class="text-dark">
 
-<!-- ========== NAVIGATION ========== -->
-<nav class="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-lg shadow-sm">
-    <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+  <!-- Navigation -->
+  <nav class="nav-glass sticky top-0 z-50">
+    <div class="max-w-6xl mx-auto px-6 py-4">
+      <div class="flex items-center justify-between">
         <a href="#" class="flex items-center gap-3 group">
-            <div class="relative">
-                <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-candy-pink via-sky-400 to-candy-purple flex items-center justify-center text-white text-xl font-black shadow-lg shadow-sky-200">
-                    SK
-                </div>
-                <div class="absolute -top-1 -right-1 w-4 h-4 bg-candy-yellow rounded-full bounce-anim"></div>
-            </div>
-            <div>
-                <span class="text-dark font-black text-xl tracking-tight">Sky Kids</span>
-                <div class="text-[10px] text-sky-500 font-bold tracking-wider uppercase -mt-1">Soroca 🎈</div>
-            </div>
+          <div class="w-12 h-12 bg-gradient-to-br from-candy-pink to-candy-orange rounded-2xl flex items-center justify-center text-white font-black text-xl shadow-lg group-hover:shadow-xl transition-shadow">
+            S
+          </div>
+          <div>
+            <span class="font-black text-2xl gradient-text">Sky Kids</span>
+            <p class="text-xs text-gray-400 -mt-1">Soroca 🎈</p>
+          </div>
         </a>
-
-        <div class="hidden lg:flex items-center gap-8">
-            <a href="#acasa" class="nav-link text-gray-600 hover:text-dark text-sm font-bold">Acasă</a>
-            <a href="#despre" class="nav-link text-gray-600 hover:text-dark text-sm font-bold">Despre Noi</a>
-            <a href="#meniu" class="nav-link text-gray-600 hover:text-dark text-sm font-bold">Meniu</a>
-            <a href="#galerie" class="nav-link text-gray-600 hover:text-dark text-sm font-bold">Galerie</a>
-            <a href="#preturi" class="nav-link text-gray-600 hover:text-dark text-sm font-bold">Prețuri</a>
-            <a href="#contact" class="nav-link text-gray-600 hover:text-dark text-sm font-bold">Contact</a>
-            <button onclick="openBooking()" class="ml-4 px-6 py-3 bg-gradient-to-r from-candy-pink to-candy-yellow text-white text-sm font-bold rounded-xl hover:brightness-110 transition-all shadow-lg shadow-pink-200 flex items-center gap-2">
-                <iconify-icon icon="lucide:calendar-heart" width="18"></iconify-icon>
-                Programează-te
-            </button>
+        <div class="hidden md:flex items-center gap-8">
+          <a href="#despre" class="font-semibold text-gray-600 hover:text-candy-pink transition-colors">Despre</a>
+          <a href="#meniu" class="font-semibold text-gray-600 hover:text-candy-pink transition-colors">Meniu</a>
+          <a href="#galerie" class="font-semibold text-gray-600 hover:text-candy-pink transition-colors">Galerie</a>
+          <a href="#contact" class="font-semibold text-gray-600 hover:text-candy-pink transition-colors">Contact</a>
+          <a href="#rezervari" class="bg-gradient-to-r from-candy-pink to-candy-orange text-white px-6 py-3 rounded-2xl font-bold hover:shadow-lg transition-all inline-flex items-center gap-2">
+            <iconify-icon icon="lucide:calendar" width="18"></iconify-icon>
+            Rezervă
+          </a>
         </div>
-
-        <button onclick="toggleMenu()" class="lg:hidden text-dark">
-            <iconify-icon icon="lucide:menu" width="28"></iconify-icon>
+        <button id="mobileToggle" class="md:hidden w-10 h-10 flex items-center justify-center rounded-xl bg-gray-100 hover:bg-gray-200 transition-colors">
+          <iconify-icon icon="lucide:menu" width="22"></iconify-icon>
         </button>
+      </div>
     </div>
-</nav>
+  </nav>
 
-<!-- Mobile Menu -->
-<div id="mobileMenu" class="mobile-menu fixed inset-0 z-[60] bg-white flex flex-col items-center justify-center gap-6">
-    <button onclick="toggleMenu()" class="absolute top-6 right-6 text-dark">
-        <iconify-icon icon="lucide:x" width="28"></iconify-icon>
+  <!-- Mobile Menu -->
+  <div id="mobileMenu" class="fixed inset-0 z-40 bg-white hidden flex-col items-center justify-center gap-6">
+    <button id="mobileClose" class="absolute top-6 right-6 w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center hover:bg-gray-200 transition-colors">
+      <iconify-icon icon="lucide:x" width="22"></iconify-icon>
     </button>
-    <a href="#acasa" onclick="toggleMenu()" class="text-dark text-2xl font-bold">Acasă</a>
-    <a href="#despre" onclick="toggleMenu()" class="text-dark text-2xl font-bold">Despre Noi</a>
-    <a href="#meniu" onclick="toggleMenu()" class="text-dark text-2xl font-bold">Meniu</a>
-    <a href="#galerie" onclick="toggleMenu()" class="text-dark text-2xl font-bold">Galerie</a>
-    <a href="#preturi" onclick="toggleMenu()" class="text-dark text-2xl font-bold">Prețuri</a>
-    <a href="#contact" onclick="toggleMenu()" class="text-dark text-2xl font-bold">Contact</a>
-    <button onclick="toggleMenu();openBooking()" class="mt-4 px-8 py-3 bg-gradient-to-r from-candy-pink to-candy-yellow text-white font-bold rounded-xl">
-        Programează-te Acum! 🎉
-    </button>
-</div>
+    <a href="#despre" onclick="closeMobile()" class="text-2xl font-bold text-dark hover:text-candy-pink transition-colors">Despre</a>
+    <a href="#meniu" onclick="closeMobile()" class="text-2xl font-bold text-dark hover:text-candy-pink transition-colors">Meniu</a>
+    <a href="#galerie" onclick="closeMobile()" class="text-2xl font-bold text-dark hover:text-candy-pink transition-colors">Galerie</a>
+    <a href="#contact" onclick="closeMobile()" class="text-2xl font-bold text-dark hover:text-candy-pink transition-colors">Contact</a>
+    <a href="#rezervari" onclick="closeMobile()" class="bg-gradient-to-r from-candy-pink to-candy-orange text-white px-8 py-4 rounded-2xl font-bold">Rezervă un loc</a>
+  </div>
 
-<!-- ========== HERO ========== -->
-<section id="acasa" class="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
-    <!-- Background -->
-    <div class="absolute inset-0 bg-gradient-to-br from-sky-100 via-purple-50 to-pink-50"></div>
-
-    <!-- Decorative elements -->
-    <div class="absolute top-20 left-10 w-32 h-32 bg-candy-pink/10 rounded-full blur-2xl float"></div>
-    <div class="absolute top-40 right-20 w-40 h-40 bg-candy-blue/10 rounded-full blur-2xl float-slow"></div>
-    <div class="absolute bottom-20 left-1/4 w-24 h-24 bg-candy-yellow/10 rounded-full blur-xl float"></div>
-    <div class="absolute bottom-40 right-1/3 w-20 h-20 bg-candy-green/10 rounded-full blur-xl float-slow"></div>
-
-    <!-- Floating emojis -->
-    <div class="absolute top-32 left-[15%] text-5xl float" style="animation-delay:0.5s">🎈</div>
-    <div class="absolute top-48 right-[20%] text-4xl float-slow" style="animation-delay:1s">🎠</div>
-    <div class="absolute bottom-32 left-[25%] text-4xl float" style="animation-delay:1.5s">🧸</div>
-    <div class="absolute bottom-48 right-[15%] text-5xl float-slow" style="animation-delay:0.3s">🎪</div>
-    <div class="absolute top-64 left-[8%] text-3xl bounce-anim" style="animation-delay:2s">⭐</div>
-    <div class="absolute top-36 left-[60%] text-3xl bounce-anim" style="animation-delay:1.2s">🎀</div>
-    <div class="absolute bottom-64 right-[8%] text-3xl bounce-anim" style="animation-delay:0.7s">🌈</div>
-
-    <div class="relative z-10 text-center px-6 max-w-5xl mx-auto">
-        <div class="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-white/80 shadow-md text-sm font-bold text-sky-600 mb-8">
-            <span class="wiggle inline-block">🎉</span>
-            Cel mai mare teren de joacă din Soroca
+  <!-- Hero Section -->
+  <section class="hero-bg relative overflow-hidden py-20 md:py-32">
+    <div class="shape-1" style="top: 10%; right: 5%;"></div>
+    <div class="shape-2" style="bottom: 20%; left: -5%;"></div>
+    <div class="shape-3" style="top: 50%; right: 30%;"></div>
+    
+    <div class="relative max-w-6xl mx-auto px-6">
+      <div class="text-center">
+        <!-- Badge with live open/closed status -->
+        <div class="inline-flex items-center gap-2 bg-white rounded-full px-5 py-2 shadow-md mb-8">
+          <iconify-icon icon="lucide:map-pin" width="16" class="text-candy-pink"></iconify-icon>
+          <span class="text-sm font-bold text-gray-600">Soroca, Moldova</span>
+          <span class="w-2 h-2 bg-candy-green rounded-full animate-pulse"></span>
+          <span id="openStatusBadge" class="text-sm font-bold text-candy-green">Se verifică...</span>
         </div>
-
-        <h1 class="text-5xl sm:text-7xl lg:text-8xl font-black tracking-tight leading-[1.05] mb-6">
-            <span class="text-dark">Sky</span>
-            <span class="rainbow-text"> Kids</span>
-            <br>
-            <span class="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-500">Distracție pentru Copii</span>
-            <br>
-            <span class="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-400">Relaxare pentru Părinți</span>
+        
+        <!-- Headline -->
+        <h1 class="font-black text-5xl md:text-7xl lg:text-8xl text-dark leading-tight mb-6">
+          <span class="gradient-text">Sky Kids</span> Soroca
         </h1>
-
-        <p class="text-lg sm:text-xl text-gray-500 max-w-2xl mx-auto mb-10 leading-relaxed">
-            Un univers magic unde copiii de la <strong class="text-candy-pink">1 la 12 ani</strong> se pot juca nesfârșit, iar părinții se pot relaxa cu o cafea bună și mâncare delicioasă 🍕☕
+        
+        <!-- Subheadline -->
+        <p class="text-xl md:text-2xl text-gray-500 max-w-2xl mx-auto mb-10 leading-relaxed">
+          Zonă de joacă profesională + bucătărie delicioasă.<br>
+          Copiii se distrează, părinții se relaxează!
         </p>
-
-        <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <button onclick="openBooking()" class="group px-8 py-4 bg-gradient-to-r from-candy-pink via-candy-purple to-candy-blue text-white font-bold rounded-2xl hover:brightness-110 transition-all shadow-xl shadow-pink-200/50 text-lg flex items-center gap-2">
-                <iconify-icon icon="lucide:calendar-heart" width="22"></iconify-icon>
-                Programează o Vizită
-            </button>
-            <a href="#despre" class="group px-8 py-4 border-2 border-sky-200 text-sky-600 font-bold rounded-2xl hover:bg-sky-50 transition-all text-lg flex items-center gap-2">
-                Descoperă Mai Mult
-                <iconify-icon icon="lucide:arrow-down" width="20" class="group-hover:translate-y-1 transition-transform"></iconify-icon>
-            </a>
+        
+        <!-- CTA Buttons -->
+        <div class="flex flex-col sm:flex-row gap-4 justify-center mb-16">
+          <a href="#rezervari" class="bg-gradient-to-r from-candy-pink to-candy-orange text-white px-8 py-4 rounded-2xl font-bold text-lg shadow-lg hover:shadow-xl transition-all inline-flex items-center justify-center gap-2">
+            <iconify-icon icon="lucide:calendar" width="20"></iconify-icon>
+            Rezervă un loc
+          </a>
+          <a href="#meniu" class="bg-white text-dark px-8 py-4 rounded-2xl font-bold text-lg shadow-md hover:shadow-lg transition-all border-2 border-gray-100 hover:border-candy-pink inline-flex items-center justify-center gap-2">
+            <iconify-icon icon="lucide:utensils" width="20"></iconify-icon>
+            Vezi meniul
+          </a>
         </div>
-
+        
         <!-- Stats -->
-        <div class="mt-16 grid grid-cols-2 sm:grid-cols-4 gap-6 max-w-2xl mx-auto">
-            <div class="bg-white/80 rounded-2xl p-4 shadow-md">
-                <div class="text-3xl font-black rainbow-text">500m²</div>
-                <div class="text-xs text-gray-400 font-bold mt-1">Teren de Joacă</div>
-            </div>
-            <div class="bg-white/80 rounded-2xl p-4 shadow-md">
-                <div class="text-3xl font-black text-candy-pink">1-12</div>
-                <div class="text-xs text-gray-400 font-bold mt-1">Ani</div>
-            </div>
-            <div class="bg-white/80 rounded-2xl p-4 shadow-md">
-                <div class="text-3xl font-black text-sky-500">10-22</div>
-                <div class="text-xs text-gray-400 font-bold mt-1">Program Zilnic</div>
-            </div>
-            <div class="bg-white/80 rounded-2xl p-4 shadow-md">
-                <div class="text-3xl font-black text-candy-green">100%</div>
-                <div class="text-xs text-gray-400 font-bold mt-1">Distracție</div>
-            </div>
+        <div class="grid grid-cols-3 gap-2 sm:gap-4 max-w-xl mx-auto">
+          <div class="stat-card">
+            <div class="text-4xl font-black text-candy-pink mb-1">1-12</div>
+            <div class="text-sm text-gray-400 font-medium">Ani</div>
+          </div>
+          <div class="stat-card">
+            <div class="text-4xl font-black text-candy-blue mb-1">100%</div>
+            <div class="text-sm text-gray-400 font-medium">Sigur</div>
+          </div>
+          <div class="stat-card">
+            <div class="text-4xl font-black text-candy-green mb-1">10-22</div>
+            <div class="text-sm text-gray-400 font-medium">Ore</div>
+          </div>
         </div>
+      </div>
     </div>
+  </section>
 
-    <!-- Wave divider -->
-    <div class="absolute bottom-0 left-0 right-0">
-        <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M0,60 C360,120 720,0 1080,60 C1260,90 1380,60 1440,40 L1440,120 L0,120 Z" fill="white"/>
-        </svg>
+  <!-- About Section -->
+  <section id="despre" class="py-24 relative">
+    <div class="max-w-6xl mx-auto px-6">
+      <div class="text-center mb-16 fade-up">
+        <span class="inline-block bg-candy-orange/10 text-candy-orange text-sm font-bold tracking-widest uppercase px-4 py-2 rounded-full mb-4">Despre Noi</span>
+        <h2 class="font-black text-4xl md:text-5xl text-dark">De ce să alegi Sky Kids?</h2>
+      </div>
+      
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+        <div class="card p-8 text-center fade-up" style="transition-delay: 0.1s">
+          <div class="feature-icon bg-gradient-to-br from-candy-pink to-candy-orange mx-auto mb-6 text-white shadow-lg">
+            <iconify-icon icon="lucide:gamepad-2" width="32"></iconify-icon>
+          </div>
+          <h3 class="font-bold text-xl text-dark mb-3">Zonă de Joacă Premium</h3>
+          <p class="text-gray-500 leading-relaxed">Echipamente sigure și verificate. Supraveghere permanentă de către personal calificat.</p>
+        </div>
+        
+        <div class="card p-8 text-center fade-up" style="transition-delay: 0.2s">
+          <div class="feature-icon bg-gradient-to-br from-candy-blue to-candy-purple mx-auto mb-6 text-white shadow-lg">
+            <iconify-icon icon="lucide:chef-hat" width="32"></iconify-icon>
+          </div>
+          <h3 class="font-bold text-xl text-dark mb-3">Bucătărie Delicioasă</h3>
+          <p class="text-gray-500 leading-relaxed">Preparate proaspete, făcute zilnic. Meniu variat — de la sushi și pizza la paste și salate proaspete.</p>
+        </div>
+        
+        <div class="card p-8 text-center fade-up" style="transition-delay: 0.3s">
+          <div class="feature-icon bg-gradient-to-br from-candy-green to-candy-blue mx-auto mb-6 text-white shadow-lg">
+            <iconify-icon icon="lucide:heart-handshake" width="32"></iconify-icon>
+          </div>
+          <h3 class="font-bold text-xl text-dark mb-3">Pentru Întreaga Familie</h3>
+          <p class="text-gray-500 leading-relaxed">Copiii se joacă în siguranță, părinții se relaxează cu o cafea sau o masă gustoasă.</p>
+        </div>
+      </div>
     </div>
-</section>
+  </section>
 
-<!-- ========== ABOUT ========== -->
-<section id="despre" class="py-24 bg-white">
-    <div class="max-w-7xl mx-auto px-6">
-        <div class="grid lg:grid-cols-2 gap-16 items-center">
-            <!-- Image side -->
-            <div class="relative fade-in">
-                <div class="aspect-[4/3] rounded-3xl overflow-hidden shadow-2xl shadow-sky-100">
-                    <img src="https://images.unsplash.com/photo-1566454544259-f4b94c3d758c?q=80&w=2670&auto=format&fit=crop"
-                         alt="Sky Kids teren de joacă" class="w-full h-full object-cover">
-                </div>
-                <!-- Floating badge -->
-                <div class="absolute -bottom-6 -right-6 bg-gradient-to-br from-candy-pink to-candy-purple text-white p-6 rounded-2xl shadow-xl">
-                    <div class="text-3xl">🎪</div>
-                    <div class="text-sm font-bold mt-1">Etajul 2</div>
-                </div>
-                <!-- Decorative circle -->
-                <div class="absolute -top-4 -left-4 w-20 h-20 bg-candy-yellow/20 rounded-full"></div>
-            </div>
+  <div class="section-divider max-w-6xl mx-auto"></div>
 
-            <!-- Text side -->
-            <div class="fade-in">
-                <span class="text-candy-pink text-xs font-bold tracking-widest uppercase">Despre Noi</span>
-                <h2 class="text-4xl sm:text-5xl font-black text-dark tracking-tight mt-3 mb-6">
-                    Un Loc Magic<br>
-                    <span class="rainbow-text">Pentru Toată Familia</span>
-                </h2>
-
-                <p class="text-gray-500 leading-relaxed mb-6">
-                    <strong class="text-dark">Sky Kids</strong> este cel mai mare și modern teren de joacă din Soroca, situat pe str. Ștefan cel Mare 46, la etajul 2. Am creat un spațiu unde copiii pot explora, se pot juca și socializa în siguranță, iar părinții pot relaxa.
-                </p>
-
-                <p class="text-gray-500 leading-relaxed mb-8">
-                    Oferim o experiență completă: de la labirinturi și tobogane pentru copii, la preparate delicioase și băuturi răcoritoare pentru adulți. 🎉
-                </p>
-
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="flex items-center gap-3 p-3 bg-sky-50 rounded-xl">
-                        <span class="text-2xl">🧗</span>
-                        <span class="text-sm font-bold text-dark">Labirint & Tobogan</span>
-                    </div>
-                    <div class="flex items-center gap-3 p-3 bg-pink-50 rounded-xl">
-                        <span class="text-2xl">🎂</span>
-                        <span class="text-sm font-bold text-dark">Zile de Naștere</span>
-                    </div>
-                    <div class="flex items-center gap-3 p-3 bg-purple-50 rounded-xl">
-                        <span class="text-2xl">☕</span>
-                        <span class="text-sm font-bold text-dark">Băuturi & Cafea</span>
-                    </div>
-                    <div class="flex items-center gap-3 p-3 bg-green-50 rounded-xl">
-                        <span class="text-2xl">🍕</span>
-                        <span class="text-sm font-bold text-dark">Restaurant Sky Kids</span>
-                    </div>
-                    <div class="flex items-center gap-3 p-3 bg-yellow-50 rounded-xl">
-                        <span class="text-2xl">🎵</span>
-                        <span class="text-sm font-bold text-dark">Muzică Vie</span>
-                    </div>
-                    <div class="flex items-center gap-3 p-3 bg-orange-50 rounded-xl">
-                        <span class="text-2xl">📶</span>
-                        <span class="text-sm font-bold text-dark">WiFi Gratuit</span>
-                    </div>
-                </div>
-            </div>
+  <!-- Menu Section -->
+  <section id="meniu" class="py-24 bg-white">
+    <div class="max-w-6xl mx-auto px-6">
+      <div class="text-center mb-12 fade-up">
+        <span class="inline-block bg-candy-pink/10 text-candy-pink text-sm font-bold tracking-widest uppercase px-4 py-2 rounded-full mb-4">Bucătărie</span>
+        <h2 class="font-black text-4xl md:text-5xl text-dark mb-4">Meniul Nostru</h2>
+        <p class="text-gray-500 text-lg">apasă pe orice produs pentru detalii complete</p>
+      </div>
+      
+      <div id="categoryTabs" class="flex flex-wrap justify-center gap-3 mb-12 fade-up"></div>
+      <div id="menuGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6"></div>
+      <div id="menuLoading" class="text-center py-16">
+        <div class="spinner mx-auto mb-4"></div>
+        <p class="text-gray-400 font-medium">Se încarcă meniul...</p>
+      </div>
+      <div id="menuEmpty" class="hidden text-center py-16">
+        <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <iconify-icon icon="lucide:utensils" width="36" class="text-gray-300"></iconify-icon>
         </div>
+        <p class="text-gray-400 font-medium text-lg">Nicio categorie disponibilă momentan</p>
+      </div>
     </div>
-</section>
+  </section>
 
-<!-- ========== MENU ========== -->
-<section id="meniu" class="py-24 bg-gradient-to-b from-white via-sky-50 to-white">
-    <div class="max-w-7xl mx-auto px-6">
-        <div class="text-center mb-12 fade-in">
-            <span class="text-candy-orange text-xs font-bold tracking-widest uppercase">Bucătărie</span>
-            <h2 class="text-4xl sm:text-5xl font-black text-dark tracking-tight mt-3 mb-4">Meniul Nostru</h2>
-            <p class="text-gray-400 max-w-xl mx-auto">De la sushi și pizza la preparate pe grătar — avem ceva pentru fiecare gust!</p>
-        </div>
+  <div class="section-divider max-w-6xl mx-auto"></div>
 
-        <!-- Category tabs — Pizza Pe Vatra style -->
-        <div class="sticky top-20 z-30 bg-white/90 backdrop-blur-lg py-4 -mx-6 px-6 mb-10 shadow-sm">
-            <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-hide" id="categoryTabs">
-                <button onclick="showCategory('sushi')" class="cat-tab active whitespace-nowrap px-5 py-2.5 rounded-full text-sm font-bold bg-sky-500 text-white transition-all shadow-md" data-cat="sushi">🍣 Sushi</button>
-                <button onclick="showCategory('sushi-set')" class="cat-tab whitespace-nowrap px-5 py-2.5 rounded-full text-sm font-bold bg-gray-100 text-gray-600 hover:bg-sky-100 transition-all" data-cat="sushi-set">🍱 Seturi Sushi</button>
-                <button onclick="showCategory('sushi-burger')" class="cat-tab whitespace-nowrap px-5 py-2.5 rounded-full text-sm font-bold bg-gray-100 text-gray-600 hover:bg-sky-100 transition-all" data-cat="sushi-burger">🍔 Sushi Burger</button>
-                <button onclick="showCategory('burger')" class="cat-tab whitespace-nowrap px-5 py-2.5 rounded-full text-sm font-bold bg-gray-100 text-gray-600 hover:bg-sky-100 transition-all" data-cat="burger">🍔 Burger</button>
-                <button onclick="showCategory('legume')" class="cat-tab whitespace-nowrap px-5 py-2.5 rounded-full text-sm font-bold bg-gray-100 text-gray-600 hover:bg-sky-100 transition-all" data-cat="legume">🥦 Legume</button>
-                <button onclick="showCategory('antipasti')" class="cat-tab whitespace-nowrap px-5 py-2.5 rounded-full text-sm font-bold bg-gray-100 text-gray-600 hover:bg-sky-100 transition-all" data-cat="antipasti">🧀 Antipasti</button>
-                <button onclick="showCategory('paste')" class="cat-tab whitespace-nowrap px-5 py-2.5 rounded-full text-sm font-bold bg-gray-100 text-gray-600 hover:bg-sky-100 transition-all" data-cat="paste">🍝 Paste</button>
-                <button onclick="showCategory('coltunasi')" class="cat-tab whitespace-nowrap px-5 py-2.5 rounded-full text-sm font-bold bg-gray-100 text-gray-600 hover:bg-sky-100 transition-all" data-cat="coltunasi">🥟 Colțunași</button>
-                <button onclick="showCategory('clatite')" class="cat-tab whitespace-nowrap px-5 py-2.5 rounded-full text-sm font-bold bg-gray-100 text-gray-600 hover:bg-sky-100 transition-all" data-cat="clatite">🥞 Clătite</button>
-                <button onclick="showCategory('pizza')" class="cat-tab whitespace-nowrap px-5 py-2.5 rounded-full text-sm font-bold bg-gray-100 text-gray-600 hover:bg-sky-100 transition-all" data-cat="pizza">🍕 Pizza</button>
-                <button onclick="showCategory('fries')" class="cat-tab whitespace-nowrap px-5 py-2.5 rounded-full text-sm font-bold bg-gray-100 text-gray-600 hover:bg-sky-100 transition-all" data-cat="fries">🍟 Fries</button>
-                <button onclick="showCategory('sosuri')" class="cat-tab whitespace-nowrap px-5 py-2.5 rounded-full text-sm font-bold bg-gray-100 text-gray-600 hover:bg-sky-100 transition-all" data-cat="sosuri">🥫 Sosuri</button>
-                <button onclick="showCategory('carne')" class="cat-tab whitespace-nowrap px-5 py-2.5 rounded-full text-sm font-bold bg-gray-100 text-gray-600 hover:bg-sky-100 transition-all" data-cat="carne">🥩 Carne</button>
-                <button onclick="showCategory('salate')" class="cat-tab whitespace-nowrap px-5 py-2.5 rounded-full text-sm font-bold bg-gray-100 text-gray-600 hover:bg-sky-100 transition-all" data-cat="salate">🥗 Salate</button>
-                <button onclick="showCategory('seafood')" class="cat-tab whitespace-nowrap px-5 py-2.5 rounded-full text-sm font-bold bg-gray-100 text-gray-600 hover:bg-sky-100 transition-all" data-cat="seafood">🦞 Seafood</button>
-            </div>
-        </div>
-
-        <!-- ============ SUSHI ============ -->
-        <div class="menu-category" id="cat-sushi">
-            <div class="flex items-center gap-3 mb-8">
-                <span class="text-3xl">🍣</span>
-                <h3 class="text-2xl font-black text-dark">Asian Menu — Sushi</h3>
-            </div>
-            <div class="menu-carousel" id="grid-sushi">
-                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
-                    <img src="poze/sushi-individual.jpg" alt="Philadelphia" class="w-full h-32 object-cover rounded-lg mb-3">
-                    <div><h4 class="font-bold text-dark text-lg">Philadelphia</h4><p class="text-gray-400 text-sm mt-1">Somon, castraveți, avocado, cremă de brânză</p></div>
-                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">140 lei</span></div>
-                <div class="see-all-card flex items-center justify-center bg-gradient-to-br from-sky-50 to-sky-100 rounded-xl border-2 border-dashed border-sky-300 cursor-pointer hover:bg-sky-100 transition-all min-h-[160px]" onclick="expandCategory(this)">
-                    <div class="text-center">
-                        <iconify-icon icon="lucide:chevrons-right" width="28" class="text-sky-400"></iconify-icon>
-                        <p class="text-sky-500 font-bold text-sm mt-2">toate opțiunile</p>
-                    </div>
-                </div>
-                </div>
-                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
-                    <img src="poze/platou-sushi-375.jpg" alt="Tempura cu somon" class="w-full h-32 object-cover rounded-lg mb-3">
-                    <div><h4 class="font-bold text-dark text-lg">Tempura cu somon</h4><p class="text-gray-400 text-sm mt-1">Somon, cremă de brânză, castraveți, avocado, sos unagi</p></div>
-                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">150 lei</span></div>
-                </div>
-                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
-                    <img src="poze/platou-sushi-375.jpg" alt="Tempura cu creveți" class="w-full h-32 object-cover rounded-lg mb-3">
-                    <div><h4 class="font-bold text-dark text-lg">Tempura cu creveți</h4><p class="text-gray-400 text-sm mt-1">Creveți, cremă de brânză, castraveți, avocado, sos unagi</p></div>
-                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">160 lei</span></div>
-                </div>
-                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
-                    <img src="poze/platou-sushi-750.jpg" alt="California cu crab" class="w-full h-32 object-cover rounded-lg mb-3">
-                    <div><h4 class="font-bold text-dark text-lg">California cu crab</h4><p class="text-gray-400 text-sm mt-1">Crab, castraveți, avocado, cremă de brânză, masago roșu, sos spicy</p></div>
-                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">160 lei</span></div>
-                </div>
-                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
-                    <img src="poze/platou-sushi-750.jpg" alt="California cu creveți" class="w-full h-32 object-cover rounded-lg mb-3">
-                    <div><h4 class="font-bold text-dark text-lg">California cu creveți</h4><p class="text-gray-400 text-sm mt-1">Creveți, castraveți, avocado, cremă de brânză, masago roșu, sos unagi</p></div>
-                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">160 lei</span></div>
-                </div>
-                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
-                    <div><h4 class="font-bold text-dark text-lg"><img src="poze/sushi-individual.jpg" alt="California cu somon/tipar" class="w-full h-32 object-cover rounded-lg mb-3">California cu somon/tipar</h4><p class="text-gray-400 text-sm mt-1">Somon/tipar, cremă de brânză, castraveți, avocado, susan, sos spicy</p></div>
-                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">140 lei</span></div>
-                </div>
-                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
-                    <img src="poze/sushi-individual.jpg" alt="Canada" class="w-full h-32 object-cover rounded-lg mb-3">
-                    <div><h4 class="font-bold text-dark text-lg">Canada</h4><p class="text-gray-400 text-sm mt-1">Somon, cremă de brânză, avocado, susan, sos unagi</p></div>
-                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">130 lei</span></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ============ SUSHI SET ============ -->
-        <div class="menu-category hidden" id="cat-sushi-set">
-            <div class="flex items-center gap-3 mb-8">
-                <span class="text-3xl">🍱</span>
-                <h3 class="text-2xl font-black text-dark">Sushi Set</h3>
-            </div>
-            <div class="menu-carousel">
-                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
-                    <div><h4 class="font-bold text-dark text-lg"><img src="poze/platou-sushi-375.jpg" alt="Set Family Sushi" class="w-full h-32 object-cover rounded-lg mb-3">Set Family Sushi</h4><p class="text-gray-400 text-sm mt-1">Philadelphia, tempura cu somon, tempura cu creveți, tempura cu tipar, roll dublu</p></div>
-                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">750 lei</span></div>
-                <div class="see-all-card flex items-center justify-center bg-gradient-to-br from-sky-50 to-sky-100 rounded-xl border-2 border-dashed border-sky-300 cursor-pointer hover:bg-sky-100 transition-all min-h-[160px]" onclick="expandCategory(this)">
-                    <div class="text-center">
-                        <iconify-icon icon="lucide:chevrons-right" width="28" class="text-sky-400"></iconify-icon>
-                        <p class="text-sky-500 font-bold text-sm mt-2">toate opțiunile</p>
-                    </div>
-                </div>
-                </div>
-                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
-                    <div><h4 class="font-bold text-dark text-lg"><img src="poze/platou-sushi-375.jpg" alt="Mini Set Family Sushi" class="w-full h-32 object-cover rounded-lg mb-3">Mini Set Family Sushi</h4><p class="text-gray-400 text-sm mt-1">Philadelphia, tempura cu somon, tempura cu creveți, tempura cu tipar, roll dublu</p></div>
-                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">375 lei</span></div>
-                </div>
-                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
-                    <img src="poze/sushi-individual.jpg" alt="Philadelphia" class="w-full h-32 object-cover rounded-lg mb-3">
-                    <div><h4 class="font-bold text-dark text-lg">Philadelphia Set</h4><p class="text-gray-400 text-sm mt-1">Philadelphia clasic, Philadelphia tipar, Philadelphia dublu</p></div>
-                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">440 lei</span></div>
-                </div>
-                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
-                    <div><h4 class="font-bold text-dark text-lg"><img src="poze/platou-sushi-750.jpg" alt="Californian Set" class="w-full h-32 object-cover rounded-lg mb-3">Californian Set</h4><p class="text-gray-400 text-sm mt-1">California cu crab, california cu creveți, california cu somon, california cu tipar</p></div>
-                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">170 lei</span></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ============ SUSHI BURGER ============ -->
-        <div class="menu-category hidden" id="cat-sushi-burger">
-            <div class="flex items-center gap-3 mb-8">
-                <span class="text-3xl">🍔</span>
-                <h3 class="text-2xl font-black text-dark">Sushi Burger</h3>
-            </div>
-            <div class="menu-carousel">
-                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
-                    <div><h4 class="font-bold text-dark text-lg"><img src="poze/sushi-burger-combo.jpg" alt="Sushi burger cu somon" class="w-full h-32 object-cover rounded-lg mb-3">Sushi burger cu somon</h4><p class="text-gray-400 text-sm mt-1">Somon, salată, castraveți, icre masago, cașcaval cheddar</p><span class="text-xs text-gray-300">400g</span></div>
-                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">170 lei</span></div>
-                <div class="see-all-card flex items-center justify-center bg-gradient-to-br from-sky-50 to-sky-100 rounded-xl border-2 border-dashed border-sky-300 cursor-pointer hover:bg-sky-100 transition-all min-h-[160px]" onclick="expandCategory(this)">
-                    <div class="text-center">
-                        <iconify-icon icon="lucide:chevrons-right" width="28" class="text-sky-400"></iconify-icon>
-                        <p class="text-sky-500 font-bold text-sm mt-2">toate opțiunile</p>
-                    </div>
-                </div>
-                </div>
-                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
-                    <div><h4 class="font-bold text-dark text-lg">Sushi burger cu creveți</h4><p class="text-gray-400 text-sm mt-1">Creveți, salată, castraveți, avocado, icre masago, cremă de brânză, cașcaval cheddar</p><span class="text-xs text-gray-300">400g</span></div>
-                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">190 lei</span></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ============ BURGER ============ -->
-        <div class="menu-category hidden" id="cat-burger">
-            <div class="flex items-center gap-3 mb-8">
-                <span class="text-3xl">🍔</span>
-                <h3 class="text-2xl font-black text-dark">Burger</h3>
-            </div>
-            <div class="menu-carousel">
-                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
-                    <div><h4 class="font-bold text-dark text-lg"><img src="poze/crispy-black-burger.jpg" alt="Crispy Black Burger" class="w-full h-32 object-cover rounded-lg mb-3">Crispy Black Burger</h4><p class="text-gray-400 text-sm mt-1">Cotlet de pui/vită/porc/crispy, chiflă neagră, roșii, ceapă marinată, salată, sos ketchup, cartofi pai</p></div>
-                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">140 lei</span></div>
-                <div class="see-all-card flex items-center justify-center bg-gradient-to-br from-sky-50 to-sky-100 rounded-xl border-2 border-dashed border-sky-300 cursor-pointer hover:bg-sky-100 transition-all min-h-[160px]" onclick="expandCategory(this)">
-                    <div class="text-center">
-                        <iconify-icon icon="lucide:chevrons-right" width="28" class="text-sky-400"></iconify-icon>
-                        <p class="text-sky-500 font-bold text-sm mt-2">toate opțiunile</p>
-                    </div>
-                </div>
-                </div>
-                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
-                    <div><h4 class="font-bold text-dark text-lg"><img src="poze/platou-skykids.jpg" alt="Clasic Burger" class="w-full h-32 object-cover rounded-lg mb-3">Clasic Burger</h4><p class="text-gray-400 text-sm mt-1">Cotlet de pui/vită/porc/crispy, chiflă albă, roșii, ceapă marinată, salată, sos</p></div>
-                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">150 lei</span></div>
-                </div>
-                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between border-2 border-candy-yellow/40">
-                    <div><span class="inline-block bg-candy-yellow text-dark text-xs font-bold px-2 py-0.5 rounded-full mb-2">PENTRU COPII</span><h4 class="font-bold text-dark text-lg"><img src="poze/platou-mini-skykids.jpg" alt="Kids Burger" class="w-full h-32 object-cover rounded-lg mb-3">Kids Burger</h4><p class="text-gray-400 text-sm mt-1">Cotlet de pui, chiflă albă, roșii, ceapă marinată, salată, sos</p></div>
-                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">80 lei</span></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ============ LEGUME ============ -->
-        <div class="menu-category hidden" id="cat-legume">
-            <div class="flex items-center gap-3 mb-8">
-                <span class="text-3xl">🥦</span>
-                <h3 class="text-2xl font-black text-dark">Legume</h3>
-            </div>
-            <div class="menu-carousel">
-                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
-                    <div><h4 class="font-bold text-dark text-lg"><img src="poze/somon-la-gratar.jpg" alt="Legume la grătar" class="w-full h-32 object-cover rounded-lg mb-3">Legume la grătar</h4><p class="text-gray-400 text-sm mt-1">Roșii cherry, ciuperci, dovlecel, ardei</p></div>
-                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">70 lei</span></div>
-                <div class="see-all-card flex items-center justify-center bg-gradient-to-br from-sky-50 to-sky-100 rounded-xl border-2 border-dashed border-sky-300 cursor-pointer hover:bg-sky-100 transition-all min-h-[160px]" onclick="expandCategory(this)">
-                    <div class="text-center">
-                        <iconify-icon icon="lucide:chevrons-right" width="28" class="text-sky-400"></iconify-icon>
-                        <p class="text-sky-500 font-bold text-sm mt-2">toate opțiunile</p>
-                    </div>
-                </div>
-                </div>
-                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
-                    <div><h4 class="font-bold text-dark text-lg"><img src="poze/salata-gourmet.jpg" alt="Legume proaspete" class="w-full h-32 object-cover rounded-lg mb-3">Legume proaspete</h4><p class="text-gray-400 text-sm mt-1">Castraveți, ardei, morcov</p></div>
-                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">120 lei</span></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ============ ANTIPASTI ============ -->
-        <div class="menu-category hidden" id="cat-antipasti">
-            <div class="flex items-center gap-3 mb-8">
-                <span class="text-3xl">🧀</span>
-                <h3 class="text-2xl font-black text-dark">Antipasti</h3>
-            </div>
-            <div class="menu-carousel">
-                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
-                    <div><h4 class="font-bold text-dark text-lg"><img src="poze/antipasti.jpg" alt="Antipasti" class="w-full h-32 object-cover rounded-lg mb-3">Antipasti</h4><p class="text-gray-400 text-sm mt-1">Prosciutto crudo, mortadella, salami Milano, brie, gorgonzola, grissini, miere, nucă de cocos, struguri</p></div>
-                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">300 lei</span></div>
-                <div class="see-all-card flex items-center justify-center bg-gradient-to-br from-sky-50 to-sky-100 rounded-xl border-2 border-dashed border-sky-300 cursor-pointer hover:bg-sky-100 transition-all min-h-[160px]" onclick="expandCategory(this)">
-                    <div class="text-center">
-                        <iconify-icon icon="lucide:chevrons-right" width="28" class="text-sky-400"></iconify-icon>
-                        <p class="text-sky-500 font-bold text-sm mt-2">toate opțiunile</p>
-                    </div>
-                </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ============ PASTE ============ -->
-        <div class="menu-category hidden" id="cat-paste">
-            <div class="flex items-center gap-3 mb-8">
-                <span class="text-3xl">🍝</span>
-                <h3 class="text-2xl font-black text-dark">Paste</h3>
-            </div>
-            <div class="menu-carousel">
-                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
-                    <div><h4 class="font-bold text-dark text-lg"><img src="poze/platou-skykids.jpg" alt="Paste Carbonara" class="w-full h-32 object-cover rounded-lg mb-3">Paste Carbonara</h4><p class="text-gray-400 text-sm mt-1">Paste, piept de pui, șuncă, ciuperci, frișcă, parmezan</p><span class="text-xs text-gray-300">250g</span></div>
-                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">140 lei</span></div>
-                <div class="see-all-card flex items-center justify-center bg-gradient-to-br from-sky-50 to-sky-100 rounded-xl border-2 border-dashed border-sky-300 cursor-pointer hover:bg-sky-100 transition-all min-h-[160px]" onclick="expandCategory(this)">
-                    <div class="text-center">
-                        <iconify-icon icon="lucide:chevrons-right" width="28" class="text-sky-400"></iconify-icon>
-                        <p class="text-sky-500 font-bold text-sm mt-2">toate opțiunile</p>
-                    </div>
-                </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ============ COLȚUNAȘI ============ -->
-        <div class="menu-category hidden" id="cat-coltunasi">
-            <div class="flex items-center gap-3 mb-8">
-                <span class="text-3xl">🥟</span>
-                <h3 class="text-2xl font-black text-dark">Colțunași</h3>
-            </div>
-            <div class="menu-carousel">
-                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
-                    <div><h4 class="font-bold text-dark text-lg"><img src="poze/platou-skykids.jpg" alt="Colțunași cu brânză" class="w-full h-32 object-cover rounded-lg mb-3">Colțunași cu brânză</h4><span class="text-xs text-gray-300">250g</span></div>
-                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">85 lei</span></div>
-                <div class="see-all-card flex items-center justify-center bg-gradient-to-br from-sky-50 to-sky-100 rounded-xl border-2 border-dashed border-sky-300 cursor-pointer hover:bg-sky-100 transition-all min-h-[160px]" onclick="expandCategory(this)">
-                    <div class="text-center">
-                        <iconify-icon icon="lucide:chevrons-right" width="28" class="text-sky-400"></iconify-icon>
-                        <p class="text-sky-500 font-bold text-sm mt-2">toate opțiunile</p>
-                    </div>
-                </div>
-                </div>
-                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
-                    <div><h4 class="font-bold text-dark text-lg"><img src="poze/clatite-dulci.jpg" alt="Colțunași cu cartofi" class="w-full h-32 object-cover rounded-lg mb-3">Colțunași cu cartofi</h4><p class="text-gray-400 text-sm mt-1">Colțunași cu cartofi, ceapă prăjită</p><span class="text-xs text-gray-300">250g</span></div>
-                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">85 lei</span></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ============ CLĂTITE ============ -->
-        <div class="menu-category hidden" id="cat-clatite">
-            <div class="flex items-center gap-3 mb-8">
-                <span class="text-3xl">🥞</span>
-                <h3 class="text-2xl font-black text-dark">Clătite</h3>
-            </div>
-            <div class="menu-carousel">
-                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
-                    <div><h4 class="font-bold text-dark text-lg"><img src="poze/platou-skykids.jpg" alt="Clătite dulci" class="w-full h-32 object-cover rounded-lg mb-3">Clătite dulci</h4></div>
-                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">250 lei</span></div>
-                <div class="see-all-card flex items-center justify-center bg-gradient-to-br from-sky-50 to-sky-100 rounded-xl border-2 border-dashed border-sky-300 cursor-pointer hover:bg-sky-100 transition-all min-h-[160px]" onclick="expandCategory(this)">
-                    <div class="text-center">
-                        <iconify-icon icon="lucide:chevrons-right" width="28" class="text-sky-400"></iconify-icon>
-                        <p class="text-sky-500 font-bold text-sm mt-2">toate opțiunile</p>
-                    </div>
-                </div>
-                </div>
-                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
-                    <div><h4 class="font-bold text-dark text-lg"><img src="poze/cartofi-pai.jpg" alt="Clătite sărate" class="w-full h-32 object-cover rounded-lg mb-3">Clătite sărate</h4></div>
-                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">250 lei</span></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ============ PIZZA ============ -->
-        <div class="menu-category hidden" id="cat-pizza">
-            <div class="flex items-center gap-3 mb-8">
-                <span class="text-3xl">🍕</span>
-                <h3 class="text-2xl font-black text-dark">Pizza</h3>
-            </div>
-            <div class="menu-carousel">
-                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
-                    <div><h4 class="font-bold text-dark text-lg"><img src="poze/platou-skykids.jpg" alt="Margherita" class="w-full h-32 object-cover rounded-lg mb-3">Margherita</h4><p class="text-gray-400 text-sm mt-1">Sos roșu, mozzarella, parmezan, sos pesto</p></div>
-                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">100 lei</span></div>
-                <div class="see-all-card flex items-center justify-center bg-gradient-to-br from-sky-50 to-sky-100 rounded-xl border-2 border-dashed border-sky-300 cursor-pointer hover:bg-sky-100 transition-all min-h-[160px]" onclick="expandCategory(this)">
-                    <div class="text-center">
-                        <iconify-icon icon="lucide:chevrons-right" width="28" class="text-sky-400"></iconify-icon>
-                        <p class="text-sky-500 font-bold text-sm mt-2">toate opțiunile</p>
-                    </div>
-                </div>
-                </div>
-                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
-                    <div><h4 class="font-bold text-dark text-lg"><img src="poze/platou-skykids.jpg" alt="Quattro formaggi" class="w-full h-32 object-cover rounded-lg mb-3">Quattro formaggi</h4><p class="text-gray-400 text-sm mt-1">Sos roșu, mozzarella, brie, gorgonzola, parmezan</p></div>
-                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">150 lei</span></div>
-                </div>
-                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
-                    <div><h4 class="font-bold text-dark text-lg"><img src="poze/platou-skykids.jpg" alt="Pepperoni" class="w-full h-32 object-cover rounded-lg mb-3">Pepperoni</h4><p class="text-gray-400 text-sm mt-1">Sos roșu, salam, mozzarella, porumb</p></div>
-                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">140 lei</span></div>
-                </div>
-                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
-                    <div><h4 class="font-bold text-dark text-lg"><img src="poze/platou-skykids.jpg" alt="Neapolitana" class="w-full h-32 object-cover rounded-lg mb-3">Neapolitana</h4><p class="text-gray-400 text-sm mt-1">Șuncă, ciuperci, măsline, mozzarella</p></div>
-                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">140 lei</span></div>
-                </div>
-                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
-                    <div><h4 class="font-bold text-dark text-lg"><img src="poze/platou-skykids.jpg" alt="Carnivora" class="w-full h-32 object-cover rounded-lg mb-3">Carnivora</h4><p class="text-gray-400 text-sm mt-1">Sos roșu, șuncă, piept de pui, mozzarella, sos BBQ</p></div>
-                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">160 lei</span></div>
-                </div>
-                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
-                    <div><h4 class="font-bold text-dark text-lg"><img src="poze/platou-familie.jpg" alt="Family" class="w-full h-32 object-cover rounded-lg mb-3">Family</h4><p class="text-gray-400 text-sm mt-1">Sos roșu, mozzarella, șuncă, salami, bacon, piept de pui, cârnaciori BBQ</p></div>
-                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">140 lei</span></div>
-                </div>
-                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between border-2 border-candy-yellow/40">
-                    <div><span class="inline-block bg-candy-yellow text-dark text-xs font-bold px-2 py-0.5 rounded-full mb-2">PENTRU COPII</span><h4 class="font-bold text-dark text-lg"><img src="poze/platou-mini-skykids.jpg" alt="Kids pizza" class="w-full h-32 object-cover rounded-lg mb-3">Kids pizza</h4><p class="text-gray-400 text-sm mt-1">Sos roșu, piept de pui, mozzarella, parmezan</p></div>
-                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">130 lei</span></div>
-                </div>
-                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
-                    <div><h4 class="font-bold text-dark text-lg"><img src="poze/platou-skykids.jpg" alt="Capricciosa" class="w-full h-32 object-cover rounded-lg mb-3">Capricciosa</h4><p class="text-gray-400 text-sm mt-1">Vânătă, brânză de oi, mozzarella, șuncă, ciuperci marinate</p></div>
-                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">150 lei</span></div>
-                </div>
-                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
-                    <div><h4 class="font-bold text-dark text-lg"><img src="poze/platou-skykids.jpg" alt="Carbonara" class="w-full h-32 object-cover rounded-lg mb-3">Carbonara</h4><p class="text-gray-400 text-sm mt-1">Sos alb, mozzarella, bacon, gălbenuș, parmezan, piper negru</p></div>
-                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">150 lei</span></div>
-                </div>
-                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
-                    <div><h4 class="font-bold text-dark text-lg"><img src="poze/crispy-black-burger.jpg" alt="Pizza Sky Kids" class="w-full h-32 object-cover rounded-lg mb-3">Pizza Sky Kids</h4><p class="text-gray-400 text-sm mt-1">Sos roșu, mozzarella, salami, piept de pui</p></div>
-                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">140 lei</span></div>
-                </div>
-                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
-                    <div><h4 class="font-bold text-dark text-lg"><img src="poze/antipasti.jpg" alt="Prosciutto Crudo" class="w-full h-32 object-cover rounded-lg mb-3">Prosciutto Crudo</h4><p class="text-gray-400 text-sm mt-1">Sos roșu, prosciutto, mozzarella, parmezan, pesto, cherry, rucola</p></div>
-                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">170 lei</span></div>
-                </div>
-                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
-                    <div><h4 class="font-bold text-dark text-lg"><img src="poze/platou-skykids.jpg" alt="Diavola 🌶️" class="w-full h-32 object-cover rounded-lg mb-3">Diavola 🌶️</h4><p class="text-gray-400 text-sm mt-1">Sos roșu, mozzarella, napoli picant, sos iute, parmezan</p></div>
-                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">140 lei</span></div>
-                </div>
-                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
-                    <div><h4 class="font-bold text-dark text-lg"><img src="poze/platou-skykids.jpg" alt="Tonno" class="w-full h-32 object-cover rounded-lg mb-3">Tonno</h4><p class="text-gray-400 text-sm mt-1">Ton, ceapă marinată, mozzarella, rucola, parmezan</p></div>
-                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">140 lei</span></div>
-                </div>
-                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
-                    <div><h4 class="font-bold text-dark text-lg"><img src="poze/platou-marin.jpg" alt="Pizza Del Mare" class="w-full h-32 object-cover rounded-lg mb-3">Pizza Del Mare</h4><p class="text-gray-400 text-sm mt-1">Creveți, midii, calmar, somon, sos de usturoi</p></div>
-                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">170 lei</span></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ============ FRIES ============ -->
-        <div class="menu-category hidden" id="cat-fries">
-            <div class="flex items-center gap-3 mb-8">
-                <span class="text-3xl">🍟</span>
-                <h3 class="text-2xl font-black text-dark">Fries &amp; Snacks</h3>
-            </div>
-            <div class="menu-carousel">
-                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
-                    <div><h4 class="font-bold text-dark text-lg"><img src="poze/asorti-cartofi.jpg" alt="Cartofi pai" class="w-full h-32 object-cover rounded-lg mb-3">Cartofi pai</h4><span class="text-xs text-gray-300">150g</span></div>
-                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">45 lei</span></div>
-                <div class="see-all-card flex items-center justify-center bg-gradient-to-br from-sky-50 to-sky-100 rounded-xl border-2 border-dashed border-sky-300 cursor-pointer hover:bg-sky-100 transition-all min-h-[160px]" onclick="expandCategory(this)">
-                    <div class="text-center">
-                        <iconify-icon icon="lucide:chevrons-right" width="28" class="text-sky-400"></iconify-icon>
-                        <p class="text-sky-500 font-bold text-sm mt-2">toate opțiunile</p>
-                    </div>
-                </div>
-                </div>
-                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
-                    <div><h4 class="font-bold text-dark text-lg"><img src="poze/asorti-cartofi.jpg" alt="Cartofi biluțe" class="w-full h-32 object-cover rounded-lg mb-3">Cartofi biluțe</h4><span class="text-xs text-gray-300">180g</span></div>
-                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">45 lei</span></div>
-                </div>
-                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
-                    <div><h4 class="font-bold text-dark text-lg"><img src="poze/asorti-cartofi.jpg" alt="Cartofi ca acasă" class="w-full h-32 object-cover rounded-lg mb-3">Cartofi ca acasă</h4><span class="text-xs text-gray-300">180g</span></div>
-                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">45 lei</span></div>
-                </div>
-                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
-                    <div><h4 class="font-bold text-dark text-lg"><img src="poze/crispy-black-burger.jpg" alt="Crispy" class="w-full h-32 object-cover rounded-lg mb-3">Crispy</h4><span class="text-xs text-gray-300">250g</span></div>
-                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">75 lei</span></div>
-                </div>
-                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
-                    <div><h4 class="font-bold text-dark text-lg"><img src="poze/mozzarella-sticks.jpg" alt="Nughete" class="w-full h-32 object-cover rounded-lg mb-3">Nughete</h4><span class="text-xs text-gray-300">250g</span></div>
-                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">75 lei</span></div>
-                </div>
-                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
-                    <div><h4 class="font-bold text-dark text-lg"><img src="poze/aripioare.jpg" alt="Aripioare de pui" class="w-full h-32 object-cover rounded-lg mb-3">Aripioare de pui</h4><span class="text-xs text-gray-300">500g</span></div>
-                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">120 lei</span></div>
-                </div>
-                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
-                    <div><h4 class="font-bold text-dark text-lg">Inelușe de ceapă</h4><span class="text-xs text-gray-300">200g</span></div>
-                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">60 lei</span></div>
-                </div>
-                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
-                    <div><h4 class="font-bold text-dark text-lg"><img src="poze/cartofi-pai-cu-nughete.jpg" alt="Cartofi pai/biluțe cu nughete" class="w-full h-32 object-cover rounded-lg mb-3">Cartofi pai/biluțe cu nughete</h4><span class="text-xs text-gray-300">450g</span></div>
-                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">120 lei</span></div>
-                </div>
-                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
-                    <div><h4 class="font-bold text-dark text-lg"><img src="poze/aripioare-cu-cartofi-bile.jpg" alt="Cartofi pai/biluțe cu aripioare" class="w-full h-32 object-cover rounded-lg mb-3">Cartofi pai/biluțe cu aripioare</h4><span class="text-xs text-gray-300">450g</span></div>
-                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">120 lei</span></div>
-                </div>
-                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
-                    <div><h4 class="font-bold text-dark text-lg"><img src="poze/asorti-cartofi.jpg" alt="Assorti de cartofi" class="w-full h-32 object-cover rounded-lg mb-3">Assorti de cartofi</h4><span class="text-xs text-gray-300">500g</span></div>
-                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">135 lei</span></div>
-                </div>
-                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
-                    <div><h4 class="font-bold text-dark text-lg"><img src="poze/platou-skykids.jpg" alt="Cartofi assorti cu nughete și aripioare" class="w-full h-32 object-cover rounded-lg mb-3">Cartofi assorti cu nughete și aripioare</h4><span class="text-xs text-gray-300">740g</span></div>
-                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">220 lei</span></div>
-                </div>
-                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
-                    <div><h4 class="font-bold text-dark text-lg"><img src="poze/aripioare-cu-cartofi-bile.jpg" alt="Mozarella sticks" class="w-full h-32 object-cover rounded-lg mb-3">Mozarella sticks</h4><p class="text-gray-400 text-sm mt-1">Bastonașe de cașcaval cu dulceață/sos de cașcaval</p><span class="text-xs text-gray-300">250g</span></div>
-                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">75 lei</span></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ============ SOSURI ============ -->
-        <div class="menu-category hidden" id="cat-sosuri">
-            <div class="flex items-center gap-3 mb-8">
-                <span class="text-3xl">🥫</span>
-                <h3 class="text-2xl font-black text-dark">Sosuri</h3>
-            </div>
-            <div class="menu-carousel">
-                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 text-center">
-                    <h4 class="font-bold text-dark text-lg"><img src="poze/aripioare-cu-cartofi-bile.jpg" alt="Ketchup" class="w-full h-32 object-cover rounded-lg mb-3">Ketchup</h4>
-                    <span class="text-candy-pink font-bold text-lg mt-2 block">10 lei</span>
-                <div class="see-all-card flex items-center justify-center bg-gradient-to-br from-sky-50 to-sky-100 rounded-xl border-2 border-dashed border-sky-300 cursor-pointer hover:bg-sky-100 transition-all min-h-[160px]" onclick="expandCategory(this)">
-                    <div class="text-center">
-                        <iconify-icon icon="lucide:chevrons-right" width="28" class="text-sky-400"></iconify-icon>
-                        <p class="text-sky-500 font-bold text-sm mt-2">toate opțiunile</p>
-                    </div>
-                </div>
-                </div>
-                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 text-center">
-                    <h4 class="font-bold text-dark text-lg"><img src="poze/aripioare-cu-cartofi-bile.jpg" alt="Maioneză" class="w-full h-32 object-cover rounded-lg mb-3">Maioneză</h4>
-                    <span class="text-candy-pink font-bold text-lg mt-2 block">10 lei</span>
-                </div>
-                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 text-center">
-                    <h4 class="font-bold text-dark text-lg"><img src="poze/somon-la-gratar.jpg" alt="Sos de ciuperci" class="w-full h-32 object-cover rounded-lg mb-3">Sos de ciuperci</h4>
-                    <span class="text-candy-pink font-bold text-lg mt-2 block">10 lei</span>
-                </div>
-                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 text-center">
-                    <h4 class="font-bold text-dark text-lg"><img src="" alt="Sos de cașcaval" class="w-full h-32 object-cover rounded-lg mb-3">Sos de cașcaval</h4>
-                    <span class="text-candy-pink font-bold text-lg mt-2 block">10 lei</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- ============ CARNE ============ -->
-        <div class="menu-category hidden" id="cat-carne">
-            <div class="flex items-center gap-3 mb-8">
-                <span class="text-3xl">🥩</span>
-                <h3 class="text-2xl font-black text-dark">Carne & Platouri</h3>
-            </div>
-            <div class="menu-carousel">
-                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
-                    <div><h4 class="font-bold text-dark text-lg"><img src="poze/somon-la-gratar.jpg" alt="Platou cu Ciolan" class="w-full h-32 object-cover rounded-lg mb-3">Platou cu Ciolan</h4><p class="text-gray-400 text-sm mt-1">Ciolan, cârnăciori BBQ, ceafă de porc, mici, piept de pui, aripioare, cartofi ca acasă, murătură, sos</p><span class="text-xs text-gray-300">5kg</span></div>
-                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">1300 lei</span></div>
-                <div class="see-all-card flex items-center justify-center bg-gradient-to-br from-sky-50 to-sky-100 rounded-xl border-2 border-dashed border-sky-300 cursor-pointer hover:bg-sky-100 transition-all min-h-[160px]" onclick="expandCategory(this)">
-                    <div class="text-center">
-                        <iconify-icon icon="lucide:chevrons-right" width="28" class="text-sky-400"></iconify-icon>
-                        <p class="text-sky-500 font-bold text-sm mt-2">toate opțiunile</p>
-                    </div>
-                </div>
-                </div>
-                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
-                    <div><h4 class="font-bold text-dark text-lg">Platou cu costițe</h4><p class="text-gray-400 text-sm mt-1">Costițe de porc, cârnăciori BBQ, piept de pui, cartofi copți, sos, ceapă marinată, verdețuri</p><span class="text-xs text-gray-300">2200g</span></div>
-                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">650 lei</span></div>
-                </div>
-                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
-                    <div><h4 class="font-bold text-dark text-lg"><img src="poze/platou-familie.jpg" alt="Platou Family" class="w-full h-32 object-cover rounded-lg mb-3">Platou Family</h4><p class="text-gray-400 text-sm mt-1">Cârnăciori BBQ, ceafă de porc, piept de pui, cartofi ca acasă, sos, ceapă marinată, salată</p><span class="text-xs text-gray-300">1100g</span></div>
-                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">480 lei</span></div>
-                </div>
-                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between border-2 border-candy-yellow/40">
-                    <div><span class="inline-block bg-candy-yellow text-dark text-xs font-bold px-2 py-0.5 rounded-full mb-2">SKY KIDS</span><h4 class="font-bold text-dark text-lg"><img src="poze/crispy-black-burger.jpg" alt="Platou Sky Kids" class="w-full h-32 object-cover rounded-lg mb-3">Platou Sky Kids</h4><p class="text-gray-400 text-sm mt-1">Cârnăciori BBQ, piept de pui, aripioare, cartofi ca acasă, sos, ceapă marinată</p><span class="text-xs text-gray-300">1000g</span></div>
-                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">420 lei</span></div>
-                </div>
-                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between border-2 border-candy-yellow/40">
-                    <div><span class="inline-block bg-candy-yellow text-dark text-xs font-bold px-2 py-0.5 rounded-full mb-2">SKY KIDS MINI</span><h4 class="font-bold text-dark text-lg"><img src="poze/platou-mini-skykids.jpg" alt="Platou Mini Sky Kids" class="w-full h-32 object-cover rounded-lg mb-3">Platou Mini Sky Kids</h4><p class="text-gray-400 text-sm mt-1">Piept de pui, aripioare BBQ, ciuperci, dovlecel, cherry, salată, sos</p><span class="text-xs text-gray-300">800g</span></div>
-                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">250 lei</span></div>
-                </div>
-                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
-                    <div><h4 class="font-bold text-dark text-lg"><img src="poze/somon-la-gratar.jpg" alt="Ceafă de porc cu salată" class="w-full h-32 object-cover rounded-lg mb-3">Ceafă de porc cu salată</h4><p class="text-gray-400 text-sm mt-1">Ceafă de porc, salată proaspătă, cherry</p><span class="text-xs text-gray-300">300g</span></div>
-                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">180 lei</span></div>
-                </div>
-                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
-                    <div><h4 class="font-bold text-dark text-lg"><img src="poze/somon-la-gratar.jpg" alt="Steak de pui la grătar" class="w-full h-32 object-cover rounded-lg mb-3">Steak de pui la grătar</h4><p class="text-gray-400 text-sm mt-1">Pui, sos de ciuperci, salată proaspătă</p><span class="text-xs text-gray-300">300g</span></div>
-                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">110 lei</span></div>
-                </div>
-                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
-                    <div><h4 class="font-bold text-dark text-lg"><img src="poze/somon-la-gratar.jpg" alt="Cârnăciori BBQ" class="w-full h-32 object-cover rounded-lg mb-3">Cârnăciori BBQ</h4></div>
-                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">240 lei</span></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ============ SALATE ============ -->
-        <div class="menu-category hidden" id="cat-salate">
-            <div class="flex items-center gap-3 mb-8">
-                <span class="text-3xl">🥗</span>
-                <h3 class="text-2xl font-black text-dark">Salate</h3>
-            </div>
-            <div class="menu-carousel">
-                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
-                    <img src="poze/caesar-cu-pui.jpg" alt="Caesar cu pui/creveți" class="w-full h-32 object-cover rounded-lg mb-3">
-                    <div><h4 class="font-bold text-dark text-lg">Caesar cu pui/creveți</h4><p class="text-gray-400 text-sm mt-1">Piept de pui/creveți, salată, sos, parmezan, roșii cherry, ou de prepeliță</p><span class="text-xs text-gray-300">260g</span></div>
-                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">140 / 150 lei</span></div>
-                <div class="see-all-card flex items-center justify-center bg-gradient-to-br from-sky-50 to-sky-100 rounded-xl border-2 border-dashed border-sky-300 cursor-pointer hover:bg-sky-100 transition-all min-h-[160px]" onclick="expandCategory(this)">
-                    <div class="text-center">
-                        <iconify-icon icon="lucide:chevrons-right" width="28" class="text-sky-400"></iconify-icon>
-                        <p class="text-sky-500 font-bold text-sm mt-2">toate opțiunile</p>
-                    </div>
-                </div>
-                </div>
-                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
-                    <div><h4 class="font-bold text-dark text-lg"><img src="poze/salata-burrata.jpg" alt="Gourmet" class="w-full h-32 object-cover rounded-lg mb-3">Gourmet</h4><p class="text-gray-400 text-sm mt-1">Mix de salată, prosciutto, pere caramelizate, Dor Blue, biluțe de brânză, cherry, dressing</p><span class="text-xs text-gray-300">500g</span></div>
-                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">160 lei</span></div>
-                </div>
-                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
-                    <div><h4 class="font-bold text-dark text-lg"><img src="poze/platou-skykids.jpg" alt="Italiana" class="w-full h-32 object-cover rounded-lg mb-3">Italiana</h4><p class="text-gray-400 text-sm mt-1">Salată, prosciutto, mozzarella, cherry, ulei de măsline, sos soia</p><span class="text-xs text-gray-300">300g</span></div>
-                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">120 lei</span></div>
-                </div>
-                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
-                    <div><h4 class="font-bold text-dark text-lg"><img src="poze/somon-la-gratar.jpg" alt="Salată caldă" class="w-full h-32 object-cover rounded-lg mb-3">Salată caldă</h4><p class="text-gray-400 text-sm mt-1">Piept de pui, fasole verzi, broccoli, ardei gras, cherry, dressing</p><span class="text-xs text-gray-300">300g</span></div>
-                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">140 lei</span></div>
-                </div>
-                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
-                    <div><h4 class="font-bold text-dark text-lg"><img src="poze/caesar-cu-pui.jpg" alt="Salată fresh" class="w-full h-32 object-cover rounded-lg mb-3">Salată fresh</h4><p class="text-gray-400 text-sm mt-1">Mix de salată, roșii cherry, roșii uscate, cremă de brânză, fulgi de migdale</p><span class="text-xs text-gray-300">250g</span></div>
-                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">120 lei</span></div>
-                </div>
-                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
-                    <div><h4 class="font-bold text-dark text-lg"><img src="poze/salata-gourmet.jpg" alt="Salată grecească" class="w-full h-32 object-cover rounded-lg mb-3">Salată grecească</h4><p class="text-gray-400 text-sm mt-1">Roșii, castraveți, ardei, ceapă marinată, olive calamata, brânză feta</p><span class="text-xs text-gray-300">250g</span></div>
-                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">100 lei</span></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ============ SEAFOOD ============ -->
-        <div class="menu-category hidden" id="cat-seafood">
-            <div class="flex items-center gap-3 mb-8">
-                <span class="text-3xl">🦞</span>
-                <h3 class="text-2xl font-black text-dark">Seafood</h3>
-            </div>
-            <div class="menu-carousel">
-                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
-                    <div><h4 class="font-bold text-dark text-lg"><img src="poze/platou-marin.jpg" alt="Somon la grătar" class="w-full h-32 object-cover rounded-lg mb-3">Somon la grătar</h4><p class="text-gray-400 text-sm mt-1">Somon la grătar, ardei, ciuperci, dovlecel, lămâie, roșii cherry, salată</p><span class="text-xs text-gray-300">700g</span></div>
-                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">350 lei</span></div>
-                <div class="see-all-card flex items-center justify-center bg-gradient-to-br from-sky-50 to-sky-100 rounded-xl border-2 border-dashed border-sky-300 cursor-pointer hover:bg-sky-100 transition-all min-h-[160px]" onclick="expandCategory(this)">
-                    <div class="text-center">
-                        <iconify-icon icon="lucide:chevrons-right" width="28" class="text-sky-400"></iconify-icon>
-                        <p class="text-sky-500 font-bold text-sm mt-2">toate opțiunile</p>
-                    </div>
-                </div>
-                </div>
-                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
-                    <div><h4 class="font-bold text-dark text-lg"><img src="poze/platou-marin.jpg" alt="Platou marin rece" class="w-full h-32 object-cover rounded-lg mb-3">Platou marin rece</h4><p class="text-gray-400 text-sm mt-1">Somon afumat, pește alb afumat, creveți fierți, măsline, lămâie, frunze de salată</p><span class="text-xs text-gray-300">700g</span></div>
-                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">300 lei</span></div>
-                </div>
-                <div class="menu-item bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-all border border-gray-100 hover:border-sky-300 flex flex-col justify-between">
-                    <div><h4 class="font-bold text-dark text-lg"><img src="poze/platou-marin.jpg" alt="Sote din fructe de mare" class="w-full h-32 object-cover rounded-lg mb-3">Sote din fructe de mare</h4><p class="text-gray-400 text-sm mt-1">Midii, creveți, caracatiță, calmar, frișcă, parmezan, lămâie</p><span class="text-xs text-gray-300">1000g</span></div>
-                    <div class="flex justify-between items-center mt-3"><span class="text-candy-pink font-bold text-lg">370 lei</span></div>
-                </div>
-            </div>
-        </div>
-
-        <p class="text-center text-gray-400 text-sm mt-12">* Meniul poate varia. Pentru meniul complet contactează-ne.</p>
+  <!-- Gallery Section -->
+  <section id="galerie" class="py-24 relative">
+    <div class="max-w-6xl mx-auto px-6">
+      <div class="text-center mb-12 fade-up">
+        <span class="inline-block bg-candy-green/10 text-candy-green text-sm font-bold tracking-widest uppercase px-4 py-2 rounded-full mb-4">Galerie</span>
+        <h2 class="font-black text-4xl md:text-5xl text-dark">Sky Kids în imagini</h2>
+      </div>
+      
+      <div id="galleryGrid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4"></div>
+      <div id="galleryLoading" class="text-center py-16">
+        <div class="spinner mx-auto mb-4"></div>
+        <p class="text-gray-400 font-medium">Se încarcă galeria...</p>
+      </div>
     </div>
-</section>
+  </section>
 
-<!-- ========== GALLERY ========== -->
-<section id="galerie" class="py-24 bg-white">
-    <div class="max-w-7xl mx-auto px-6">
-        <div class="text-center mb-16 fade-in">
-            <span class="text-candy-purple text-xs font-bold tracking-widest uppercase">Momente</span>
-            <h2 class="text-4xl sm:text-5xl font-black text-dark tracking-tight mt-3 mb-4">Galerie Foto</h2>
-            <p class="text-gray-400 max-w-xl mx-auto">Momente de neuitat de la Sky Kids!</p>
-        </div>
+  <div class="section-divider max-w-6xl mx-auto"></div>
 
-        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            <div class="gallery-item aspect-square rounded-2xl overflow-hidden shadow-lg">
-                <img src="" alt="Sky Kids" class="w-full h-full object-cover">
+  <!-- Contact Section -->
+  <section id="contact" class="py-24 bg-white">
+    <div class="max-w-6xl mx-auto px-6">
+      <div class="text-center mb-12 fade-up">
+        <span class="inline-block bg-candy-purple/10 text-candy-purple text-sm font-bold tracking-widest uppercase px-4 py-2 rounded-full mb-4">Contact</span>
+        <h2 class="font-black text-4xl md:text-5xl text-dark">Găsește-ne</h2>
+      </div>
+      
+      <div class="grid md:grid-cols-2 gap-8">
+        <div class="card p-8 fade-up">
+          <h3 class="font-bold text-xl text-dark mb-6 flex items-center gap-3">
+            <div class="w-10 h-10 bg-candy-pink/10 rounded-xl flex items-center justify-center">
+              <iconify-icon icon="lucide:info" width="20" class="text-candy-pink"></iconify-icon>
             </div>
-            <div class="gallery-item aspect-square rounded-2xl overflow-hidden shadow-lg col-span-1 md:col-span-1 md:row-span-2">
-                <img src="" alt="Sky Kids" class="w-full h-full object-cover">
-            </div>
-            <div class="gallery-item aspect-square rounded-2xl overflow-hidden shadow-lg">
-                <img src="" alt="Sky Kids" class="w-full h-full object-cover">
-            </div>
-            <div class="gallery-item aspect-square rounded-2xl overflow-hidden shadow-lg">
-                <img src="" alt="Sky Kids" class="w-full h-full object-cover">
-            </div>
-            <div class="gallery-item aspect-square rounded-2xl overflow-hidden shadow-lg">
-                <img src="" alt="Sky Kids" class="w-full h-full object-cover">
-            </div>
-            <div class="gallery-item aspect-square rounded-2xl overflow-hidden shadow-lg">
-                <img src="" alt="Sky Kids" class="w-full h-full object-cover">
-            </div>
-            <div class="gallery-item aspect-square rounded-2xl overflow-hidden shadow-lg">
-                <img src="" alt="Sky Kids" class="w-full h-full object-cover">
-            </div>
-            <div class="gallery-item aspect-square rounded-2xl overflow-hidden shadow-lg">
-                <img src="" alt="Sky Kids" class="w-full h-full object-cover">
-            </div>
-            <div class="gallery-item aspect-square rounded-2xl overflow-hidden shadow-lg">
-                <img src="" alt="Sky Kids" class="w-full h-full object-cover">
-            </div>
-            <div class="gallery-item aspect-square rounded-2xl overflow-hidden shadow-lg">
-                <img src="" alt="Sky Kids" class="w-full h-full object-cover">
-            </div>
-            <div class="gallery-item aspect-square rounded-2xl overflow-hidden shadow-lg">
-                <img src="" alt="Sky Kids" class="w-full h-full object-cover">
-            </div>
-            <div class="gallery-item aspect-square rounded-2xl overflow-hidden shadow-lg">
-                <img src="" alt="Sky Kids" class="w-full h-full object-cover">
-            </div>
-            <div class="gallery-item aspect-square rounded-2xl overflow-hidden shadow-lg">
-                <img src="" alt="Sky Kids" class="w-full h-full object-cover">
-            </div>
-            <div class="gallery-item aspect-square rounded-2xl overflow-hidden shadow-lg">
-                <img src="" alt="Sky Kids" class="w-full h-full object-cover">
-            </div>
-            <div class="gallery-item aspect-square rounded-2xl overflow-hidden shadow-lg">
-                <img src="" alt="Sky Kids" class="w-full h-full object-cover">
-            </div>
-            <div class="gallery-item aspect-square rounded-2xl overflow-hidden shadow-lg">
-                <img src="" alt="Sky Kids" class="w-full h-full object-cover">
-            </div>
-            <div class="gallery-item aspect-square rounded-2xl overflow-hidden shadow-lg">
-                <img src="" alt="Sky Kids" class="w-full h-full object-cover">
-            </div>
-            <div class="gallery-item aspect-square rounded-2xl overflow-hidden shadow-lg">
-                <img src="" alt="Sky Kids" class="w-full h-full object-cover">
-            </div>
-            <div class="gallery-item aspect-square rounded-2xl overflow-hidden shadow-lg">
-                <img src="" alt="Sky Kids" class="w-full h-full object-cover">
-            </div>
-            <div class="gallery-item aspect-square rounded-2xl overflow-hidden shadow-lg">
-                <img src="" alt="Sky Kids" class="w-full h-full object-cover">
-            </div>
-            <div class="gallery-item aspect-square rounded-2xl overflow-hidden shadow-lg">
-                <img src="" alt="Sky Kids" class="w-full h-full object-cover">
-            </div>
-            <div class="gallery-item aspect-square rounded-2xl overflow-hidden shadow-lg">
-                <img src="" alt="Sky Kids" class="w-full h-full object-cover">
-            </div>
-            <div class="gallery-item aspect-square rounded-2xl overflow-hidden shadow-lg bg-gradient-to-br from-candy-pink to-candy-purple flex items-center justify-center">
-                <div class="text-center text-white p-6">
-                    <div class="text-4xl mb-3">📸</div>
-                    <div class="font-bold">Vezi mai multe</div>
-                    <div class="text-sm opacity-80">pe Instagram</div>
-                    <a href="https://www.instagram.com/_.sky.kids._/" target="_blank" class="inline-flex items-center gap-1 mt-3 bg-white/20 px-4 py-2 rounded-full text-sm font-bold hover:bg-white/30 transition-all">
-                        <iconify-icon icon="lucide:instagram" width="16"></iconify-icon>
-                        @_.sky.kids._
-                    </a>
-                </div>
-            </div>
+            Informații contact
+          </h3>
+          <div id="contactInfo" class="space-y-4"></div>
         </div>
+        
+        <div class="card overflow-hidden fade-up" style="transition-delay: 0.1s">
+          <div id="mapEmbed" class="w-full h-full min-h-[350px] bg-gray-50"></div>
+        </div>
+      </div>
+      
+      <div class="flex justify-center gap-4 mt-10 fade-up">
+        <a id="socialFacebook" href="#" target="_blank" class="w-14 h-14 bg-gray-100 hover:bg-candy-blue hover:text-white rounded-2xl flex items-center justify-center transition-all hover:scale-110">
+          <iconify-icon icon="logos:facebook" width="24"></iconify-icon>
+        </a>
+        <a id="socialInstagram" href="#" target="_blank" class="w-14 h-14 bg-gray-100 hover:bg-candy-pink hover:text-white rounded-2xl flex items-center justify-center transition-all hover:scale-110">
+          <iconify-icon icon="skill-icons:instagram" width="24"></iconify-icon>
+        </a>
+      </div>
     </div>
-</section>
+  </section>
 
-<!-- ========== PRICING ========== -->
-<section id="preturi" class="py-24 bg-gradient-to-b from-white to-sky-50">
-    <div class="max-w-7xl mx-auto px-6">
-        <div class="text-center mb-16 fade-in">
-            <span class="text-candy-green text-xs font-bold tracking-widest uppercase">Tarife</span>
-            <h2 class="text-4xl sm:text-5xl font-black text-dark tracking-tight mt-3 mb-4">Pachete & Prețuri</h2>
-            <p class="text-gray-400 max-w-xl mx-auto">Alege pachetul potrivit pentru copilul tău!</p>
-        </div>
+  <div class="section-divider max-w-6xl mx-auto"></div>
 
-        <div class="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            <!-- Basic -->
-            <div class="card-hover bg-white rounded-3xl p-8 shadow-lg border-2 border-sky-100 text-center">
-                <div class="text-4xl mb-4">🌟</div>
-                <h3 class="text-xl font-black text-dark">Standard</h3>
-                <p class="text-gray-400 text-sm mt-2 mb-6">Acces teren de joacă</p>
-                <div class="text-4xl font-black text-sky-500 mb-1">100 <span class="text-lg">MDL</span></div>
-                <p class="text-gray-400 text-xs mb-6">/ copil / 2 ore</p>
-                <ul class="text-left space-y-3 text-sm">
-                    <li class="flex items-center gap-2"><iconify-icon icon="lucide:check-circle" class="text-candy-green" width="18"></iconify-icon><span>Teren de joacă complet</span></li>
-                    <li class="flex items-center gap-2"><iconify-icon icon="lucide:check-circle" class="text-candy-green" width="18"></iconify-icon><span>Labirint & tobogan</span></li>
-                    <li class="flex items-center gap-2"><iconify-icon icon="lucide:check-circle" class="text-candy-green" width="18"></icon><span>Zonă părinți cu WiFi</span></li>
-                    <li class="flex items-center gap-2 text-gray-300"><iconify-icon icon="lucide:x-circle" width="18"></iconify-icon><span>Animator</span></li>
-                </ul>
-                <button onclick="openBooking('standard')" class="mt-8 w-full py-3 border-2 border-sky-200 text-sky-600 font-bold rounded-xl hover:bg-sky-50 transition-all">
-                    Alege
-                </button>
+  <!-- Booking Section -->
+  <section id="rezervari" class="py-24 relative">
+    <div class="max-w-3xl mx-auto px-6">
+      <div class="text-center mb-12 fade-up">
+        <span class="inline-block bg-candy-blue/10 text-candy-blue text-sm font-bold tracking-widest uppercase px-4 py-2 rounded-full mb-4">Rezervări</span>
+        <h2 class="font-black text-4xl md:text-5xl text-dark">Rezervă un loc pentru copil</h2>
+        <p class="text-gray-500 mt-4">Completează pașii pentru a trimite o rezervare</p>
+      </div>
+      
+      <!-- Step indicators -->
+      <div class="flex items-center justify-center gap-4 mb-10">
+        <div class="step-dot active" data-step="1">1</div>
+        <div class="w-12 h-0.5 bg-gray-200"></div>
+        <div class="step-dot" data-step="2">2</div>
+        <div class="w-12 h-0.5 bg-gray-200"></div>
+        <div class="step-dot" data-step="3">3</div>
+      </div>
+      
+      <!-- Booking form card -->
+      <div class="card p-8 md:p-10 fade-up">
+        <form id="bookingForm">
+          <!-- Step 1: Package selection -->
+          <div id="step1" class="booking-step">
+            <h3 class="font-bold text-xl mb-6 flex items-center gap-3">
+              <span class="w-8 h-8 bg-candy-pink text-white rounded-lg flex items-center justify-center text-sm">1</span>
+              Alege pachetul
+            </h3>
+            
+            <div id="packageCardsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+              <!-- Loaded dynamically from API -->
             </div>
-
-            <!-- Popular -->
-            <div class="card-hover bg-gradient-to-b from-sky-500 to-sky-600 rounded-3xl p-8 shadow-2xl shadow-sky-200 text-center text-white relative scale-105">
-                <div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-candy-yellow text-dark text-xs font-bold px-4 py-1.5 rounded-full shadow-lg">
-                    ⭐ CEL MAI POPULAR
-                </div>
-                <div class="text-4xl mb-4">🎉</div>
-                <h3 class="text-xl font-black">Premium</h3>
-                <p class="text-sky-100 text-sm mt-2 mb-6">Distracție + mâncare</p>
-                <div class="text-4xl font-black mb-1">180 <span class="text-lg">MDL</span></div>
-                <p class="text-sky-100 text-xs mb-6">/ copil / 3 ore</p>
-                <ul class="text-left space-y-3 text-sm">
-                    <li class="flex items-center gap-2"><iconify-icon icon="lucide:check-circle" class="text-candy-yellow" width="18"></iconify-icon><span>Tot din Standard</span></li>
-                    <li class="flex items-center gap-2"><iconify-icon icon="lucide:check-circle" class="text-candy-yellow" width="18"></iconify-icon><span>+ Meniu Copii inclus</span></li>
-                    <li class="flex items-center gap-2"><iconify-icon icon="lucide:check-circle" class="text-candy-yellow" width="18"></iconify-icon><span>+ Băutură răcoritoare</span></li>
-                    <li class="flex items-center gap-2"><iconify-icon icon="lucide:check-circle" class="text-candy-yellow" width="18"></iconify-icon><span>+ Timp extra 1 oră</span></li>
-                </ul>
-                <button onclick="openBooking('premium')" class="mt-8 w-full py-3 bg-white text-sky-600 font-bold rounded-xl hover:bg-sky-50 transition-all">
-                    Alege
-                </button>
+            
+            <div class="mb-6">
+              <label class="block text-sm font-bold text-gray-700 mb-3">Număr de copii *</label>
+              <div class="flex items-center gap-4">
+                <button type="button" onclick="changeKids(-1)" class="w-12 h-12 bg-gray-100 hover:bg-gray-200 rounded-xl flex items-center justify-center text-xl font-bold transition-colors">−</button>
+                <input type="number" id="kids_count" value="1" min="1" max="30" class="w-20 text-center text-2xl font-bold border-2 border-gray-200 rounded-xl py-3">
+                <button type="button" onclick="changeKids(1)" class="w-12 h-12 bg-gray-100 hover:bg-gray-200 rounded-xl flex items-center justify-center text-xl font-bold transition-colors">+</button>
+                <span class="text-gray-400 ml-2">copii</span>
+              </div>
             </div>
-
-            <!-- Birthday -->
-            <div class="card-hover bg-white rounded-3xl p-8 shadow-lg border-2 border-candy-pink/20 text-center">
-                <div class="text-4xl mb-4">🎂</div>
-                <h3 class="text-xl font-black text-dark">Zi de Naștere</h3>
-                <p class="text-gray-400 text-sm mt-2 mb-6">Petrecere completă</p>
-                <div class="text-4xl font-black text-candy-pink mb-1">1500 <span class="text-lg">MDL</span></div>
-                <p class="text-gray-400 text-xs mb-6">/ până la 10 copii</p>
-                <ul class="text-left space-y-3 text-sm">
-                    <li class="flex items-center gap-2"><iconify-icon icon="lucide:check-circle" class="text-candy-pink" width="18"></iconify-icon><span>Teren privat 3 ore</span></li>
-                    <li class="flex items-center gap-2"><iconify-icon icon="lucide:check-circle" class="text-candy-pink" width="18"></iconify-icon><span>Animator & muzică</span></li>
-                    <li class="flex items-center gap-2"><iconify-icon icon="lucide:check-circle" class="text-candy-pink" width="18"></iconify-icon><span>Tort + decorăriuni</span></li>
-                    <li class="flex items-center gap-2"><iconify-icon icon="lucide:check-circle" class="text-candy-pink" width="18"></iconify-icon><span>Meniu complet pentru copii</span></li>
-                </ul>
-                <button onclick="openBooking('birthday')" class="mt-8 w-full py-3 border-2 border-candy-pink/30 text-candy-pink font-bold rounded-xl hover:bg-pink-50 transition-all">
-                    Alege
-                </button>
+            
+            <div class="mb-6">
+              <label class="block text-sm font-bold text-gray-700 mb-3">Număr de adulți</label>
+              <div class="flex items-center gap-4">
+                <button type="button" onclick="changeAdults(-1)" class="w-12 h-12 bg-gray-100 hover:bg-gray-200 rounded-xl flex items-center justify-center text-xl font-bold transition-colors">−</button>
+                <input type="number" id="adults_count" value="0" min="0" max="20" class="w-20 text-center text-2xl font-bold border-2 border-gray-200 rounded-xl py-3">
+                <button type="button" onclick="changeAdults(1)" class="w-12 h-12 bg-gray-100 hover:bg-gray-200 rounded-xl flex items-center justify-center text-xl font-bold transition-colors">+</button>
+                <span class="text-gray-400 ml-2">adulți</span>
+              </div>
             </div>
-        </div>
-
-        <p class="text-center text-gray-400 text-sm mt-8">* Copiii sub 1 an au intrare gratuită. 50 MDL pentru fiecare copil suplimentar la pachetul Zi de Naștere.</p>
-    </div>
-</section>
-
-<!-- ========== REVIEWS ========== -->
-<section class="py-24 bg-white">
-    <div class="max-w-7xl mx-auto px-6">
-        <div class="text-center mb-16 fade-in">
-            <span class="text-candy-yellow text-xs font-bold tracking-widest uppercase">Recenzii</span>
-            <h2 class="text-4xl sm:text-5xl font-black text-dark tracking-tight mt-3 mb-4">Ce Zic Părinții</h2>
-        </div>
-
-        <div class="grid md:grid-cols-3 gap-8">
-            <div class="bg-gradient-to-br from-sky-50 to-white rounded-2xl p-8 border border-sky-100 card-hover">
-                <div class="flex gap-1 mb-4">
-                    <span class="text-candy-yellow text-lg">★★★★★</span>
-                </div>
-                <p class="text-gray-600 text-sm leading-relaxed mb-6">
-                    "Cel mai bun loc din Soroca pentru copii! Fetia mea nu mai vrea să plece. Personal foarte amabil, curat și mâncarea e bună!"
-                </p>
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-full bg-candy-pink/20 flex items-center justify-center">👩</div>
-                    <div>
-                        <div class="font-bold text-dark text-sm">Ana M.</div>
-                        <div class="text-gray-400 text-xs">Google Review</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="bg-gradient-to-br from-pink-50 to-white rounded-2xl p-8 border border-pink-100 card-hover">
-                <div class="flex gap-1 mb-4">
-                    <span class="text-candy-yellow text-lg">★★★★★</span>
-                </div>
-                <p class="text-gray-600 text-sm leading-relaxed mb-6">
-                    "Am făcut ziua de naștere a fiului nostru aici și a fost perfect! Copiii s-au distrat, noi ne-am relaxat cu o cafea. Recomand!"
-                </p>
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-full bg-sky-200/50 flex items-center justify-center">👨</div>
-                    <div>
-                        <div class="font-bold text-dark text-sm">Ion P.</div>
-                        <div class="text-gray-400 text-xs">Google Review</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="bg-gradient-to-br from-purple-50 to-white rounded-2xl p-8 border border-purple-100 card-hover">
-                <div class="flex gap-1 mb-4">
-                    <span class="text-candy-yellow text-lg">★★★★☆</span>
-                </div>
-                <p class="text-gray-600 text-sm leading-relaxed mb-6">
-                    "Locul e super pentru copii! Mâncarea e foarte bună și personalul e amabil. Singurul minus e că pe weekend e cam plin — merită să rezervați."
-                </p>
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-full bg-candy-purple/20 flex items-center justify-center">👩</div>
-                    <div>
-                        <div class="font-bold text-dark text-sm">Maria L.</div>
-                        <div class="text-gray-400 text-xs">Google Review</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- ========== CTA ========== -->
-<section class="py-24 relative overflow-hidden">
-    <div class="absolute inset-0 bg-gradient-to-br from-sky-500 via-candy-purple to-candy-pink"></div>
-    <div class="absolute inset-0 opacity-10">
-        <div class="absolute top-10 left-10 text-6xl float">🎈</div>
-        <div class="absolute top-20 right-20 text-5xl float-slow">⭐</div>
-        <div class="absolute bottom-10 left-1/3 text-6xl float">🎪</div>
-        <div class="absolute bottom-20 right-10 text-5xl float-slow">🎀</div>
-    </div>
-
-    <div class="relative z-10 max-w-3xl mx-auto px-6 text-center text-white">
-        <div class="text-5xl mb-6">🎉</div>
-        <h2 class="text-4xl sm:text-5xl font-black tracking-tight mb-6">Fă-ți Programarea Acum!</h2>
-        <p class="text-white/80 text-lg mb-10">Nu rata distracția! Programează vizita ta și asigură-ți locul.</p>
-
-        <div class="flex flex-col sm:flex-row gap-4 justify-center">
-            <button onclick="openBooking()" class="px-10 py-4 bg-white text-dark font-bold rounded-2xl hover:bg-gray-100 transition-all shadow-xl text-lg flex items-center justify-center gap-2">
-                <iconify-icon icon="lucide:calendar-heart" width="22"></iconify-icon>
-                Programează Online
+            
+            <button type="button" onclick="goToStep(2)" id="btnStep1" class="w-full bg-gradient-to-r from-candy-pink to-candy-orange text-white py-4 rounded-2xl font-bold text-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2" disabled>
+              Continuă
+              <iconify-icon icon="lucide:arrow-right" width="20"></iconify-icon>
             </button>
-            <a href="tel:+37376802801" class="px-10 py-4 border-2 border-white/30 text-white font-bold rounded-2xl hover:bg-white/10 transition-all text-lg flex items-center justify-center gap-2">
-                <iconify-icon icon="lucide:phone" width="22"></iconify-icon>
-                Sună-ne
-            </a>
+          </div>
+          
+          <!-- Step 2: Date & Time -->
+          <div id="step2" class="booking-step hidden">
+            <h3 class="font-bold text-xl mb-6 flex items-center gap-3">
+              <span class="w-8 h-8 bg-candy-pink text-white rounded-lg flex items-center justify-center text-sm">2</span>
+              Alege data și ora
+            </h3>
+            
+            <div class="mb-6">
+              <label class="block text-sm font-bold text-gray-700 mb-3">Data *</label>
+              <input type="date" id="date" required class="w-full px-5 py-4 rounded-2xl border-2 border-gray-200 text-lg font-medium">
+            </div>
+            
+            <div id="timeSlots" class="mb-8 hidden">
+              <label class="block text-sm font-bold text-gray-700 mb-3">Ora *</label>
+              <div id="slotsGrid" class="grid grid-cols-3 sm:grid-cols-4 gap-3"></div>
+            </div>
+            
+            <div class="flex gap-4">
+              <button type="button" onclick="goToStep(1)" class="flex-1 bg-gray-100 text-gray-700 py-4 rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-gray-200 transition-colors">
+                <iconify-icon icon="lucide:arrow-left" width="20"></iconify-icon>
+                Înapoi
+              </button>
+              <button type="button" onclick="goToStep(3)" id="btnStep2" class="flex-1 bg-gradient-to-r from-candy-pink to-candy-orange text-white py-4 rounded-2xl font-bold flex items-center justify-center gap-2 disabled:opacity-50" disabled>
+                Continuă
+                <iconify-icon icon="lucide:arrow-right" width="20"></iconify-icon>
+              </button>
+            </div>
+          </div>
+          
+          <!-- Step 3: Contact info -->
+          <div id="step3" class="booking-step hidden">
+            <h3 class="font-bold text-xl mb-6 flex items-center gap-3">
+              <span class="w-8 h-8 bg-candy-pink text-white rounded-lg flex items-center justify-center text-sm">3</span>
+              Datele tale de contact
+            </h3>
+            
+            <div class="space-y-5 mb-8">
+              <div>
+                <label class="block text-sm font-bold text-gray-700 mb-2">Nume părinte *</label>
+                <div class="relative">
+                  <iconify-icon icon="lucide:user" width="18" class="input-icon"></iconify-icon>
+                  <input type="text" id="client_name" required placeholder="Numele tău complet" class="w-full pl-12 pr-5 py-4 rounded-2xl border-2 border-gray-200">
+                </div>
+              </div>
+              
+              <div>
+                <label class="block text-sm font-bold text-gray-700 mb-2">Telefon *</label>
+                <div class="relative">
+                  <iconify-icon icon="lucide:phone" width="18" class="input-icon"></iconify-icon>
+                  <input type="tel" id="client_phone" required placeholder="+373 __ ___ ___" class="w-full pl-12 pr-5 py-4 rounded-2xl border-2 border-gray-200">
+                </div>
+              </div>
+              
+              <div>
+                <label class="block text-sm font-bold text-gray-700 mb-2">Notițe (opțional)</label>
+                <div class="relative">
+                  <iconify-icon icon="lucide:message-square" width="18" class="input-icon" style="top: 16px; transform: none;"></iconify-icon>
+                  <textarea id="notes" rows="3" placeholder="Alergii, preferințe, cerințe speciale..." class="w-full pl-12 pr-5 py-4 rounded-2xl border-2 border-gray-200 resize-none"></textarea>
+                </div>
+              </div>
+            </div>
+            
+            <div class="bg-gray-50 rounded-2xl p-5 mb-8">
+              <h4 class="font-bold text-sm text-gray-500 uppercase tracking-wide mb-3">Rezumat rezervare</h4>
+              <div id="bookingSummary" class="space-y-2 text-sm"></div>
+            </div>
+            
+            <div class="flex gap-4">
+              <button type="button" onclick="goToStep(2)" class="flex-1 bg-gray-100 text-gray-700 py-4 rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-gray-200 transition-colors">
+                <iconify-icon icon="lucide:arrow-left" width="20"></iconify-icon>
+                Înapoi
+              </button>
+              <button type="submit" class="flex-1 bg-gradient-to-r from-candy-pink to-candy-orange text-white py-4 rounded-2xl font-bold flex items-center justify-center gap-2">
+                <iconify-icon icon="lucide:send" width="20"></iconify-icon>
+                Trimite rezervarea
+              </button>
+            </div>
+          </div>
+        </form>
+        
+        <!-- Success message -->
+        <div id="bookingSuccess" class="hidden text-center py-10">
+          <div class="w-24 h-24 bg-candy-green/20 rounded-full flex items-center justify-center mx-auto mb-6 animate-checkmark">
+            <iconify-icon icon="lucide:check-circle" width="48" class="text-candy-green"></iconify-icon>
+          </div>
+          <h3 class="font-bold text-2xl text-candy-green mb-3">Rezervare trimisă!</h3>
+          <p class="text-gray-500 mb-6">Te vom contacta în scurt timp pentru confirmare. Te așteptăm!</p>
+          <button onclick="resetBooking()" class="bg-gray-100 text-gray-700 px-6 py-3 rounded-xl font-bold hover:bg-gray-200 transition-colors">
+            Face o nouă rezervare
+          </button>
         </div>
+      </div>
     </div>
-</section>
+  </section>
 
-<!-- ========== CONTACT ========== -->
-<section id="contact" class="py-24 bg-white">
-    <div class="max-w-7xl mx-auto px-6">
-        <div class="text-center mb-16 fade-in">
-            <span class="text-sky-500 text-xs font-bold tracking-widest uppercase">Unde Ne Găsești</span>
-            <h2 class="text-4xl sm:text-5xl font-black text-dark tracking-tight mt-3 mb-4">Contacte</h2>
+  <!-- Footer -->
+  <footer class="footer-wave text-white py-16">
+    <div class="max-w-6xl mx-auto px-6">
+      <div class="flex flex-col md:flex-row justify-between items-center gap-8">
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 bg-gradient-to-br from-candy-pink to-candy-blue rounded-2xl flex items-center justify-center font-black text-xl text-white">
+            <span class="gradient-text">SKY</span>
+          </div>
+          <div>
+            <span class="font-black text-2xl text-white">Kids Soroca</span>
+            <p class="text-gray-400 text-sm">Magic pentru copii 🎈</p>
+          </div>
         </div>
-
-        <div class="grid lg:grid-cols-2 gap-12">
-            <div class="space-y-8">
-                <div class="flex items-start gap-4 p-4 bg-sky-50 rounded-2xl">
-                    <div class="w-12 h-12 rounded-xl bg-sky-500 flex items-center justify-center shrink-0">
-                        <iconify-icon icon="lucide:map-pin" class="text-white text-xl"></iconify-icon>
-                    </div>
-                    <div>
-                        <h4 class="text-dark font-bold mb-1">Adresă</h4>
-                        <p class="text-gray-500 text-sm">str. Ștefan cel Mare 46, Etajul 2, Soroca, Moldova</p>
-                    </div>
-                </div>
-
-                <div class="flex items-start gap-4 p-4 bg-pink-50 rounded-2xl">
-                    <div class="w-12 h-12 rounded-xl bg-candy-pink flex items-center justify-center shrink-0">
-                        <iconify-icon icon="lucide:clock" class="text-white text-xl"></iconify-icon>
-                    </div>
-                    <div>
-                        <h4 class="text-dark font-bold mb-1">Program</h4>
-                        <p class="text-gray-500 text-sm">Zilnic: 10:00 – 22:00</p>
-                    </div>
-                </div>
-
-                <div class="flex items-start gap-4 p-4 bg-purple-50 rounded-2xl">
-                    <div class="w-12 h-12 rounded-xl bg-candy-purple flex items-center justify-center shrink-0">
-                        <iconify-icon icon="lucide:share-2" class="text-white text-xl"></iconify-icon>
-                    </div>
-                    <div>
-                        <h4 class="text-dark font-bold mb-3">Rețele Sociale</h4>
-                        <div class="flex gap-3">
-                            <a href="https://www.instagram.com/_.sky.kids._/" target="_blank" class="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white hover:brightness-110 transition-all">
-                                <iconify-icon icon="lucide:instagram" width="20"></iconify-icon>
-                            </a>
-                            <a href="https://www.facebook.com/reel/1993714461368856/" target="_blank" class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white hover:brightness-110 transition-all">
-                                <iconify-icon icon="lucide:facebook" width="20"></iconify-icon>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Map -->
-            <div class="rounded-2xl overflow-hidden shadow-xl h-[400px]">
-                <iframe
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2695.5!2d28.2974!3d48.2055!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNDjCsDEyJzE5LjgiTiAyOMKwMTcnNTAuNiJF!5e0!3m2!1sro!2smd!4v1700000000000!5m2!1sro!2smd"
-                    width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy">
-                </iframe>
-            </div>
+        
+        <div class="flex gap-3">
+          <a id="footerFacebook" href="#" class="w-11 h-11 bg-white/10 hover:bg-candy-blue rounded-xl flex items-center justify-center transition-all">
+            <iconify-icon icon="logos:facebook" width="20"></iconify-icon>
+          </a>
+          <a id="footerInstagram" href="#" class="w-11 h-11 bg-white/10 hover:bg-candy-pink rounded-xl flex items-center justify-center transition-all">
+            <iconify-icon icon="skill-icons:instagram" width="20"></iconify-icon>
+          </a>
         </div>
+      </div>
+      
+      <div class="border-t border-white/10 mt-10 pt-8 text-center">
+        <p class="text-gray-400 text-sm">
+          © 2026 Sky Kids Soroca. Toate drepturile rezervate.
+          <span class="mx-2">•</span>
+          Făcut cu ❤️ pentru copii
+        </p>
+      </div>
     </div>
-</section>
+  </footer>
 
-<!-- ========== FOOTER ========== -->
-<footer class="bg-dark py-16 text-white">
-    <div class="max-w-7xl mx-auto px-6">
-        <div class="flex flex-col md:flex-row justify-between items-center gap-8">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-candy-pink to-candy-purple flex items-center justify-center text-white font-black">SK</div>
-                <div>
-                    <span class="font-bold text-lg">Sky Kids</span>
-                    <span class="text-gray-500 text-xs block">Cel mai mare teren de joacă din Soroca</span>
-                </div>
-            </div>
-
-            <div class="flex gap-6">
-                <a href="#acasa" class="text-gray-400 hover:text-white text-sm transition-colors">Acasă</a>
-                <a href="#meniu" class="text-gray-400 hover:text-white text-sm transition-colors">Meniu</a>
-                <a href="#preturi" class="text-gray-400 hover:text-white text-sm transition-colors">Prețuri</a>
-                <a href="#contact" class="text-gray-400 hover:text-white text-sm transition-colors">Contact</a>
-            </div>
-
-            <div class="flex gap-3">
-                <a href="https://www.instagram.com/_.sky.kids._/" target="_blank" class="w-10 h-10 rounded-lg border border-white/10 hover:border-candy-pink/50 flex items-center justify-center transition-all">
-                    <iconify-icon icon="lucide:instagram" class="text-gray-400 hover:text-white" width="18"></iconify-icon>
-                </a>
-                <a href="https://www.facebook.com/reel/1993714461368856/" target="_blank" class="w-10 h-10 rounded-lg border border-white/10 hover:border-blue-400/50 flex items-center justify-center transition-all">
-                    <iconify-icon icon="lucide:facebook" class="text-gray-400 hover:text-white" width="18"></iconify-icon>
-                </a>
-            </div>
+  <!-- Product Modal -->
+  <div id="productModal" class="fixed inset-0 z-[100] hidden items-center justify-center p-4" style="display:none;">
+    <div class="modal-backdrop absolute inset-0" onclick="closeProductModal()"></div>
+    <div class="relative bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden">
+      <button onclick="closeProductModal()" class="absolute top-4 right-4 z-10 w-10 h-10 bg-white/90 hover:bg-white rounded-full flex items-center justify-center shadow-lg transition-all">
+        <iconify-icon icon="lucide:x" width="20"></iconify-icon>
+      </button>
+      
+      <div class="relative">
+        <img id="modalImg" src="" alt="" class="w-full h-56 object-cover">
+        <div id="modalImgPlaceholder" class="w-full h-56 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center hidden">
+          <iconify-icon icon="lucide:image" width="48" class="text-gray-300"></iconify-icon>
         </div>
-
-        <div class="border-t border-white/10 mt-8 pt-8 text-center">
-            <p class="text-gray-500 text-sm">© 2026 Sky Kids Soroca. Toate drepturile rezervate.</p>
-            <p class="text-gray-600 text-xs mt-1">str. Ștefan cel Mare 46, Etajul 2, Soroca, Moldova</p>
+        <span id="modalBadge" class="hidden absolute top-4 left-4 bg-candy-yellow text-dark text-xs font-bold px-3 py-1.5 rounded-full shadow">PENTRU COPII</span>
+      </div>
+      
+      <div class="p-6 md:p-8">
+        <h3 id="modalTitle" class="font-black text-2xl text-dark mb-2"></h3>
+        <p id="modalDesc" class="text-gray-500 leading-relaxed mb-4"></p>
+        <p id="modalWeight" class="text-sm text-gray-400 mb-5"></p>
+        
+        <div class="border-t pt-5">
+          <p class="text-sm text-gray-400 font-medium mb-1">PREȚ</p>
+          <p id="modalPrice" class="text-3xl font-black price-tag"></p>
         </div>
+      </div>
     </div>
-</footer>
+  </div>
 
-<!-- ========== BOOKING MODAL ========== -->
-<div id="bookingModal" class="modal-overlay fixed inset-0 z-[70] bg-dark/60 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="modal-content bg-white rounded-3xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
-        <!-- Modal Header -->
-        <div class="bg-gradient-to-r from-candy-pink via-candy-purple to-sky-400 p-6 rounded-t-3xl text-white relative">
-            <button onclick="closeBooking()" class="absolute top-4 right-4 w-8 h-8 bg-white/20 rounded-full flex items-center justify-center hover:bg-white/30 transition-all">
-                <iconify-icon icon="lucide:x" width="18"></iconify-icon>
-            </button>
-            <div class="text-3xl mb-2">🎉</div>
-            <h3 class="text-xl font-black" id="modalTitle">Programează o Vizită</h3>
-            <p class="text-white/80 text-sm">Completează formularul și te contactăm pentru confirmare</p>
-        </div>
+  <script>
+  // ===== State =====
+  let categories = [];
+  let products = [];
+  let packages = [];
+  let currentCategory = null;
+  let selectedPackage = null;
+  let selectedPackageId = null;
+  let selectedTime = null;
+  let currentStep = 1;
 
-        <!-- Step indicator -->
-        <div class="px-6 pt-6">
-            <div class="flex items-center justify-between mb-6">
-                <div class="flex items-center gap-2">
-                    <div id="step1Dot" class="w-8 h-8 rounded-full bg-candy-pink text-white text-sm font-bold flex items-center justify-center">1</div>
-                    <span class="text-xs font-bold text-dark">Date</span>
-                </div>
-                <div class="flex-1 h-0.5 bg-gray-200 mx-2"><div id="stepProgress" class="h-full bg-candy-pink transition-all" style="width:0%"></div></div>
-                <div class="flex items-center gap-2">
-                    <div id="step2Dot" class="w-8 h-8 rounded-full bg-gray-200 text-gray-400 text-sm font-bold flex items-center justify-center">2</div>
-                    <span class="text-xs font-bold text-gray-400">Ora</span>
-                </div>
-                <div class="flex-1 h-0.5 bg-gray-200 mx-2"><div id="stepProgress2" class="h-full bg-candy-pink transition-all" style="width:0%"></div></div>
-                <div class="flex items-center gap-2">
-                    <div id="step3Dot" class="w-8 h-8 rounded-full bg-gray-200 text-gray-400 text-sm font-bold flex items-center justify-center">3</div>
-                    <span class="text-xs font-bold text-gray-400">Gata!</span>
-                </div>
-            </div>
-        </div>
+  // ===== Mobile menu =====
+  document.getElementById('mobileToggle').addEventListener('click', () => {
+    const menu = document.getElementById('mobileMenu');
+    menu.classList.remove('hidden');
+    menu.classList.add('flex');
+  });
+  document.getElementById('mobileClose').addEventListener('click', closeMobile);
+  function closeMobile() {
+    const menu = document.getElementById('mobileMenu');
+    menu.classList.add('hidden');
+    menu.classList.remove('flex');
+  }
 
-        <!-- Step 1: Date & Package -->
-        <div id="step1" class="px-6 pb-6">
-            <div class="space-y-4">
-                <div>
-                    <label class="text-sm font-bold text-dark mb-2 block">Pachet</label>
-                    <select id="bookPackage" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-candy-pink outline-none transition-colors font-medium">
-                        <option value="standard">🌟 Standard — 100 MDL / 2h</option>
-                        <option value="premium">🎉 Premium — 180 MDL / 3h</option>
-                        <option value="birthday">🎂 Zi de Naștere — 1500 MDL</option>
-                    </select>
-                </div>
-
-                <div>
-                    <label class="text-sm font-bold text-dark mb-2 block">Data dorită</label>
-                    <input type="date" id="bookDate" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-candy-pink outline-none transition-colors font-medium" min="">
-                </div>
-
-                <div>
-                    <label class="text-sm font-bold text-dark mb-2 block">Număr de copii</label>
-                    <div class="flex items-center gap-3">
-                        <button onclick="changeKids(-1)" class="w-10 h-10 rounded-xl bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors font-bold text-lg">−</button>
-                        <span id="kidsCount" class="text-2xl font-black text-dark w-12 text-center">1</span>
-                        <button onclick="changeKids(1)" class="w-10 h-10 rounded-xl bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors font-bold text-lg">+</button>
-                    </div>
-                </div>
-
-                <button onclick="goToStep2()" class="w-full py-3 bg-gradient-to-r from-candy-pink to-candy-purple text-white font-bold rounded-xl hover:brightness-110 transition-all">
-                    Alege Ora →
-                </button>
-            </div>
-        </div>
-
-        <!-- Step 2: Time -->
-        <div id="step2" class="px-6 pb-6 hidden">
-            <div class="space-y-4">
-                <div>
-                    <label class="text-sm font-bold text-dark mb-3 block">Alege ora</label>
-                    <div id="timeSlots" class="grid grid-cols-4 gap-2">
-                        <!-- Generated by JS -->
-                    </div>
-                </div>
-
-                <div>
-                    <label class="text-sm font-bold text-dark mb-2 block">Numele tău</label>
-                    <input type="text" id="bookName" placeholder="Ex: Ana Popescu" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-candy-pink outline-none transition-colors">
-                </div>
-
-                <div>
-                    <label class="text-sm font-bold text-dark mb-2 block">Telefon</label>
-                    <input type="tel" id="bookPhone" placeholder="Ex: 069 123 456" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-candy-pink outline-none transition-colors">
-                </div>
-
-                <div>
-                    <label class="text-sm font-bold text-dark mb-2 block">Observații (opțional)</label>
-                    <textarea id="bookNotes" rows="2" placeholder="Ex: Zi de naștere, alergii alimentare..." class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-candy-pink outline-none transition-colors resize-none"></textarea>
-                </div>
-
-                <div class="flex gap-3">
-                    <button onclick="goToStep1()" class="flex-1 py-3 border-2 border-gray-200 text-gray-500 font-bold rounded-xl hover:bg-gray-50 transition-all">
-                        ← Înapoi
-                    </button>
-                    <button onclick="submitBooking()" class="flex-1 py-3 bg-gradient-to-r from-candy-pink to-candy-purple text-white font-bold rounded-xl hover:brightness-110 transition-all">
-                        Confirmă 🎉
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Step 3: Success -->
-        <div id="step3" class="px-6 pb-6 hidden text-center py-8">
-            <div class="text-6xl mb-4">✅</div>
-            <h3 class="text-2xl font-black text-dark mb-2">Programare Trimisă!</h3>
-            <p class="text-gray-500 mb-2">Te vom contacta în curând pentru confirmare.</p>
-            <div id="bookingSummary" class="bg-sky-50 rounded-xl p-4 text-left text-sm space-y-2 mb-6">
-                <!-- Filled by JS -->
-            </div>
-            <button onclick="closeBooking()" class="w-full py-3 bg-gradient-to-r from-candy-pink to-candy-purple text-white font-bold rounded-xl hover:brightness-110 transition-all">
-                Perfect! 🎈
-            </button>
-        </div>
-    </div>
-</div>
-
-<!-- ========== SCRIPTS ========== -->
-<script>
-    // --- Navigation ---
-    function toggleMenu() {
-        document.getElementById('mobileMenu').classList.toggle('active');
+  // ===== Init =====
+  // ===== Check if restaurant is currently open (10:00 - 22:00) =====
+  function updateOpenStatus() {
+    const now = new Date();
+    const hour = now.getHours();
+    const badge = document.getElementById('openStatusBadge');
+    if (hour >= 10 && hour < 22) {
+      badge.textContent = 'Deschis acum';
+      badge.className = 'text-sm font-bold text-candy-green';
+    } else {
+      badge.textContent = 'Închis';
+      badge.className = 'text-sm font-bold text-red-500';
     }
+  }
 
-    document.querySelectorAll('a[href^="#"]').forEach(a => {
-        a.addEventListener('click', e => {
-            const t = document.querySelector(a.getAttribute('href'));
-            if (t) { e.preventDefault(); t.scrollIntoView({behavior:'smooth'}); }
-        });
-    });
-
-    // --- Intersection Observer ---
-    const observer = new IntersectionObserver(entries => {
-        entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
-    }, {threshold: 0.1});
-    document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
-
-    // --- Menu Category Tabs (Pizza Pe Vatra style) ---
-    function showCategory(cat) {
-        // Update tabs
-        document.querySelectorAll('.cat-tab').forEach(tab => {
-            tab.classList.remove('bg-sky-500','text-white','shadow-md');
-            tab.classList.add('bg-gray-100','text-gray-600');
-        });
-        const activeTab = document.querySelector(`.cat-tab[data-cat="${cat}"]`);
-        if (activeTab) {
-            activeTab.classList.remove('bg-gray-100','text-gray-600');
-            activeTab.classList.add('bg-sky-500','text-white','shadow-md');
-        }
-
-        // Show/hide categories with animation
-        document.querySelectorAll('.menu-category').forEach(section => {
-            if (section.id === `cat-${cat}`) {
-                section.classList.remove('hidden');
-                section.style.opacity = '0';
-                section.style.transform = 'translateY(15px)';
-                setTimeout(() => {
-                    section.style.transition = 'all 0.4s ease';
-                    section.style.opacity = '1';
-                    section.style.transform = 'translateY(0)';
-                }, 50);
-            } else {
-                section.classList.add('hidden');
-            }
-        });
-
-        // Scroll tabs so active tab is visible
-        if (activeTab) {
-            activeTab.scrollIntoView({behavior:'smooth', block:'nearest', inline:'center'});
-        }
-    }
-
-    // --- Expand Category (toate optiunile) ---
-    function expandCategory(el) {
-        const carousel = el.parentElement;
-        const items = carousel.querySelectorAll('.menu-item');
-        // Show all items by removing the flex scroll and making it a grid
-        carousel.classList.remove('menu-carousel');
-        carousel.style.display = 'grid';
-        carousel.style.gridTemplateColumns = 'repeat(auto-fill, minmax(260px, 1fr))';
-        carousel.style.gap = '16px';
-        items.forEach(item => {
-            item.style.flex = '';
-        });
-        // Remove the see-all card
-        el.remove();
-    }
-
-    // --- Booking System ---
-    let bookingData = { package: 'standard', date: '', time: '', kids: 1, name: '', phone: '', notes: '' };
-
-    // Set min date to today
+  async function init() {
     const today = new Date().toISOString().split('T')[0];
-    document.getElementById('bookDate').min = today;
-    document.getElementById('bookDate').value = today;
+    document.getElementById('date').min = today;
+    
+    await Promise.all([loadMenu(), loadGallery(), loadContact(), loadPackages()]);
+    
+    // Update open/closed status
+    updateOpenStatus();
+    setInterval(updateOpenStatus, 60000); // Update every minute
+    
+    document.getElementById('date').addEventListener('change', loadSlots);
+    
+    observeFadeElements();
+  }
 
-    function openBooking(pkg) {
-        if (pkg) document.getElementById('bookPackage').value = pkg;
-        document.getElementById('bookingModal').classList.add('active');
-        showStep(1);
-        document.body.style.overflow = 'hidden';
+  // ===== Load packages from API =====
+  async function loadPackages() {
+    try {
+      const res = await fetch('/api/packages');
+      packages = await res.json();
+      renderPackageCards();
+    } catch (e) {
+      console.error('Packages load failed:', e);
     }
+  }
 
-    function closeBooking() {
-        document.getElementById('bookingModal').classList.remove('active');
-        document.body.style.overflow = '';
-        showStep(1); // Reset
+  function renderPackageCards() {
+    const container = document.getElementById('packageCardsContainer');
+    if (!packages.length) {
+      container.innerHTML = '<p class="col-span-full text-gray-400 text-center py-8">Niciun pachet disponibil momentan.</p>';
+      return;
     }
-
-    function showStep(n) {
-        document.getElementById('step1').classList.toggle('hidden', n !== 1);
-        document.getElementById('step2').classList.toggle('hidden', n !== 2);
-        document.getElementById('step3').classList.toggle('hidden', n !== 3);
-
-        // Update step indicators
-        const dots = [document.getElementById('step1Dot'), document.getElementById('step2Dot'), document.getElementById('step3Dot')];
-        dots.forEach((d, i) => {
-            if (i < n) { d.className = 'w-8 h-8 rounded-full bg-candy-pink text-white text-sm font-bold flex items-center justify-center'; }
-            else { d.className = 'w-8 h-8 rounded-full bg-gray-200 text-gray-400 text-sm font-bold flex items-center justify-center'; }
-        });
-
-        document.getElementById('stepProgress').style.width = n > 1 ? '100%' : '0%';
-        document.getElementById('stepProgress2').style.width = n > 2 ? '100%' : '0%';
-    }
-
-    function changeKids(delta) {
-        bookingData.kids = Math.max(1, Math.min(20, bookingData.kids + delta));
-        document.getElementById('kidsCount').textContent = bookingData.kids;
-    }
-
-    async function goToStep2() {
-        const date = document.getElementById('bookDate').value;
-        if (!date) { alert('Te rog alege o dată!'); return; }
-
-        bookingData.package = document.getElementById('bookPackage').value;
-        bookingData.date = date;
-
-        // Generate time slots (with real availability)
-        const container = document.getElementById('timeSlots');
-        container.innerHTML = '<p class="text-gray-400 text-sm col-span-4">Se încarcă...</p>';
-        // Fetch real availability from backend
-        try {
-            const resp = await fetch(`/api/slots/${date}`);
-            const data = await resp.json();
-            const slots = data.slots || [];
-            if (slots.length === 0) {
-                container.innerHTML = '<p class="text-gray-400 text-sm col-span-4">Nu sunt sloturi disponibile</p>';
-                return;
-            }
-            slots.forEach(s => {
-                const btn = document.createElement('button');
-                btn.className = 'time-slot px-3 py-2 rounded-xl border-2 text-sm font-bold transition-all ';
-                if (!s.available) {
-                    btn.className += 'border-red-200 text-red-300 bg-red-50 cursor-not-allowed';
-                    btn.disabled = true;
-                    btn.title = 'Indisponibil';
-                } else {
-                    btn.className += 'border-gray-200 text-gray-600 hover:border-candy-pink hover:text-candy-pink';
-                    btn.onclick = () => selectTime(s.time, btn);
-                }
-                btn.textContent = s.time;
-                const remaining = document.createElement('span');
-                remaining.className = 'block text-[10px] font-normal text-gray-400';
-                remaining.textContent = s.available ? `${s.remaining} locuri` : 'plin';
-                btn.appendChild(remaining);
-                container.appendChild(btn);
-            });
-        } catch(e) {
-            // Fallback to static slots
-            const hours = ['10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00'];
-            hours.forEach(h => {
-                const btn = document.createElement('button');
-                btn.className = 'time-slot px-3 py-2 rounded-xl border-2 border-gray-200 text-sm font-bold text-gray-600 hover:border-candy-pink hover:text-candy-pink transition-all';
-                btn.textContent = h;
-                btn.onclick = () => selectTime(h, btn);
-                container.appendChild(btn);
-            });
-        }
-
-        showStep(2);
-    }
-
-    function goToStep1() { showStep(1); }
-
-    function selectTime(time, btn) {
-        bookingData.time = time;
-        document.querySelectorAll('.time-slot').forEach(b => b.classList.remove('selected'));
-        btn.classList.add('selected');
-    }
-
-    async function submitBooking() {
-        const name = document.getElementById('bookName').value.trim();
-        const phone = document.getElementById('bookPhone').value.trim();
-        if (!name) { alert('Te rog introdu numele tău!'); return; }
-        if (!phone) { alert('Te rog introdu telefonul!'); return; }
-        if (!bookingData.time) { alert('Te rog alege o oră!'); return; }
-
-        bookingData.name = name;
-        bookingData.phone = phone;
-        bookingData.notes = document.getElementById('bookNotes').value;
-
-        // Submit to backend
-        try {
-            const resp = await fetch('/api/bookings', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    package: bookingData.package,
-                    date: bookingData.date,
-                    time: bookingData.time,
-                    kids_count: bookingData.kids,
-                    client_name: bookingData.name,
-                    client_phone: bookingData.phone,
-                    notes: bookingData.notes
-                })
-            });
-            const result = await resp.json();
-            if (!resp.ok) {
-                alert(result.error || 'Eroare la trimiterea programării');
-                return;
-            }
-        } catch(e) {
-            console.error('Booking error:', e);
-            // Still show success for demo
-        }
-
-        // Show summary
-        const pkgNames = { standard: '🌟 Standard', premium: '🎉 Premium', birthday: '🎂 Zi de Naștere' };
-        const summary = document.getElementById('bookingSummary');
-        summary.innerHTML = `
-            <div class="flex justify-between"><span class="text-gray-400">Pachet:</span><span class="font-bold text-dark">${pkgNames[bookingData.package]}</span></div>
-            <div class="flex justify-between"><span class="text-gray-400">Data:</span><span class="font-bold text-dark">${bookingData.date}</span></div>
-            <div class="flex justify-between"><span class="text-gray-400">Ora:</span><span class="font-bold text-dark">${bookingData.time}</span></div>
-            <div class="flex justify-between"><span class="text-gray-400">Copii:</span><span class="font-bold text-dark">${bookingData.kids}</span></div>
-            <div class="flex justify-between"><span class="text-gray-400">Nume:</span><span class="font-bold text-dark">${bookingData.name}</span></div>
-            <div class="flex justify-between"><span class="text-gray-400">Telefon:</span><span class="font-bold text-dark">${bookingData.phone}</span></div>
-            ${bookingData.notes ? `<div class="pt-2 border-t border-gray-200"><span class="text-gray-400">Observații:</span><span class="text-dark block mt-1">${bookingData.notes}</span></div>` : ''}
-        `;
-
-        showStep(3);
-        launchConfetti();
-    }
-
-    function launchConfetti() {
-        const colors = ['#FF6B9D','#C084FC','#60A5FA','#34D399','#FBBF24','#FB923C'];
-        for (let i = 0; i < 50; i++) {
-            const piece = document.createElement('div');
-            piece.className = 'confetti-piece';
-            piece.style.left = Math.random() * 100 + 'vw';
-            piece.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-            piece.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
-            piece.style.width = (Math.random() * 10 + 5) + 'px';
-            piece.style.height = (Math.random() * 10 + 5) + 'px';
-            piece.style.animationDuration = (Math.random() * 2 + 2) + 's';
-            piece.style.animationDelay = Math.random() * 0.5 + 's';
-            document.body.appendChild(piece);
-            setTimeout(() => piece.remove(), 4000);
-        }
-    }
-
-    // Close modal on outside click
-    document.getElementById('bookingModal').addEventListener('click', e => {
-        if (e.target === document.getElementById('bookingModal')) closeBooking();
+    container.innerHTML = packages.map((p, i) => `
+      <div class="package-card" onclick="selectPackage('${p.name.toLowerCase().replace(/\s+/g, '-')}', ${p.id})" data-package="${p.name.toLowerCase().replace(/\s+/g, '-')}" data-id="${p.id}">
+        <div class="flex items-start justify-between mb-3">
+          <div class="flex items-center gap-3">
+            <span class="text-3xl">${p.icon}</span>
+            <div>
+              <h4 class="font-bold text-lg">${p.name}</h4>
+              ${p.description ? `<p class="text-sm text-gray-500">${p.description}</p>` : ''}
+            </div>
+          </div>
+          <div class="text-right">
+            <p class="text-2xl font-black text-candy-pink">${p.price_per_child || p.price_group}</p>
+            ${p.price_per_child ? `<p class="text-xs text-gray-400">/copil</p>` : `<p class="text-xs text-gray-400">/grup</p>`}
+          </div>
+        </div>
+        ${p.includes ? `<div class="flex flex-wrap gap-2 text-sm text-gray-500">${p.includes.split(',').map(item => `<span class="flex items-center gap-1"><iconify-icon icon="lucide:check" width="14" class="text-candy-green"></iconify-icon>${item.trim()}</span>`).join('')}</div>` : ''}
+        <div class="package-check absolute top-4 right-4 w-6 h-6 rounded-full hidden items-center justify-center">
+          <iconify-icon icon="lucide:check" width="14"></iconify-icon>
+        </div>
+      </div>
+    `).join('');
+    
+    // Re-attach click listeners
+    document.querySelectorAll('.package-card').forEach(card => {
+      card.addEventListener('click', () => selectPackage(card.dataset.package, card.dataset.id));
     });
-</script>
+  }
 
+  // ===== Booking wizard =====
+  function selectPackage(pkg, pkgId) {
+    selectedPackage = pkg;
+    selectedPackageId = pkgId;
+    document.querySelectorAll('.package-card').forEach(c => {
+      c.classList.remove('selected');
+      const check = c.querySelector('.package-check');
+      if (check) { check.classList.remove('flex'); check.classList.add('hidden'); }
+    });
+    const selected = document.querySelector(`[data-package="${pkg}"]`);
+    if (selected) {
+      selected.classList.add('selected');
+      const check = selected.querySelector('.package-check');
+      if (check) { check.classList.remove('hidden'); check.classList.add('flex'); }
+    }
+    document.getElementById('btnStep1').disabled = false;
+    updateSummary();
+  }
+
+  function changeKids(delta) {
+    const input = document.getElementById('kids_count');
+    let val = parseInt(input.value) + delta;
+    if (val < 1) val = 1;
+    if (val > 30) val = 30;
+    input.value = val;
+    updateSummary();
+  }
+
+  function changeAdults(delta) {
+    const input = document.getElementById('adults_count');
+    let val = parseInt(input.value) + delta;
+    if (val < 0) val = 0;
+    if (val > 20) val = 20;
+    input.value = val;
+    updateSummary();
+  }
+
+  function goToStep(step) {
+    // Validate current step before going forward
+    if (step > currentStep) {
+      if (currentStep === 1 && !selectedPackage) return;
+      if (currentStep === 2 && (!document.getElementById('date').value || !selectedTime)) return;
+    }
+    
+    // Hide current step
+    document.getElementById(`step${currentStep}`).classList.add('hidden');
+    
+    // Update step dots
+    document.querySelectorAll('.step-dot').forEach((dot, i) => {
+      dot.classList.remove('active', 'completed');
+      if (i + 1 < step) dot.classList.add('completed');
+      if (i + 1 === step) dot.classList.add('active');
+    });
+    
+    // Show new step
+    document.getElementById(`step${step}`).classList.remove('hidden');
+    currentStep = step;
+    
+    if (step === 3) updateSummary();
+  }
+
+  async function loadSlots() {
+    const date = document.getElementById('date').value;
+    if (!date) return;
+    
+    try {
+      const res = await fetch(`/api/slots/${date}`);
+      const data = await res.json();
+      const grid = document.getElementById('slotsGrid');
+      const timeSlotsContainer = document.getElementById('timeSlots');
+      
+      timeSlotsContainer.classList.remove('hidden');
+      grid.innerHTML = '';
+      
+      data.slots.forEach(slot => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'time-slot' + (slot.available ? '' : ' disabled');
+        btn.textContent = slot.time;
+        btn.disabled = !slot.available;
+        btn.onclick = () => selectTime(slot.time, btn);
+        grid.appendChild(btn);
+      });
+    } catch (e) {
+      console.error('Slots load failed:', e);
+    }
+  }
+
+  function selectTime(time, btn) {
+    selectedTime = time;
+    document.querySelectorAll('.time-slot').forEach(s => s.classList.remove('selected'));
+    btn.classList.add('selected');
+    document.getElementById('btnStep2').disabled = false;
+    updateSummary();
+  }
+
+  function updateSummary() {
+    const summary = document.getElementById('bookingSummary');
+    const pkgNames = { standard: 'Standard (100 lei/copil)', premium: 'Premium (180 lei/copil)', birthday: 'Zi de Naștere (1500 lei/grup)' };
+    const kids = document.getElementById('kids_count').value || 1;
+    const date = document.getElementById('date').value || '';
+    const time = selectedTime || '';
+    
+    let price = '';
+    if (selectedPackage === 'birthday') price = '1500 lei';
+    else if (selectedPackage === 'premium') price = `${180 * kids} lei`;
+    else if (selectedPackage === 'standard') price = `${100 * kids} lei`;
+    
+    summary.innerHTML = `
+      <div class="flex justify-between"><span class="text-gray-500">Pachet:</span><span class="font-bold">${pkgNames[selectedPackage] || '—'}</span></div>
+      <div class="flex justify-between"><span class="text-gray-500">Copii:</span><span class="font-bold">${kids}</span></div>
+      <div class="flex justify-between"><span class="text-gray-500">Adulți:</span><span class="font-bold">${document.getElementById('adults_count').value || 0}</span></div>
+      <div class="flex justify-between"><span class="text-gray-500">Data:</span><span class="font-bold">${date || '—'}</span></div>
+      <div class="flex justify-between"><span class="text-gray-500">Ora:</span><span class="font-bold">${time || '—'}</span></div>
+      <div class="flex justify-between border-t pt-2 mt-2"><span class="text-gray-500">Total:</span><span class="font-black text-candy-pink">${price || '—'}</span></div>
+    `;
+  }
+
+  function resetBooking() {
+    selectedPackage = null;
+    selectedPackageId = null;
+    selectedTime = null;
+    currentStep = 1;
+    document.getElementById('bookingForm').reset();
+    document.querySelectorAll('.package-card').forEach(c => {
+      c.classList.remove('selected');
+      const check = c.querySelector('.package-check');
+      if (check) check.classList.add('hidden');
+    });
+    document.querySelectorAll('.step-dot').forEach((dot, i) => {
+      dot.classList.remove('active', 'completed');
+      if (i === 0) dot.classList.add('active');
+    });
+    document.getElementById('step1').classList.remove('hidden');
+    document.getElementById('step2').classList.add('hidden');
+    document.getElementById('step3').classList.add('hidden');
+    document.getElementById('bookingSuccess').classList.add('hidden');
+    document.getElementById('bookingForm').classList.remove('hidden');
+    document.getElementById('btnStep1').disabled = true;
+    document.getElementById('btnStep2').disabled = true;
+    document.getElementById('kids_count').value = 1;
+    document.getElementById('adults_count').value = 0;
+    document.getElementById('timeSlots').classList.add('hidden');
+  }
+
+  // ===== Booking form submit =====
+  document.getElementById('bookingForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const data = {
+      package: selectedPackage,
+      date: document.getElementById('date').value,
+      time: selectedTime,
+      kids_count: parseInt(document.getElementById('kids_count').value),
+      client_name: document.getElementById('client_name').value,
+      client_phone: document.getElementById('client_phone').value,
+      notes: document.getElementById('notes').value
+    };
+    
+    try {
+      const res = await fetch('/api/bookings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      const result = await res.json();
+      if (!res.ok) throw new Error(result.error || 'Booking failed');
+      
+      document.getElementById('bookingForm').classList.add('hidden');
+      document.getElementById('bookingSuccess').classList.remove('hidden');
+    } catch (err) {
+      alert('Eroare: ' + err.message);
+    }
+  });
+
+  // ===== Load Menu =====
+  async function loadMenu() {
+    try {
+      const [catsRes, prodsRes] = await Promise.all([
+        fetch('/api/categories'),
+        fetch('/api/products')
+      ]);
+      categories = await catsRes.json();
+      products = await prodsRes.json();
+      
+      renderCategoryTabs();
+      
+      if (categories.length > 0) {
+        currentCategory = categories[0].id;
+        renderMenu();
+      } else {
+        document.getElementById('menuEmpty').classList.remove('hidden');
+        document.getElementById('menuGrid').classList.add('hidden');
+      }
+    } catch (e) {
+      console.error('Menu load failed:', e);
+    } finally {
+      document.getElementById('menuLoading').classList.add('hidden');
+    }
+  }
+
+  function renderCategoryTabs() {
+    const container = document.getElementById('categoryTabs');
+    if (!categories.length) { container.classList.add('hidden'); return; }
+    container.innerHTML = categories.map(cat => `
+      <button onclick="selectCategory(${cat.id})" 
+        class="cat-tab px-6 py-3 rounded-2xl font-bold text-sm border-2 border-gray-100 ${currentCategory === cat.id ? 'active' : 'bg-white text-gray-600 hover:border-candy-pink'}">
+        ${cat.icon} ${cat.name}
+      </button>
+    `).join('');
+  }
+
+  function selectCategory(id) {
+    currentCategory = id;
+    renderCategoryTabs();
+    renderMenu();
+  }
+
+  function renderMenu() {
+    const grid = document.getElementById('menuGrid');
+    const filtered = products.filter(p => p.category_id === currentCategory);
+    
+    if (!filtered.length) {
+      grid.innerHTML = '<div class="col-span-full text-center py-12 text-gray-400">Niciun produs în această categorie.</div>';
+      return;
+    }
+    
+    grid.innerHTML = filtered.map(p => `
+      <div class="menu-item card overflow-hidden" onclick="openProductModal('${p.image}', '${p.name.replace(/'/g, "\\'")}', '${(p.description||'').replace(/'/g, "\\'")}', '${p.price}', '${p.weight}', '${p.badge}')">
+        ${p.image ? 
+          `<img src="${p.image}" alt="${p.name}" class="w-full h-40 object-cover">` : 
+          `<div class="w-full h-40 bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center text-5xl opacity-30">${p.icon || '🍽️'}</div>`
+        }
+        <div class="p-5">
+          ${p.badge ? `<span class="inline-block bg-candy-yellow text-dark text-xs font-bold px-3 py-1 rounded-full mb-3">${p.badge}</span>` : ''}
+          <h4 class="font-bold text-lg text-dark mb-2 leading-tight">${p.name}</h4>
+          ${p.description ? `<p class="text-gray-500 text-sm mb-3 line-clamp-2">${p.description}</p>` : ''}
+          <div class="flex items-center justify-between">
+            ${p.weight ? `<span class="text-xs text-gray-400">${p.weight}</span>` : '<span></span>'}
+            ${p.price ? `<span class="font-black text-xl price-tag">${p.price}</span>` : ''}
+          </div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  // ===== Product Modal =====
+  function openProductModal(img, name, desc, price, weight, badge) {
+    const modal = document.getElementById('productModal');
+    const imgEl = document.getElementById('modalImg');
+    const placeholder = document.getElementById('modalImgPlaceholder');
+    
+    if (img) {
+      imgEl.src = img;
+      imgEl.classList.remove('hidden');
+      placeholder.classList.add('hidden');
+    } else {
+      imgEl.classList.add('hidden');
+      placeholder.classList.remove('hidden');
+    }
+    
+    document.getElementById('modalTitle').textContent = name || '';
+    document.getElementById('modalDesc').textContent = desc || '';
+    document.getElementById('modalPrice').textContent = price || '';
+    document.getElementById('modalWeight').textContent = weight || '';
+    
+    const badgeEl = document.getElementById('modalBadge');
+    if (badge && badge.trim()) { badgeEl.textContent = badge; badgeEl.classList.remove('hidden'); }
+    else { badgeEl.classList.add('hidden'); }
+    
+    modal.classList.remove('hidden');
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeProductModal() {
+    const modal = document.getElementById('productModal');
+    modal.classList.add('hidden');
+    modal.style.display = 'none';
+    document.body.style.overflow = '';
+  }
+
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeProductModal(); });
+
+  // ===== Gallery =====
+  async function loadGallery() {
+    try {
+      const res = await fetch('/api/gallery');
+      const gallery = await res.json();
+      const grid = document.getElementById('galleryGrid');
+      
+      if (!gallery.length) {
+        grid.innerHTML = '<p class="col-span-full text-center text-gray-400 py-12">Galeria momentan indisponibilă.</p>';
+      } else {
+        grid.innerHTML = gallery.map(item => `
+          <div class="gallery-item cursor-pointer">
+            <img src="${item.image_url}" alt="${item.caption || ''}" class="w-full h-48 object-cover">
+            ${item.caption ? `<div class="p-3 bg-white"><p class="text-sm font-medium text-gray-700">${item.caption}</p></div>` : ''}
+          </div>
+        `).join('');
+      }
+    } catch (e) {
+      console.error('Gallery load failed:', e);
+    } finally {
+      document.getElementById('galleryLoading').classList.add('hidden');
+    }
+  }
+
+  // ===== Contact =====
+  async function loadContact() {
+    try {
+      const res = await fetch('/api/contact');
+      const contact = await res.json();
+      const infoDiv = document.getElementById('contactInfo');
+      
+      let html = '';
+      const contactItems = [
+        { key: 'phone', icon: 'lucide:phone', color: 'candy-pink', label: 'Telefon' },
+        { key: 'address', icon: 'lucide:map-pin', color: 'candy-blue', label: 'Adresă' },
+        { key: 'email', icon: 'lucide:mail', color: 'candy-green', label: 'Email' },
+      ];
+      
+      contactItems.forEach(item => {
+        if (contact[item.key]) {
+          const val = contact[item.key].value || contact[item.key];
+          html += `
+            <div class="flex items-center gap-4 p-4 bg-gray-50 rounded-2xl">
+              <div class="w-12 h-12 bg-${item.color}/10 rounded-xl flex items-center justify-center flex-shrink-0">
+                <iconify-icon icon="${item.icon}" width="22" class="text-${item.color}"></iconify-icon>
+              </div>
+              <div>
+                <p class="text-xs text-gray-400 font-medium uppercase tracking-wide">${item.label}</p>
+                <p class="font-bold text-dark">${val}</p>
+              </div>
+            </div>
+          `;
+        }
+      });
+      
+      infoDiv.innerHTML = html || '<p class="text-gray-400 text-center py-8">Informații indisponibile momentan.</p>';
+      
+      if (contact.map_embed && contact.map_embed.value) {
+        // Use search URL instead of embed (embed requires API key for most sites)
+        const mapSearchUrl = encodeURIComponent(contact.map_embed.value) || 'Sky+Kids+Soroca';
+        document.getElementById('mapEmbed').innerHTML = `
+          <div class="w-full h-full flex flex-col items-center justify-center bg-gray-100 rounded-2xl p-6">
+            <iconify-icon icon="logos:google-maps" width="48" class="text-gray-400 mb-4"></iconify-icon>
+            <p class="text-gray-500 text-center mb-4">Deschide harta pentru a găsi Sky Kids Soroca</p>
+            <a href="https://www.google.com/maps/search/Sky+Kids+Soroca" target="_blank" class="bg-candy-pink text-white px-6 py-3 rounded-xl font-bold hover:opacity-90 transition-all">
+              Deschide în Google Maps
+            </a>
+          </div>
+        `;
+      } else {
+        document.getElementById('mapEmbed').innerHTML = `
+          <div class="w-full h-full flex items-center justify-center text-gray-400">
+            <div class="text-center">
+              <iconify-icon icon="lucide:map" width="48" class="mx-auto mb-3 opacity-50"></iconify-icon>
+              <p class="text-sm">Hartă indisponibilă</p>
+            </div>
+          </div>
+        `;
+      }
+      
+      if (contact.facebook) {
+        const fbUrl = contact.facebook.value || contact.facebook;
+        document.getElementById('socialFacebook').href = fbUrl;
+        document.getElementById('footerFacebook').href = fbUrl;
+      }
+      if (contact.instagram) {
+        const igUrl = contact.instagram.value || contact.instagram;
+        document.getElementById('socialInstagram').href = igUrl.startsWith('http') ? igUrl : `https://instagram.com/${igUrl.replace('@','')}`;
+        document.getElementById('footerInstagram').href = igUrl.startsWith('http') ? igUrl : `https://instagram.com/${igUrl.replace('@','')}`;
+      }
+    } catch (e) {
+      console.error('Contact load failed:', e);
+    }
+  }
+
+  // ===== Scroll animations =====
+  function observeFadeElements() {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) entry.target.classList.add('visible');
+      });
+    }, { threshold: 0.1 });
+    
+    document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+  }
+
+  init();
+  </script>
 </body>
 </html>

@@ -1,326 +1,1913 @@
 <!DOCTYPE html>
 <html lang="ro">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sky Kids — Admin Dashboard</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: { sans: ['Nunito', 'sans-serif'] },
-                    colors: {
-                        dark: '#1a1a2e',
-                        candy: { pink:'#FF6B9D', purple:'#C084FC', blue:'#60A5FA', green:'#34D399', yellow:'#FBBF24', orange:'#FB923C' }
-                    }
-                }
-            }
-        }
-    </script>
-    <style>
-        body { font-family: 'Nunito', sans-serif; }
-        .fade-in { animation: fadeIn 0.3s ease; }
-        @keyframes fadeIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
-        .stat-card { transition: all 0.3s ease; }
-        .stat-card:hover { transform: translateY(-4px); }
-    </style>
-</head>
-<body class="bg-gray-50 min-h-screen">
-
-<!-- LOGIN -->
-<div id="loginScreen" class="min-h-screen flex items-center justify-center bg-gradient-to-br from-sky-400 via-purple-400 to-pink-400 p-6">
-    <div class="bg-white rounded-3xl shadow-2xl p-8 max-w-md w-full fade-in">
-        <div class="text-center mb-8">
-            <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-candy-pink to-candy-purple flex items-center justify-center text-white text-2xl font-black mx-auto mb-4 shadow-lg">SK</div>
-            <h1 class="text-2xl font-black text-dark">Sky Kids Admin</h1>
-            <p class="text-gray-400 text-sm mt-1">Panou de administrare</p>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sky Kids Admin 🎈</title>
+  <script src="https://cdn.tailwindcss.com">
+  // ===== STATS / DASHBOARD =====
+  async function loadStats() {
+    const period = document.getElementById('statsPeriod').value;
+    const dateFrom = document.getElementById('statsDateFrom').value;
+    const dateTo = document.getElementById('statsDateTo').value;
+    
+    let url = '/api/admin/bookings?all=1';
+    const res = await fetch(url, { headers: authHeaders() });
+    let bookings = (await res.json()).bookings;
+    
+    // Filter by period
+    const now = new Date();
+    let from = new Date();
+    let to = new Date();
+    
+    if (dateFrom && dateTo) {
+      from = new Date(dateFrom);
+      to = new Date(dateTo);
+    } else if (period === 'today') {
+      from = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      to = new Date();
+    } else if (period === 'yesterday') {
+      from = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
+      to = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
+    } else if (period === 'week') {
+      from = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+      to = new Date();
+    } else if (period === 'month') {
+      from = new Date(now.getFullYear(), now.getMonth(), 1);
+      to = new Date();
+    } else if (period === 'year') {
+      from = new Date(now.getFullYear(), 0, 1);
+      to = new Date();
+    } else if (period === 'all') {
+      from = new Date(2020, 0, 1);
+      to = new Date(2030, 0, 1);
+    }
+    
+    bookings = bookings.filter(b => {
+      const d = new Date(b.date);
+      return d >= from && d <= to && b.status !== 'cancelled';
+    });
+    
+    // Calculate stats
+    const totalKids = bookings.reduce((sum, b) => sum + (b.kids_count || 0), 0);
+    const totalAdults = bookings.reduce((sum, b) => sum + (b.adults_count || 0), 0);
+    
+    // Calculate revenue
+    let totalRevenue = 0;
+    const pkgPrices = { standard: 100, premium: 180, birthday: 1500 };
+    bookings.forEach(b => {
+      if (b.package === 'birthday') totalRevenue += 1500;
+      else if (b.package === 'premium') totalRevenue += (b.kids_count || 0) * 180 + (b.adults_count || 0) * 120;
+      else if (b.package === 'standard') totalRevenue += (b.kids_count || 0) * 100 + (b.adults_count || 0) * 80;
+    });
+    
+    document.getElementById('statBookings').textContent = bookings.length;
+    document.getElementById('statKids').textContent = totalKids;
+    document.getElementById('statAdults').textContent = totalAdults;
+    document.getElementById('statRevenue').textContent = totalRevenue + ' lei';
+    
+    // Render stats bookings list
+    const list = document.getElementById('statsBookingsList');
+    if (!bookings.length) {
+      list.innerHTML = '<p class="text-gray-400 text-center py-8">Nicio rezervare în această perioadă.</p>';
+      return;
+    }
+    list.innerHTML = bookings.map(b => `
+      <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+        <div>
+          <p class="font-bold">${b.client_name}</p>
+          <p class="text-sm text-gray-500">${b.date} la ${b.time}</p>
         </div>
-        <div id="loginError" class="hidden bg-red-50 text-red-600 text-sm font-medium p-3 rounded-xl mb-4"></div>
-        <div class="space-y-4">
-            <input id="loginUser" type="text" value="admin" placeholder="Username" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-candy-pink outline-none transition-colors font-bold">
-            <input id="loginPass" type="password" placeholder="Parolă" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-candy-pink outline-none transition-colors font-bold"
-                   onkeydown="if(event.key==='Enter')login()">
-            <button onclick="login()" class="w-full py-3 bg-gradient-to-r from-candy-pink to-candy-purple text-white font-bold rounded-xl hover:brightness-110 transition-all">
-                Intră 🔐
-            </button>
+        <div class="text-right">
+          <p class="font-bold text-candy-pink">${b.package}</p>
+          <p class="text-sm text-gray-500">${b.kids_count} copii, ${b.adults_count || 0} adulți</p>
         </div>
-    </div>
-</div>
+        <span class="text-xs font-bold px-3 py-1 rounded-full badge-${b.status}">${b.status}</span>
+      </div>
+    `).join('');
+  }
 
-<!-- DASHBOARD -->
-<div id="dashboard" class="hidden">
-    <nav class="bg-white shadow-sm border-b px-6 py-4 flex items-center justify-between sticky top-0 z-40">
-        <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-candy-pink to-candy-purple flex items-center justify-center text-white font-black">SK</div>
-            <span class="font-bold text-dark">Admin Dashboard</span>
+  // ===== BOOKINGS =====
+  async function loadBookings() {
+    const status = document.getElementById('bookingsStatusFilter')?.value || '';
+    let url = '/api/admin/bookings';
+    if (status) url += '?status=' + status;
+    const data = await (await fetch(url, { headers: authHeaders() })).json();
+    allBookings = data.bookings;
+    renderBookings();
+  }
+
+  function renderBookings() {
+    const list = document.getElementById('bookingsList');
+    if (!allBookings.length) {
+      list.innerHTML = '<div class="card p-12 text-center text-gray-400">Nicio rezervare momentan.</div>';
+      return;
+    }
+    const statusBadge = { pending: 'badge-pending', confirmed: 'badge-confirmed', cancelled: 'badge-cancelled', completed: 'badge-completed' };
+    list.innerHTML = allBookings.map(b => `
+      <div class="card p-5 flex flex-wrap items-center justify-between gap-4 cursor-pointer hover:shadow-lg transition-all" onclick="openBookingEditModal('${b.id}')">
+        <div>
+          <h4 class="font-bold text-lg">${b.client_name}</h4>
+          <p class="text-gray-500">${b.client_phone}</p>
+          <p class="text-sm text-gray-400">${b.date} la ${b.time}</p>
+          ${b.notes ? `<p class="text-sm text-gray-400 mt-1">📝 ${b.notes}</p>` : ''}
+          ${b.admin_notes ? `<p class="text-sm text-candy-blue mt-1 font-medium">🔒 ${b.admin_notes}</p>` : ''}
+        </div>
+        <div class="text-center">
+          <p class="font-bold text-candy-pink">${b.package}</p>
+          <p class="text-sm">${b.kids_count} copii</p>
+          <p class="text-sm">${b.adults_count || 0} adulți</p>
         </div>
         <div class="flex items-center gap-2">
-            <button onclick="refreshData()" class="p-2 hover:bg-gray-100 rounded-lg" title="Refresh">
-                <iconify-icon icon="lucide:refresh-cw" width="18" class="text-gray-500"></iconify-icon>
-            </button>
-            <button onclick="logout()" class="px-4 py-2 text-sm font-bold text-red-500 hover:bg-red-50 rounded-lg flex items-center gap-1">
-                <iconify-icon icon="lucide:log-out" width="16"></iconify-icon> Ieși
-            </button>
+          <span class="px-3 py-1 rounded-full text-xs font-bold ${statusBadge[b.status]}">${b.status}</span>
+          ${b.status === 'pending' ? `
+            <button onclick="event.stopPropagation(); updateBookingStatus('${b.id}', 'confirmed')" class="px-4 py-2 bg-candy-green text-white rounded-xl text-sm font-bold hover:opacity-90">Confirmă</button>
+            <button onclick="event.stopPropagation(); updateBookingStatus('${b.id}', 'cancelled')" class="px-4 py-2 bg-red-500 text-white rounded-xl text-sm font-bold hover:opacity-90">Anulează</button>
+          ` : ''}
         </div>
-    </nav>
-
-    <div class="max-w-7xl mx-auto px-6 py-8">
-        <!-- Stats -->
-        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-            <div class="stat-card bg-white rounded-2xl p-5 shadow-sm border">
-                <div class="flex items-center justify-between mb-2"><div class="w-10 h-10 rounded-xl bg-sky-100 flex items-center justify-center"><iconify-icon icon="lucide:calendar" class="text-sky-500" width="20"></iconify-icon></div><span class="text-xs text-gray-400 font-bold">Total</span></div>
-                <div id="statTotal" class="text-3xl font-black text-dark">0</div>
-                <div class="text-xs text-gray-400">Programări</div>
-            </div>
-            <div class="stat-card bg-white rounded-2xl p-5 shadow-sm border">
-                <div class="flex items-center justify-between mb-2"><div class="w-10 h-10 rounded-xl bg-orange-100 flex items-center justify-center"><iconify-icon icon="lucide:clock" class="text-candy-orange" width="20"></iconify-icon></div><span class="text-xs text-gray-400 font-bold">Pending</span></div>
-                <div id="statPending" class="text-3xl font-black text-candy-orange">0</div>
-                <div class="text-xs text-gray-400">De confirmat</div>
-            </div>
-            <div class="stat-card bg-white rounded-2xl p-5 shadow-sm border">
-                <div class="flex items-center justify-between mb-2"><div class="w-10 h-10 rounded-xl bg-pink-100 flex items-center justify-center"><iconify-icon icon="lucide:baby" class="text-candy-pink" width="20"></iconify-icon></div><span class="text-xs text-gray-400 font-bold">Azi</span></div>
-                <div id="statToday" class="text-3xl font-black text-candy-pink">0</div>
-                <div class="text-xs text-gray-400">Copii azi</div>
-            </div>
-            <div class="stat-card bg-white rounded-2xl p-5 shadow-sm border">
-                <div class="flex items-center justify-between mb-2"><div class="w-10 h-10 rounded-xl bg-green-100 flex items-center justify-center"><iconify-icon icon="lucide:banknote" class="text-candy-green" width="20"></iconify-icon></div><span class="text-xs text-gray-400 font-bold">Venit</span></div>
-                <div id="statRevenue" class="text-3xl font-black text-candy-green">0</div>
-                <div class="text-xs text-gray-400">MDL estimat</div>
-            </div>
-        </div>
-
-        <!-- Tabs -->
-        <div class="flex gap-2 mb-6">
-            <button onclick="switchTab('bookings')" class="tab-btn px-5 py-2 rounded-full text-sm font-bold bg-dark text-white" data-tab="bookings">📋 Programări</button>
-            <button onclick="switchTab('upcoming')" class="tab-btn px-5 py-2 rounded-full text-sm font-bold bg-gray-100 text-gray-600" data-tab="upcoming">📅 Următoarele</button>
-            <button onclick="switchTab('settings')" class="tab-btn px-5 py-2 rounded-full text-sm font-bold bg-gray-100 text-gray-600" data-tab="settings">⚙️ Setări</button>
-        </div>
-
-        <!-- Bookings Tab -->
-        <div id="tabBookings" class="tab-content">
-            <div class="flex flex-wrap gap-3 mb-4">
-                <select id="filterStatus" onchange="loadBookings()" class="px-4 py-2 rounded-xl border text-sm font-bold">
-                    <option value="all">Toate</option>
-                    <option value="pending">⏳ Pending</option>
-                    <option value="confirmed">✅ Confirmată</option>
-                    <option value="cancelled">❌ Anulată</option>
-                    <option value="completed">🎉 Completată</option>
-                </select>
-                <input id="filterDate" type="date" onchange="loadBookings()" class="px-4 py-2 rounded-xl border text-sm font-bold">
-                <button onclick="document.getElementById('filterDate').value='';loadBookings()" class="px-4 py-2 text-sm font-bold text-gray-500 hover:text-dark">✕ Reset</button>
-            </div>
-            <div class="bg-white rounded-2xl shadow-sm border overflow-hidden">
-                <div class="overflow-x-auto">
-                    <table class="w-full text-sm">
-                        <thead><tr class="bg-gray-50 text-gray-500 text-xs font-bold uppercase">
-                            <th class="px-4 py-3 text-left">Data / Ora</th>
-                            <th class="px-4 py-3 text-left">Client</th>
-                            <th class="px-4 py-3 text-left">Pachet</th>
-                            <th class="px-4 py-3 text-center">👶</th>
-                            <th class="px-4 py-3 text-left">Status</th>
-                            <th class="px-4 py-3 text-left">Observații</th>
-                            <th class="px-4 py-3 text-right">Acțiuni</th>
-                        </tr></thead>
-                        <tbody id="bookingsTable"><tr><td colspan="7" class="px-4 py-8 text-center text-gray-400">Se încarcă...</td></tr></tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <!-- Upcoming Tab -->
-        <div id="tabUpcoming" class="tab-content hidden">
-            <div id="upcomingList" class="grid gap-4"><div class="text-center text-gray-400 py-8">Se încarcă...</div></div>
-        </div>
-
-        <!-- Settings Tab -->
-        <div id="tabSettings" class="tab-content hidden">
-            <div class="max-w-lg space-y-6">
-                <div class="bg-white rounded-2xl p-6 shadow-sm border">
-                    <h3 class="font-bold text-dark mb-4">🕐 Program</h3>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div><label class="text-xs font-bold text-gray-400 block mb-1">Ora deschidere</label><input id="setOpenHour" type="number" min="6" max="23" class="w-full px-4 py-2 rounded-xl border text-sm font-bold"></div>
-                        <div><label class="text-xs font-bold text-gray-400 block mb-1">Ora închidere</label><input id="setCloseHour" type="number" min="6" max="23" class="w-full px-4 py-2 rounded-xl border text-sm font-bold"></div>
-                    </div>
-                </div>
-                <div class="bg-white rounded-2xl p-6 shadow-sm border">
-                    <h3 class="font-bold text-dark mb-4">🎪 Capacitate</h3>
-                    <label class="text-xs font-bold text-gray-400 block mb-1">Max copii per oră</label>
-                    <input id="setMaxKids" type="number" min="1" max="100" class="w-full px-4 py-2 rounded-xl border text-sm font-bold">
-                </div>
-                <div class="bg-white rounded-2xl p-6 shadow-sm border">
-                    <h3 class="font-bold text-dark mb-4">🔐 Schimbă Parola</h3>
-                    <div class="flex gap-3">
-                        <input id="newPassword" type="password" placeholder="Parolă nouă" class="flex-1 px-4 py-2 rounded-xl border text-sm font-bold">
-                        <button onclick="changePassword()" class="px-6 py-2 bg-dark text-white font-bold rounded-xl text-sm">Schimbă</button>
-                    </div>
-                </div>
-                <button onclick="saveSettings()" class="w-full py-3 bg-gradient-to-r from-candy-pink to-candy-purple text-white font-bold rounded-xl hover:brightness-110 transition-all">
-                    💾 Salvează Setările
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<script>
-let token = localStorage.getItem('skykids_token') || '';
-if (token) showDashboard();
-
-async function api(method, path, body) {
-    const opts = { method, headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` } };
-    if (body) opts.body = JSON.stringify(body);
-    const r = await fetch(path, opts);
-    if (r.status === 401) { logout(); throw new Error('Unauthorized'); }
-    return r.json();
-}
-
-async function login() {
-    const username = document.getElementById('loginUser').value;
-    const password = document.getElementById('loginPass').value;
-    const err = document.getElementById('loginError');
-    try {
-        const res = await fetch('/api/admin/login', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({username,password}) });
-        const data = await res.json();
-        if (!res.ok) { err.textContent = data.error; err.classList.remove('hidden'); return; }
-        token = data.token;
-        localStorage.setItem('skykids_token', token);
-        showDashboard();
-    } catch(e) { err.textContent = 'Server indisponibil'; err.classList.remove('hidden'); }
-}
-
-function logout() {
-    token = '';
-    localStorage.removeItem('skykids_token');
-    location.reload();
-}
-
-async function showDashboard() {
-    document.getElementById('loginScreen').classList.add('hidden');
-    document.getElementById('dashboard').classList.remove('hidden');
-    await refreshData();
-}
-
-async function refreshData() {
-    try {
-        const s = await api('GET', '/api/admin/stats');
-        document.getElementById('statTotal').textContent = s.totalBookings;
-        document.getElementById('statPending').textContent = s.pendingBookings;
-        document.getElementById('statToday').textContent = s.todayKids;
-        document.getElementById('statRevenue').textContent = s.revenue.toLocaleString();
-        renderUpcoming(s.upcomingBookings);
-        loadBookings();
-        loadSettings();
-    } catch(e) { console.error(e); }
-}
-
-async function loadBookings() {
-    const status = document.getElementById('filterStatus').value;
-    const date = document.getElementById('filterDate').value;
-    let url = `/api/admin/bookings?status=${status}`;
-    if (date) url += `&date=${date}`;
-    try {
-        const data = await api('GET', url);
-        renderBookings(data.bookings);
-    } catch(e) { console.error(e); }
-}
-
-const pkgLabels = { standard:'🌟 Standard', premium:'🎉 Premium', birthday:'🎂 Zi de Naștere' };
-const statusColors = { pending:'bg-yellow-100 text-yellow-700', confirmed:'bg-green-100 text-green-700', cancelled:'bg-red-100 text-red-700', completed:'bg-blue-100 text-blue-700' };
-const statusLabels = { pending:'⏳ Pending', confirmed:'✅ Confirmată', cancelled:'❌ Anulată', completed:'🎉 Completată' };
-
-function renderBookings(bookings) {
-    const tb = document.getElementById('bookingsTable');
-    if (!bookings || bookings.length === 0) {
-        tb.innerHTML = '<tr><td colspan="7" class="px-4 py-8 text-center text-gray-400">Nicio programare găsită</td></tr>';
-        return;
-    }
-    tb.innerHTML = bookings.map(b => `
-        <tr class="booking-row border-b border-gray-50 hover:bg-gray-50">
-            <td class="px-4 py-3"><div class="font-bold text-dark">${b.date}</div><div class="text-xs text-gray-400">${b.time}</div></td>
-            <td class="px-4 py-3"><div class="font-bold">${b.client_name}</div><div class="text-xs text-gray-400">${b.client_phone}</div></td>
-            <td class="px-4 py-3 font-bold">${pkgLabels[b.package] || b.package}</td>
-            <td class="px-4 py-3 text-center font-bold">${b.kids_count}</td>
-            <td class="px-4 py-3"><span class="px-2 py-1 rounded-full text-xs font-bold ${statusColors[b.status]}">${statusLabels[b.status]}</span></td>
-            <td class="px-4 py-3 text-xs text-gray-400 max-w-[150px] truncate">${b.notes || '-'}</td>
-            <td class="px-4 py-3 text-right">
-                <div class="flex gap-1 justify-end">
-                    ${b.status === 'pending' ? `<button onclick="updateStatus('${b.id}','confirmed')" class="px-2 py-1 bg-green-100 text-green-700 text-xs font-bold rounded-lg hover:bg-green-200">✅</button>` : ''}
-                    ${b.status === 'confirmed' ? `<button onclick="updateStatus('${b.id}','completed')" class="px-2 py-1 bg-blue-100 text-blue-700 text-xs font-bold rounded-lg hover:bg-blue-200">🎉</button>` : ''}
-                    ${b.status !== 'cancelled' && b.status !== 'completed' ? `<button onclick="updateStatus('${b.id}','cancelled')" class="px-2 py-1 bg-red-100 text-red-700 text-xs font-bold rounded-lg hover:bg-red-200">❌</button>` : ''}
-                    <button onclick="deleteBooking('${b.id}')" class="px-2 py-1 bg-gray-100 text-gray-500 text-xs font-bold rounded-lg hover:bg-gray-200">🗑</button>
-                </div>
-            </td>
-        </tr>
+      </div>
     `).join('');
-}
+  }
 
-function renderUpcoming(bookings) {
-    const el = document.getElementById('upcomingList');
-    if (!bookings || bookings.length === 0) {
-        el.innerHTML = '<div class="text-center text-gray-400 py-8">Nicio programare viitoare</div>';
-        return;
-    }
-    el.innerHTML = bookings.map(b => `
-        <div class="bg-white rounded-2xl p-5 shadow-sm border flex items-center gap-4">
-            <div class="w-14 h-14 rounded-xl bg-sky-100 flex flex-col items-center justify-center shrink-0">
-                <span class="text-lg font-black text-sky-600">${b.date.split('-')[2]}</span>
-                <span class="text-[10px] text-sky-400 font-bold">${['Ian','Feb','Mar','Apr','Mai','Iun','Iul','Aug','Sep','Oct','Nov','Dec'][parseInt(b.date.split('-')[1])-1]}</span>
-            </div>
-            <div class="flex-1 min-w-0">
-                <div class="font-bold text-dark">${b.client_name} — ${b.time}</div>
-                <div class="text-xs text-gray-400">${pkgLabels[b.package]} · ${b.kids_count} copii · ${b.client_phone}</div>
-                ${b.notes ? `<div class="text-xs text-gray-400 mt-1 truncate">📝 ${b.notes}</div>` : ''}
-            </div>
-            <span class="px-2 py-1 rounded-full text-xs font-bold ${statusColors[b.status]}">${statusLabels[b.status]}</span>
-        </div>
-    `).join('');
-}
+  function openBookingEditModal(id) {
+    const b = allBookings.find(b => b.id === id);
+    if (!b) return;
+    document.getElementById('editBookingId').value = b.id;
+    document.getElementById('editClientName').value = b.client_name;
+    document.getElementById('editClientPhone').value = b.client_phone;
+    document.getElementById('editKidsCount').value = b.kids_count;
+    document.getElementById('editAdultsCount').value = b.adults_count || 0;
+    document.getElementById('editNotes').value = b.notes || '';
+    document.getElementById('editAdminNotes').value = b.admin_notes || '';
+    document.getElementById('editStatus').value = b.status;
+    showModal('bookingEditModal');
+  }
 
-async function updateStatus(id, status) {
-    await api('PATCH', `/api/admin/bookings/${id}`, { status });
-    refreshData();
-}
+  function closeBookingEditModal() { hideModal('bookingEditModal'); }
 
-async function deleteBooking(id) {
-    if (!confirm('Sigur vrei să ștergi această programare?')) return;
-    await api('DELETE', `/api/admin/bookings/${id}`);
-    refreshData();
-}
+  async function updateBookingStatus(id, status) {
+    await fetch('/api/admin/bookings/' + id, { method: 'PATCH', headers: authHeaders(), body: JSON.stringify({ status }) });
+    loadBookings();
+  }
 
-async function loadSettings() {
-    try {
-        const s = await api('GET', '/api/admin/settings');
-        document.getElementById('setOpenHour').value = s.open_hour || '10';
-        document.getElementById('setCloseHour').value = s.close_hour || '22';
-        document.getElementById('setMaxKids').value = s.max_kids_per_slot || '20';
-    } catch(e) {}
-}
+  document.getElementById('bookingEditForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const id = document.getElementById('editBookingId').value;
+    const data = {
+      client_name: document.getElementById('editClientName').value,
+      client_phone: document.getElementById('editClientPhone').value,
+      kids_count: parseInt(document.getElementById('editKidsCount').value),
+      adults_count: parseInt(document.getElementById('editAdultsCount').value),
+      notes: document.getElementById('editNotes').value,
+      admin_notes: document.getElementById('editAdminNotes').value,
+      status: document.getElementById('editStatus').value
+    };
+    await fetch('/api/admin/bookings/' + id, { method: 'PUT', headers: authHeaders(), body: JSON.stringify(data) });
+    closeBookingEditModal();
+    loadBookings();
+  });
 
-async function saveSettings() {
-    await api('PUT', '/api/admin/settings', {
-        open_hour: document.getElementById('setOpenHour').value,
-        close_hour: document.getElementById('setCloseHour').value,
-        max_kids_per_slot: document.getElementById('setMaxKids').value,
-    });
-    alert('✅ Setări salvate!');
-}
+  async function deleteBooking() {
+    const id = document.getElementById('editBookingId').value;
+    if (!confirm('Ștergi această rezervare?')) return;
+    await fetch('/api/admin/bookings/' + id, { method: 'DELETE', headers: authHeaders() });
+    closeBookingEditModal();
+    loadBookings();
+  }
 
-async function changePassword() {
-    const pw = document.getElementById('newPassword').value;
-    if (!pw || pw.length < 4) { alert('Parola prea scurtă'); return; }
-    // Simple approach: update via settings
-    alert('Pentru a schimba parola, contactează administratorul serverului.');
-}
+  function showBookingModal() {
+    // For now just show alert - could implement full modal
+    alert('Pentru a adăuga o rezervare, contactează clientul direct.');
+  }
 
-function switchTab(tab) {
-    document.querySelectorAll('.tab-content').forEach(t => t.classList.add('hidden'));
-    document.querySelectorAll('.tab-btn').forEach(b => { b.className = 'tab-btn px-5 py-2 rounded-full text-sm font-bold bg-gray-100 text-gray-600'; });
-    document.getElementById('tab' + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.remove('hidden');
-    document.querySelector(`[data-tab="${tab}"]`).className = 'tab-btn px-5 py-2 rounded-full text-sm font-bold bg-dark text-white';
-}
 </script>
+  <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js">
+  // ===== STATS / DASHBOARD =====
+  async function loadStats() {
+    const period = document.getElementById('statsPeriod').value;
+    const dateFrom = document.getElementById('statsDateFrom').value;
+    const dateTo = document.getElementById('statsDateTo').value;
+    
+    let url = '/api/admin/bookings?all=1';
+    const res = await fetch(url, { headers: authHeaders() });
+    let bookings = (await res.json()).bookings;
+    
+    // Filter by period
+    const now = new Date();
+    let from = new Date();
+    let to = new Date();
+    
+    if (dateFrom && dateTo) {
+      from = new Date(dateFrom);
+      to = new Date(dateTo);
+    } else if (period === 'today') {
+      from = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      to = new Date();
+    } else if (period === 'yesterday') {
+      from = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
+      to = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
+    } else if (period === 'week') {
+      from = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+      to = new Date();
+    } else if (period === 'month') {
+      from = new Date(now.getFullYear(), now.getMonth(), 1);
+      to = new Date();
+    } else if (period === 'year') {
+      from = new Date(now.getFullYear(), 0, 1);
+      to = new Date();
+    } else if (period === 'all') {
+      from = new Date(2020, 0, 1);
+      to = new Date(2030, 0, 1);
+    }
+    
+    bookings = bookings.filter(b => {
+      const d = new Date(b.date);
+      return d >= from && d <= to && b.status !== 'cancelled';
+    });
+    
+    // Calculate stats
+    const totalKids = bookings.reduce((sum, b) => sum + (b.kids_count || 0), 0);
+    const totalAdults = bookings.reduce((sum, b) => sum + (b.adults_count || 0), 0);
+    
+    // Calculate revenue
+    let totalRevenue = 0;
+    const pkgPrices = { standard: 100, premium: 180, birthday: 1500 };
+    bookings.forEach(b => {
+      if (b.package === 'birthday') totalRevenue += 1500;
+      else if (b.package === 'premium') totalRevenue += (b.kids_count || 0) * 180 + (b.adults_count || 0) * 120;
+      else if (b.package === 'standard') totalRevenue += (b.kids_count || 0) * 100 + (b.adults_count || 0) * 80;
+    });
+    
+    document.getElementById('statBookings').textContent = bookings.length;
+    document.getElementById('statKids').textContent = totalKids;
+    document.getElementById('statAdults').textContent = totalAdults;
+    document.getElementById('statRevenue').textContent = totalRevenue + ' lei';
+    
+    // Render stats bookings list
+    const list = document.getElementById('statsBookingsList');
+    if (!bookings.length) {
+      list.innerHTML = '<p class="text-gray-400 text-center py-8">Nicio rezervare în această perioadă.</p>';
+      return;
+    }
+    list.innerHTML = bookings.map(b => `
+      <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+        <div>
+          <p class="font-bold">${b.client_name}</p>
+          <p class="text-sm text-gray-500">${b.date} la ${b.time}</p>
+        </div>
+        <div class="text-right">
+          <p class="font-bold text-candy-pink">${b.package}</p>
+          <p class="text-sm text-gray-500">${b.kids_count} copii, ${b.adults_count || 0} adulți</p>
+        </div>
+        <span class="text-xs font-bold px-3 py-1 rounded-full badge-${b.status}">${b.status}</span>
+      </div>
+    `).join('');
+  }
+
+  // ===== BOOKINGS =====
+  async function loadBookings() {
+    const status = document.getElementById('bookingsStatusFilter')?.value || '';
+    let url = '/api/admin/bookings';
+    if (status) url += '?status=' + status;
+    const data = await (await fetch(url, { headers: authHeaders() })).json();
+    allBookings = data.bookings;
+    renderBookings();
+  }
+
+  function renderBookings() {
+    const list = document.getElementById('bookingsList');
+    if (!allBookings.length) {
+      list.innerHTML = '<div class="card p-12 text-center text-gray-400">Nicio rezervare momentan.</div>';
+      return;
+    }
+    const statusBadge = { pending: 'badge-pending', confirmed: 'badge-confirmed', cancelled: 'badge-cancelled', completed: 'badge-completed' };
+    list.innerHTML = allBookings.map(b => `
+      <div class="card p-5 flex flex-wrap items-center justify-between gap-4 cursor-pointer hover:shadow-lg transition-all" onclick="openBookingEditModal('${b.id}')">
+        <div>
+          <h4 class="font-bold text-lg">${b.client_name}</h4>
+          <p class="text-gray-500">${b.client_phone}</p>
+          <p class="text-sm text-gray-400">${b.date} la ${b.time}</p>
+          ${b.notes ? `<p class="text-sm text-gray-400 mt-1">📝 ${b.notes}</p>` : ''}
+          ${b.admin_notes ? `<p class="text-sm text-candy-blue mt-1 font-medium">🔒 ${b.admin_notes}</p>` : ''}
+        </div>
+        <div class="text-center">
+          <p class="font-bold text-candy-pink">${b.package}</p>
+          <p class="text-sm">${b.kids_count} copii</p>
+          <p class="text-sm">${b.adults_count || 0} adulți</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="px-3 py-1 rounded-full text-xs font-bold ${statusBadge[b.status]}">${b.status}</span>
+          ${b.status === 'pending' ? `
+            <button onclick="event.stopPropagation(); updateBookingStatus('${b.id}', 'confirmed')" class="px-4 py-2 bg-candy-green text-white rounded-xl text-sm font-bold hover:opacity-90">Confirmă</button>
+            <button onclick="event.stopPropagation(); updateBookingStatus('${b.id}', 'cancelled')" class="px-4 py-2 bg-red-500 text-white rounded-xl text-sm font-bold hover:opacity-90">Anulează</button>
+          ` : ''}
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function openBookingEditModal(id) {
+    const b = allBookings.find(b => b.id === id);
+    if (!b) return;
+    document.getElementById('editBookingId').value = b.id;
+    document.getElementById('editClientName').value = b.client_name;
+    document.getElementById('editClientPhone').value = b.client_phone;
+    document.getElementById('editKidsCount').value = b.kids_count;
+    document.getElementById('editAdultsCount').value = b.adults_count || 0;
+    document.getElementById('editNotes').value = b.notes || '';
+    document.getElementById('editAdminNotes').value = b.admin_notes || '';
+    document.getElementById('editStatus').value = b.status;
+    showModal('bookingEditModal');
+  }
+
+  function closeBookingEditModal() { hideModal('bookingEditModal'); }
+
+  async function updateBookingStatus(id, status) {
+    await fetch('/api/admin/bookings/' + id, { method: 'PATCH', headers: authHeaders(), body: JSON.stringify({ status }) });
+    loadBookings();
+  }
+
+  document.getElementById('bookingEditForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const id = document.getElementById('editBookingId').value;
+    const data = {
+      client_name: document.getElementById('editClientName').value,
+      client_phone: document.getElementById('editClientPhone').value,
+      kids_count: parseInt(document.getElementById('editKidsCount').value),
+      adults_count: parseInt(document.getElementById('editAdultsCount').value),
+      notes: document.getElementById('editNotes').value,
+      admin_notes: document.getElementById('editAdminNotes').value,
+      status: document.getElementById('editStatus').value
+    };
+    await fetch('/api/admin/bookings/' + id, { method: 'PUT', headers: authHeaders(), body: JSON.stringify(data) });
+    closeBookingEditModal();
+    loadBookings();
+  });
+
+  async function deleteBooking() {
+    const id = document.getElementById('editBookingId').value;
+    if (!confirm('Ștergi această rezervare?')) return;
+    await fetch('/api/admin/bookings/' + id, { method: 'DELETE', headers: authHeaders() });
+    closeBookingEditModal();
+    loadBookings();
+  }
+
+  function showBookingModal() {
+    // For now just show alert - could implement full modal
+    alert('Pentru a adăuga o rezervare, contactează clientul direct.');
+  }
+
+</script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            sky: { 50:'#f0f9ff',100:'#e0f2fe',200:'#bae6fd',300:'#7dd3fc',400:'#38bdf8',500:'#0ea5e9',600:'#0284c7',700:'#0369a1',800:'#075985',900:'#0c4a6e' },
+            candy: { pink:'#ff6b9d', yellow:'#ffd93d', green:'#6bcb77', orange:'#ff8c42', blue:'#4d96ff', purple:'#9b59b6' },
+            dark: '#1a1a2e',
+          },
+          fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] }
+        }
+      }
+    }
+  
+  // ===== STATS / DASHBOARD =====
+  async function loadStats() {
+    const period = document.getElementById('statsPeriod').value;
+    const dateFrom = document.getElementById('statsDateFrom').value;
+    const dateTo = document.getElementById('statsDateTo').value;
+    
+    let url = '/api/admin/bookings?all=1';
+    const res = await fetch(url, { headers: authHeaders() });
+    let bookings = (await res.json()).bookings;
+    
+    // Filter by period
+    const now = new Date();
+    let from = new Date();
+    let to = new Date();
+    
+    if (dateFrom && dateTo) {
+      from = new Date(dateFrom);
+      to = new Date(dateTo);
+    } else if (period === 'today') {
+      from = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      to = new Date();
+    } else if (period === 'yesterday') {
+      from = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
+      to = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
+    } else if (period === 'week') {
+      from = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+      to = new Date();
+    } else if (period === 'month') {
+      from = new Date(now.getFullYear(), now.getMonth(), 1);
+      to = new Date();
+    } else if (period === 'year') {
+      from = new Date(now.getFullYear(), 0, 1);
+      to = new Date();
+    } else if (period === 'all') {
+      from = new Date(2020, 0, 1);
+      to = new Date(2030, 0, 1);
+    }
+    
+    bookings = bookings.filter(b => {
+      const d = new Date(b.date);
+      return d >= from && d <= to && b.status !== 'cancelled';
+    });
+    
+    // Calculate stats
+    const totalKids = bookings.reduce((sum, b) => sum + (b.kids_count || 0), 0);
+    const totalAdults = bookings.reduce((sum, b) => sum + (b.adults_count || 0), 0);
+    
+    // Calculate revenue
+    let totalRevenue = 0;
+    const pkgPrices = { standard: 100, premium: 180, birthday: 1500 };
+    bookings.forEach(b => {
+      if (b.package === 'birthday') totalRevenue += 1500;
+      else if (b.package === 'premium') totalRevenue += (b.kids_count || 0) * 180 + (b.adults_count || 0) * 120;
+      else if (b.package === 'standard') totalRevenue += (b.kids_count || 0) * 100 + (b.adults_count || 0) * 80;
+    });
+    
+    document.getElementById('statBookings').textContent = bookings.length;
+    document.getElementById('statKids').textContent = totalKids;
+    document.getElementById('statAdults').textContent = totalAdults;
+    document.getElementById('statRevenue').textContent = totalRevenue + ' lei';
+    
+    // Render stats bookings list
+    const list = document.getElementById('statsBookingsList');
+    if (!bookings.length) {
+      list.innerHTML = '<p class="text-gray-400 text-center py-8">Nicio rezervare în această perioadă.</p>';
+      return;
+    }
+    list.innerHTML = bookings.map(b => `
+      <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+        <div>
+          <p class="font-bold">${b.client_name}</p>
+          <p class="text-sm text-gray-500">${b.date} la ${b.time}</p>
+        </div>
+        <div class="text-right">
+          <p class="font-bold text-candy-pink">${b.package}</p>
+          <p class="text-sm text-gray-500">${b.kids_count} copii, ${b.adults_count || 0} adulți</p>
+        </div>
+        <span class="text-xs font-bold px-3 py-1 rounded-full badge-${b.status}">${b.status}</span>
+      </div>
+    `).join('');
+  }
+
+  // ===== BOOKINGS =====
+  async function loadBookings() {
+    const status = document.getElementById('bookingsStatusFilter')?.value || '';
+    let url = '/api/admin/bookings';
+    if (status) url += '?status=' + status;
+    const data = await (await fetch(url, { headers: authHeaders() })).json();
+    allBookings = data.bookings;
+    renderBookings();
+  }
+
+  function renderBookings() {
+    const list = document.getElementById('bookingsList');
+    if (!allBookings.length) {
+      list.innerHTML = '<div class="card p-12 text-center text-gray-400">Nicio rezervare momentan.</div>';
+      return;
+    }
+    const statusBadge = { pending: 'badge-pending', confirmed: 'badge-confirmed', cancelled: 'badge-cancelled', completed: 'badge-completed' };
+    list.innerHTML = allBookings.map(b => `
+      <div class="card p-5 flex flex-wrap items-center justify-between gap-4 cursor-pointer hover:shadow-lg transition-all" onclick="openBookingEditModal('${b.id}')">
+        <div>
+          <h4 class="font-bold text-lg">${b.client_name}</h4>
+          <p class="text-gray-500">${b.client_phone}</p>
+          <p class="text-sm text-gray-400">${b.date} la ${b.time}</p>
+          ${b.notes ? `<p class="text-sm text-gray-400 mt-1">📝 ${b.notes}</p>` : ''}
+          ${b.admin_notes ? `<p class="text-sm text-candy-blue mt-1 font-medium">🔒 ${b.admin_notes}</p>` : ''}
+        </div>
+        <div class="text-center">
+          <p class="font-bold text-candy-pink">${b.package}</p>
+          <p class="text-sm">${b.kids_count} copii</p>
+          <p class="text-sm">${b.adults_count || 0} adulți</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="px-3 py-1 rounded-full text-xs font-bold ${statusBadge[b.status]}">${b.status}</span>
+          ${b.status === 'pending' ? `
+            <button onclick="event.stopPropagation(); updateBookingStatus('${b.id}', 'confirmed')" class="px-4 py-2 bg-candy-green text-white rounded-xl text-sm font-bold hover:opacity-90">Confirmă</button>
+            <button onclick="event.stopPropagation(); updateBookingStatus('${b.id}', 'cancelled')" class="px-4 py-2 bg-red-500 text-white rounded-xl text-sm font-bold hover:opacity-90">Anulează</button>
+          ` : ''}
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function openBookingEditModal(id) {
+    const b = allBookings.find(b => b.id === id);
+    if (!b) return;
+    document.getElementById('editBookingId').value = b.id;
+    document.getElementById('editClientName').value = b.client_name;
+    document.getElementById('editClientPhone').value = b.client_phone;
+    document.getElementById('editKidsCount').value = b.kids_count;
+    document.getElementById('editAdultsCount').value = b.adults_count || 0;
+    document.getElementById('editNotes').value = b.notes || '';
+    document.getElementById('editAdminNotes').value = b.admin_notes || '';
+    document.getElementById('editStatus').value = b.status;
+    showModal('bookingEditModal');
+  }
+
+  function closeBookingEditModal() { hideModal('bookingEditModal'); }
+
+  async function updateBookingStatus(id, status) {
+    await fetch('/api/admin/bookings/' + id, { method: 'PATCH', headers: authHeaders(), body: JSON.stringify({ status }) });
+    loadBookings();
+  }
+
+  document.getElementById('bookingEditForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const id = document.getElementById('editBookingId').value;
+    const data = {
+      client_name: document.getElementById('editClientName').value,
+      client_phone: document.getElementById('editClientPhone').value,
+      kids_count: parseInt(document.getElementById('editKidsCount').value),
+      adults_count: parseInt(document.getElementById('editAdultsCount').value),
+      notes: document.getElementById('editNotes').value,
+      admin_notes: document.getElementById('editAdminNotes').value,
+      status: document.getElementById('editStatus').value
+    };
+    await fetch('/api/admin/bookings/' + id, { method: 'PUT', headers: authHeaders(), body: JSON.stringify(data) });
+    closeBookingEditModal();
+    loadBookings();
+  });
+
+  async function deleteBooking() {
+    const id = document.getElementById('editBookingId').value;
+    if (!confirm('Ștergi această rezervare?')) return;
+    await fetch('/api/admin/bookings/' + id, { method: 'DELETE', headers: authHeaders() });
+    closeBookingEditModal();
+    loadBookings();
+  }
+
+  function showBookingModal() {
+    // For now just show alert - could implement full modal
+    alert('Pentru a adăuga o rezervare, contactează clientul direct.');
+  }
+
+</script>
+  <style>
+    * { font-family: 'Inter', system-ui, sans-serif; }
+    body { background: #f8f9fc; }
+    
+    /* Gradient text */
+    .gradient-text {
+      background: linear-gradient(135deg, #ff6b9d 0%, #ff8c42 50%, #4d96ff 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    /* Cards */
+    .card {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+      border: 1px solid rgba(0,0,0,0.04);
+      transition: all 0.3s ease;
+    }
+    .card:hover { box-shadow: 0 8px 30px rgba(0,0,0,0.08); }
+    
+    /* Sidebar */
+    .sidebar-item {
+      transition: all 0.3s ease;
+      border: 2px solid transparent;
+      border-radius: 14px;
+    }
+    .sidebar-item:hover { background: rgba(77,150,255,0.08); }
+    .sidebar-item.active {
+      background: linear-gradient(135deg, #ff6b9d, #ff8c42);
+      color: white;
+      box-shadow: 0 4px 15px rgba(255,107,157,0.3);
+    }
+    
+    /* Form elements */
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: #4d96ff !important;
+      box-shadow: 0 0 0 4px rgba(77,150,255,0.1);
+    }
+    
+    /* Modal */
+    .modal-backdrop {
+      background: rgba(0,0,0,0.5);
+      backdrop-filter: blur(8px);
+    }
+    
+    /* Primary button */
+    .btn-primary {
+      background: linear-gradient(135deg, #ff6b9d, #ff8c42);
+      color: white;
+      font-weight: 700;
+      padding: 12px 28px;
+      border-radius: 14px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(255,107,157,0.3);
+    }
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(255,107,157,0.4); }
+    
+    /* Status badges */
+    .badge-pending { background: #fef3c7; color: #d97706; }
+    .badge-confirmed { background: #d1fae5; color: #059669; }
+    .badge-cancelled { background: #f3f4f6; color: #6b7280; }
+    .badge-completed { background: #dbeafe; color: #2563eb; }
+    .badge-active { background: #d1fae5; color: #059669; }
+    .badge-inactive { background: #f3f4f6; color: #6b7280; }
+  </style>
+</head>
+<body class="text-dark">
+
+  <!-- Login Screen -->
+  <div id="loginScreen" class="min-h-screen flex items-center justify-center p-4">
+    <div class="card p-10 w-full max-w-md">
+      <div class="text-center mb-8">
+        <div class="w-16 h-16 bg-gradient-to-br from-candy-pink to-candy-blue rounded-2xl flex items-center justify-center mx-auto mb-4 text-white font-fredoka text-2xl shadow-lg">S</div>
+        <h1 class="font-fredoka text-3xl gradient-text">Sky Kids Admin</h1>
+        <p class="text-gray-500 mt-2">Conectează-te pentru a continua</p>
+      </div>
+      <form id="loginForm" class="space-y-5">
+        <div>
+          <label class="block text-sm font-bold text-gray-700 mb-2">Utilizator</label>
+          <input type="text" id="loginUsername" required class="w-full px-5 py-4 rounded-xl border-2 border-gray-100" placeholder="admin">
+        </div>
+        <div>
+          <label class="block text-sm font-bold text-gray-700 mb-2">Parolă</label>
+          <input type="password" id="loginPassword" required class="w-full px-5 py-4 rounded-xl border-2 border-gray-100" placeholder="••••••">
+        </div>
+        <button type="submit" class="btn-primary w-full flex items-center justify-center gap-2">
+          <iconify-icon icon="lucide:log-in" width="18"></iconify-icon>
+          Intră în admin
+        </button>
+        <p id="loginError" class="hidden text-center text-red-500 font-bold"></p>
+      </form>
+    </div>
+  </div>
+
+  <!-- Admin Dashboard -->
+  <div id="adminDashboard" class="hidden">
+    <!-- Top bar -->
+    <div class="bg-white border-b border-gray-100 sticky top-0 z-50">
+      <div class="flex items-center justify-between px-8 py-5">
+        <div class="flex items-center gap-4">
+          <div class="w-12 h-12 bg-gradient-to-br from-candy-pink to-candy-blue rounded-2xl flex items-center justify-center text-white font-fredoka text-xl shadow">S</div>
+          <div>
+            <span class="font-fredoka text-2xl gradient-text">Sky Kids Admin</span>
+            <p class="text-xs text-gray-400">Panou de administrare</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-4">
+          <a href="/" target="_blank" class="flex items-center gap-2 px-4 py-2 rounded-xl bg-gray-100 hover:bg-gray-200 transition-colors font-bold text-sm text-gray-600">
+            <iconify-icon icon="lucide:external-link" width="16"></iconify-icon>
+            Vezi site-ul
+          </a>
+          <button onclick="logout()" class="flex items-center gap-2 px-4 py-2 rounded-xl hover:bg-red-50 transition-colors font-bold text-sm text-red-500">
+            <iconify-icon icon="lucide:log-out" width="16"></iconify-icon>
+            Ieșire
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex">
+      <!-- Sidebar -->
+      <aside class="w-64 bg-white border-r border-gray-100 min-h-[calc(100vh-81px)] sticky top-[81px] p-5">
+        <nav class="space-y-2">
+          <button onclick="showSection('categories')" class="sidebar-item active w-full flex items-center gap-3 px-4 py-3 font-bold text-left" data-section="categories">
+            <iconify-icon icon="lucide:folder" width="20"></iconify-icon> Categorii
+          </button>
+          <button onclick="showSection('products')" class="sidebar-item w-full flex items-center gap-3 px-4 py-3 font-bold text-left" data-section="products">
+            <iconify-icon icon="lucide:utensils" width="20"></iconify-icon> Produse
+          </button>
+          <button onclick="showSection('gallery')" class="sidebar-item w-full flex items-center gap-3 px-4 py-3 font-bold text-left" data-section="gallery">
+            <iconify-icon icon="lucide:image" width="20"></iconify-icon> Galerie
+          </button>
+          <button onclick="showSection('contact')" class="sidebar-item w-full flex items-center gap-3 px-4 py-3 font-bold text-left" data-section="contact">
+            <iconify-icon icon="lucide:phone" width="20"></iconify-icon> Contact
+          </button>
+          <button onclick="showSection('packages')" class="sidebar-item w-full flex items-center gap-3 px-4 py-3 font-bold text-left" data-section="packages">
+            <iconify-icon icon="lucide:gift" width="20"></iconify-icon> Pachete
+          </button>
+          <button onclick="showSection('bookings')" class="sidebar-item w-full flex items-center gap-3 px-4 py-3 font-bold text-left" data-section="bookings">
+            <iconify-icon icon="lucide:calendar" width="20"></iconify-icon> Rezervări
+          </button>
+          <button onclick="showSection('dashboard')" class="sidebar-item w-full flex items-center gap-3 px-4 py-3 font-bold text-left" data-section="dashboard">
+            <iconify-icon icon="lucide:layout-dashboard" width="20"></iconify-icon> Dashboard
+          </button>
+          <button onclick="showSection('settings')" class="sidebar-item w-full flex items-center gap-3 px-4 py-3 font-bold text-left" data-section="settings">
+            <iconify-icon icon="lucide:settings" width="20"></iconify-icon> Setări
+          </button>
+        </nav>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="flex-1 p-8">
+        
+        <!-- ===== CATEGORIES ===== -->
+        <section id="section-categories" class="section">
+          <div class="flex items-center justify-between mb-8">
+            <div>
+              <h2 class="font-fredoka text-3xl text-dark">Categorii Meniu</h2>
+              <p class="text-gray-400 mt-1">Adaugă și gestionează categoriile din meniu</p>
+            </div>
+            <button onclick="openCategoryModal()" class="btn-primary flex items-center gap-2">
+              <iconify-icon icon="lucide:plus" width="18"></iconify-icon>
+              Adaugă categorie
+            </button>
+          </div>
+          <div id="categoriesList" class="grid gap-4"></div>
+        </section>
+
+        <!-- ===== PRODUCTS ===== -->
+        <section id="section-products" class="section hidden">
+          <div class="flex items-center justify-between mb-8">
+            <div>
+              <h2 class="font-fredoka text-3xl text-dark">Produse</h2>
+              <p class="text-gray-400 mt-1">Gestionează produsele din meniu</p>
+            </div>
+            <button onclick="openProductModal()" class="btn-primary flex items-center gap-2">
+              <iconify-icon icon="lucide:plus" width="18"></iconify-icon>
+              Adaugă produs
+            </button>
+          </div>
+          <div class="mb-6">
+            <select id="productCategoryFilter" onchange="loadProducts()" class="px-5 py-3 rounded-xl border-2 border-gray-100 font-medium bg-white">
+              <option value="">Toate categoriile</option>
+            </select>
+          </div>
+          <div id="productsList" class="grid md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+        </section>
+
+        <!-- ===== GALLERY ===== -->
+        <section id="section-gallery" class="section hidden">
+          <div class="flex items-center justify-between mb-8">
+            <div>
+              <h2 class="font-fredoka text-3xl text-dark">Galerie Foto</h2>
+              <p class="text-gray-400 mt-1">Selectează imaginile care apar pe site</p>
+            </div>
+            <button onclick="openGalleryModal()" class="btn-primary flex items-center gap-2">
+              <iconify-icon icon="lucide:plus" width="18"></iconify-icon>
+              Adaugă imagine
+            </button>
+          </div>
+          <div id="galleryList" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5"></div>
+        </section>
+
+        <!-- ===== CONTACT ===== -->
+        <section id="section-contact" class="section hidden">
+          <div class="mb-8">
+            <h2 class="font-fredoka text-3xl text-dark">Informații Contact</h2>
+            <p class="text-gray-400 mt-1">Editează datele de contact care apar pe site</p>
+          </div>
+          <div class="card p-8 max-w-2xl">
+            <form id="contactForm" class="space-y-5">
+              <div>
+                <label class="block text-sm font-bold text-gray-700 mb-2">Telefon</label>
+                <input type="text" name="phone" class="w-full px-5 py-4 rounded-xl border-2 border-gray-100" placeholder="+373 600 00 000">
+              </div>
+              <div>
+                <label class="block text-sm font-bold text-gray-700 mb-2">Adresă</label>
+                <input type="text" name="address" class="w-full px-5 py-4 rounded-xl border-2 border-gray-100" placeholder="str. Ștefan cel Mare 46, Etajul 2, Soroca">
+              </div>
+              <div>
+                <label class="block text-sm font-bold text-gray-700 mb-2">Email</label>
+                <input type="email" name="email" class="w-full px-5 py-4 rounded-xl border-2 border-gray-100" placeholder="contact@skykids.md">
+              </div>
+              <div>
+                <label class="block text-sm font-bold text-gray-700 mb-2">Facebook URL</label>
+                <input type="url" name="facebook" class="w-full px-5 py-4 rounded-xl border-2 border-gray-100" placeholder="https://facebook.com/skykids">
+              </div>
+              <div>
+                <label class="block text-sm font-bold text-gray-700 mb-2">Instagram</label>
+                <input type="text" name="instagram" class="w-full px-5 py-4 rounded-xl border-2 border-gray-100" placeholder="@_.sky.kids._">
+              </div>
+              <div>
+                <label class="block text-sm font-bold text-gray-700 mb-2">Cod embed hartă (Google Maps)</label>
+                <textarea name="map_embed" rows="3" class="w-full px-5 py-4 rounded-xl border-2 border-gray-100" placeholder="https://www.google.com/maps/embed?..."></textarea>
+              </div>
+              <button type="submit" class="btn-primary">Salvează modificările</button>
+            </form>
+          </div>
+        </section>
+
+        <!-- ===== PACKAGES ===== -->
+        <section id="section-packages" class="section hidden">
+          <div class="flex items-center justify-between mb-8">
+            <div>
+              <h2 class="font-black text-3xl text-dark">Pachete Rezervări</h2>
+              <p class="text-gray-400 mt-1">Editează pachetele care apar pe site</p>
+            </div>
+            <button onclick="openPackageModal()" class="btn-primary flex items-center gap-2">
+              <iconify-icon icon="lucide:plus" width="18"></iconify-icon>
+              Adaugă pachet
+            </button>
+          </div>
+          <div id="packagesList" class="grid md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+        </section>
+
+        <!-- ===== DASHBOARD ===== -->
+        <section id="section-dashboard" class="section hidden">
+          <div class="mb-8">
+            <h2 class="font-black text-3xl text-dark">Dashboard</h2>
+            <p class="text-gray-400 mt-1">Statistici și venituri</p>
+          </div>
+          
+          <!-- Period selector -->
+          <div class="flex flex-wrap items-center gap-4 mb-8">
+            <select id="statsPeriod" onchange="loadStats()" class="px-5 py-3 rounded-xl border-2 border-gray-100 font-medium bg-white">
+              <option value="today">Astăzi</option>
+              <option value="yesterday">Ieri</option>
+              <option value="week" selected>Ultima săptămână</option>
+              <option value="month">Luna aceasta</option>
+              <option value="year">Anul acesta</option>
+              <option value="all">Toate timpurile</option>
+            </select>
+            <div class="flex items-center gap-2">
+              <input type="date" id="statsDateFrom" class="px-4 py-3 rounded-xl border-2 border-gray-100">
+              <span class="text-gray-400">—</span>
+              <input type="date" id="statsDateTo" class="px-4 py-3 rounded-xl border-2 border-gray-100">
+              <button onclick="loadStats()" class="px-5 py-3 bg-candy-blue text-white rounded-xl font-bold hover:opacity-90 transition-opacity">Filtrează</button>
+            </div>
+          </div>
+          
+          <!-- Stats cards -->
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-5 mb-8">
+            <div class="card p-6">
+              <div class="w-12 h-12 bg-candy-pink/10 rounded-xl flex items-center justify-center mb-4">
+                <iconify-icon icon="lucide:calendar" width="24" class="text-candy-pink"></iconify-icon>
+              </div>
+              <p class="text-3xl font-black text-dark mb-1" id="statBookings">0</p>
+              <p class="text-sm text-gray-400">Rezervări</p>
+            </div>
+            <div class="card p-6">
+              <div class="w-12 h-12 bg-candy-blue/10 rounded-xl flex items-center justify-center mb-4">
+                <iconify-icon icon="lucide:users" width="24" class="text-candy-blue"></iconify-icon>
+              </div>
+              <p class="text-3xl font-black text-dark mb-1" id="statKids">0</p>
+              <p class="text-sm text-gray-400">Copii</p>
+            </div>
+            <div class="card p-6">
+              <div class="w-12 h-12 bg-candy-green/10 rounded-xl flex items-center justify-center mb-4">
+                <iconify-icon icon="lucide:user" width="24" class="text-candy-green"></iconify-icon>
+              </div>
+              <p class="text-3xl font-black text-dark mb-1" id="statAdults">0</p>
+              <p class="text-sm text-gray-400">Adulți</p>
+            </div>
+            <div class="card p-6">
+              <div class="w-12 h-12 bg-candy-yellow/20 rounded-xl flex items-center justify-center mb-4">
+                <iconify-icon icon="lucide:wallet" width="24" class="text-candy-orange"></iconify-icon>
+              </div>
+              <p class="text-3xl font-black text-candy-pink mb-1" id="statRevenue">0 lei</p>
+              <p class="text-sm text-gray-400">Venituri</p>
+            </div>
+          </div>
+          
+          <!-- Recent bookings -->
+          <div class="card p-8">
+            <h3 class="font-bold text-xl mb-4">Rezervări în perioada selectată</h3>
+            <div id="statsBookingsList" class="space-y-3"></div>
+          </div>
+        </section>
+
+        <!-- ===== BOOKINGS ===== -->
+        <section id="section-bookings" class="section hidden">
+          <div class="mb-8 flex items-center justify-between">
+            <div>
+              <h2 class="font-black text-3xl text-dark">Rezervări</h2>
+              <p class="text-gray-400 mt-1">Gestionează rezervările de la clienți</p>
+            </div>
+          </div>
+          <div class="flex gap-4 mb-6">
+            <select id="bookingsStatusFilter" onchange="loadBookings()" class="px-5 py-3 rounded-xl border-2 border-gray-100 font-medium bg-white">
+              <option value="">Toate statusurile</option>
+              <option value="pending">În așteptare</option>
+              <option value="confirmed">Confirmate</option>
+              <option value="completed">Finalizate</option>
+              <option value="cancelled">Anulate</option>
+            </select>
+          </div>
+          <div id="bookingsList" class="space-y-4"></div>
+        </section>
+
+        <!-- ===== SETTINGS ===== -->
+        <section id="section-settings" class="section hidden">
+          <div class="mb-8">
+            <h2 class="font-fredoka text-3xl text-dark">Setări</h2>
+            <p class="text-gray-400 mt-1">Configurare generală a site-ului</p>
+          </div>
+          <div class="card p-8 max-w-2xl">
+            <form id="settingsForm" class="space-y-5">
+              <div>
+                <label class="block text-sm font-bold text-gray-700 mb-2">Nume Restaurant</label>
+                <input type="text" name="restaurant_name" class="w-full px-5 py-4 rounded-xl border-2 border-gray-100">
+              </div>
+              <div class="grid grid-cols-2 gap-5">
+                <div>
+                  <label class="block text-sm font-bold text-gray-700 mb-2">Ora deschiderii</label>
+                  <input type="number" name="open_hour" min="0" max="23" class="w-full px-5 py-4 rounded-xl border-2 border-gray-100">
+                </div>
+                <div>
+                  <label class="block text-sm font-bold text-gray-700 mb-2">Ora închiderii</label>
+                  <input type="number" name="close_hour" min="0" max="23" class="w-full px-5 py-4 rounded-xl border-2 border-gray-100">
+                </div>
+              </div>
+              <div>
+                <label class="block text-sm font-bold text-gray-700 mb-2">Max copii per slot</label>
+                <input type="number" name="max_kids_per_slot" min="1" max="50" class="w-full px-5 py-4 rounded-xl border-2 border-gray-100">
+              </div>
+              <button type="submit" class="btn-primary">Salvează setările</button>
+            </form>
+            
+            <div class="border-t pt-8 mt-8">
+              <h3 class="font-bold text-xl mb-4">Schimbă parola</h3>
+              <form id="changePasswordForm" class="space-y-4">
+                <div>
+                  <label class="block text-sm font-bold text-gray-700 mb-2">Parolă actuală</label>
+                  <input type="password" id="currentPassword" required class="w-full px-5 py-4 rounded-xl border-2 border-gray-100">
+                </div>
+                <div>
+                  <label class="block text-sm font-bold text-gray-700 mb-2">Parolă nouă</label>
+                  <input type="password" id="newPassword" required minlength="6" class="w-full px-5 py-4 rounded-xl border-2 border-gray-100">
+                </div>
+                <div>
+                  <label class="block text-sm font-bold text-gray-700 mb-2">Confirmă parola nouă</label>
+                  <input type="password" id="confirmPassword" required minlength="6" class="w-full px-5 py-4 rounded-xl border-2 border-gray-100">
+                </div>
+                <button type="submit" class="bg-candy-orange text-white px-6 py-3 rounded-xl font-bold hover:opacity-90 transition-all">
+                  Schimbă parola
+                </button>
+                <p id="passwordChangeMsg" class="hidden text-sm font-bold"></p>
+              </form>
+            </div>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- Category Modal -->
+  <div id="categoryModal" class="fixed inset-0 z-[100] hidden items-center justify-center p-4" style="display:none;">
+    <div class="modal-backdrop absolute inset-0" onclick="closeCategoryModal()"></div>
+    <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-md p-8">
+      <button onclick="closeCategoryModal()" class="absolute top-4 right-4 w-10 h-10 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center transition-colors">
+        <iconify-icon icon="lucide:x" width="18"></iconify-icon>
+      </button>
+      <h3 id="categoryModalTitle" class="font-fredoka text-2xl mb-6">Adaugă categorie</h3>
+      <form id="categoryForm" class="space-y-5">
+        <input type="hidden" id="categoryId">
+        <div>
+          <label class="block text-sm font-bold text-gray-700 mb-2">Nume *</label>
+          <input type="text" id="categoryName" required class="w-full px-5 py-4 rounded-xl border-2 border-gray-100" placeholder="ex: Sushi, Pizza, Salate">
+        </div>
+        <div>
+          <label class="block text-sm font-bold text-gray-700 mb-2">Icon (emoji)</label>
+          <input type="text" id="categoryIcon" class="w-full px-5 py-4 rounded-xl border-2 border-gray-100" placeholder="🍣" maxlength="10">
+        </div>
+        <div>
+          <label class="block text-sm font-bold text-gray-700 mb-2">Ordine sortare</label>
+          <input type="number" id="categorySort" value="0" class="w-full px-5 py-4 rounded-xl border-2 border-gray-100">
+        </div>
+        <div class="flex items-center gap-3">
+          <input type="checkbox" id="categoryActive" checked class="w-5 h-5 rounded">
+          <label for="categoryActive" class="font-medium">Activ</label>
+        </div>
+        <button type="submit" class="btn-primary w-full">Salvează</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Product Modal -->
+  <div id="productModal" class="fixed inset-0 z-[100] hidden items-center justify-center p-4" style="display:none;">
+    <div class="modal-backdrop absolute inset-0" onclick="closeProductModal()"></div>
+    <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg p-8 max-h-[90vh] overflow-y-auto">
+      <button onclick="closeProductModal()" class="absolute top-4 right-4 w-10 h-10 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center transition-colors">
+        <iconify-icon icon="lucide:x" width="18"></iconify-icon>
+      </button>
+      <h3 id="productModalTitle" class="font-fredoka text-2xl mb-6">Adaugă produs</h3>
+      <form id="productForm" class="space-y-5">
+        <input type="hidden" id="productId">
+        <div>
+          <label class="block text-sm font-bold text-gray-700 mb-2">Categorie *</label>
+          <select id="productCategory" required class="w-full px-5 py-4 rounded-xl border-2 border-gray-100 bg-white">
+            <option value="">Selectează categoria</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-sm font-bold text-gray-700 mb-2">Nume produs *</label>
+          <input type="text" id="productName" required class="w-full px-5 py-4 rounded-xl border-2 border-gray-100" placeholder="ex: Philadelphia Roll">
+        </div>
+        <div>
+          <label class="block text-sm font-bold text-gray-700 mb-2">Descriere</label>
+          <textarea id="productDesc" rows="2" class="w-full px-5 py-4 rounded-xl border-2 border-gray-100 resize-none" placeholder="Somon, castraveți, avocado, cremă de brânză"></textarea>
+        </div>
+        <div class="grid grid-cols-2 gap-5">
+          <div>
+            <label class="block text-sm font-bold text-gray-700 mb-2">Preț</label>
+            <input type="text" id="productPrice" class="w-full px-5 py-4 rounded-xl border-2 border-gray-100" placeholder="140 lei">
+          </div>
+          <div>
+            <label class="block text-sm font-bold text-gray-700 mb-2">Cantitate/Gramaj</label>
+            <input type="text" id="productWeight" class="w-full px-5 py-4 rounded-xl border-2 border-gray-100" placeholder="200g">
+          </div>
+        </div>
+        <div>
+          <label class="block text-sm font-bold text-gray-700 mb-2">URL imagine (sau încarcă din folder)</label>
+          <div class="flex gap-3">
+            <input type="url" id="productImage" class="flex-1 px-5 py-4 rounded-xl border-2 border-gray-100" placeholder="https://... (opțional)">
+            <label class="px-5 py-4 bg-gray-100 hover:bg-gray-200 rounded-xl font-bold cursor-pointer flex items-center gap-2 transition-colors">
+              <iconify-icon icon="lucide:upload" width="18"></iconify-icon>
+              <input type="file" id="productImageFile" accept="image/*" class="hidden" onchange="uploadProductImage(this)" onclick="this.focus()">
+              Încarcă
+            </label>
+          </div>
+          <p id="uploadStatus" class="text-xs text-gray-400 mt-2 hidden"></p>
+        </div>
+        <div>
+          <label class="block text-sm font-bold text-gray-700 mb-2">Etichetă (ex: PENTRU COPII)</label>
+          <input type="text" id="productBadge" class="w-full px-5 py-4 rounded-xl border-2 border-gray-100" placeholder="PENTRU COPII">
+        </div>
+        <div>
+          <label class="block text-sm font-bold text-gray-700 mb-2">Ordine sortare</label>
+          <input type="number" id="productSort" value="0" class="w-full px-5 py-4 rounded-xl border-2 border-gray-100">
+        </div>
+        <div class="flex items-center gap-3">
+          <input type="checkbox" id="productActive" checked class="w-5 h-5 rounded">
+          <label for="productActive" class="font-medium">Activ</label>
+        </div>
+        <button type="submit" class="btn-primary w-full">Salvează</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Gallery Modal -->
+  <div id="galleryModal" class="fixed inset-0 z-[100] hidden items-center justify-center p-4" style="display:none;">
+    <div class="modal-backdrop absolute inset-0" onclick="closeGalleryModal()"></div>
+    <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-md p-8">
+      <button onclick="closeGalleryModal()" class="absolute top-4 right-4 w-10 h-10 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center transition-colors">
+        <iconify-icon icon="lucide:x" width="18"></iconify-icon>
+      </button>
+      <h3 id="galleryModalTitle" class="font-fredoka text-2xl mb-6">Adaugă imagine</h3>
+      <form id="galleryForm" class="space-y-5">
+        <input type="hidden" id="galleryId">
+        <div>
+          <label class="block text-sm font-bold text-gray-700 mb-2">URL imagine (sau încarcă din folder)</label>
+          <div class="flex gap-3">
+            <input type="url" id="galleryUrl" required class="flex-1 px-5 py-4 rounded-xl border-2 border-gray-100" placeholder="https://...">
+            <label class="px-5 py-4 bg-gray-100 hover:bg-gray-200 rounded-xl font-bold cursor-pointer flex items-center gap-2 transition-colors">
+              <iconify-icon icon="lucide:upload" width="18"></iconify-icon>
+              <input type="file" id="galleryImageFile" accept="image/*" class="hidden" onchange="uploadGalleryImage(this)" onclick="this.focus()">
+              Încarcă
+            </label>
+          </div>
+          <p id="galleryUploadStatus" class="text-xs mt-2 hidden"></p>
+        </div>
+        <div>
+          <label class="block text-sm font-bold text-gray-700 mb-2">Descriere (opțional)</label>
+          <input type="text" id="galleryCaption" class="w-full px-5 py-4 rounded-xl border-2 border-gray-100" placeholder="ex: Zonă de joacă">
+        </div>
+        <div>
+          <label class="block text-sm font-bold text-gray-700 mb-2">Ordine</label>
+          <input type="number" id="gallerySort" value="0" class="w-full px-5 py-4 rounded-xl border-2 border-gray-100">
+        </div>
+        <div class="flex items-center gap-3">
+          <input type="checkbox" id="galleryActive" checked class="w-5 h-5 rounded">
+          <label for="galleryActive" class="font-medium">Activă</label>
+        </div>
+        <button type="submit" class="btn-primary w-full">Salvează</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Package Modal -->
+  <div id="packageModal" class="fixed inset-0 z-[100] hidden items-center justify-center p-4" style="display:none;">
+    <div class="modal-backdrop absolute inset-0" onclick="closePackageModal()"></div>
+    <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg p-8 max-h-[90vh] overflow-y-auto">
+      <button onclick="closePackageModal()" class="absolute top-4 right-4 w-10 h-10 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center transition-colors">
+        <iconify-icon icon="lucide:x" width="18"></iconify-icon>
+      </button>
+      <h3 id="packageModalTitle" class="font-black text-2xl mb-6">Adaugă pachet</h3>
+      <form id="packageForm" class="space-y-5">
+        <input type="hidden" id="packageId">
+        <div class="grid grid-cols-2 gap-5">
+          <div>
+            <label class="block text-sm font-bold text-gray-700 mb-2">Nume *</label>
+            <input type="text" id="packageName" required class="w-full px-5 py-4 rounded-xl border-2 border-gray-100" placeholder="ex: Standard">
+          </div>
+          <div>
+            <label class="block text-sm font-bold text-gray-700 mb-2">Icon (emoji)</label>
+            <input type="text" id="packageIcon" class="w-full px-5 py-4 rounded-xl border-2 border-gray-100" placeholder="🥨" maxlength="10">
+          </div>
+        </div>
+        <div>
+          <label class="block text-sm font-bold text-gray-700 mb-2">Descriere</label>
+          <input type="text" id="packageDesc" class="w-full px-5 py-4 rounded-xl border-2 border-gray-100" placeholder="ex: Acces complet la zonă de joacă">
+        </div>
+        <div class="grid grid-cols-2 gap-5">
+          <div>
+            <label class="block text-sm font-bold text-gray-700 mb-2">Preț per copil</label>
+            <input type="text" id="packagePriceChild" class="w-full px-5 py-4 rounded-xl border-2 border-gray-100" placeholder="100 lei">
+          </div>
+          <div>
+            <label class="block text-sm font-bold text-gray-700 mb-2">Preț per adult</label>
+            <input type="text" id="packagePriceAdult" class="w-full px-5 py-4 rounded-xl border-2 border-gray-100" placeholder="80 lei">
+          </div>
+            <input type="text" id="packagePriceGroup" class="w-full px-5 py-4 rounded-xl border-2 border-gray-100" placeholder="1500 lei">
+          </div>
+        </div>
+        <div>
+          <label class="block text-sm font-bold text-gray-700 mb-2">Max copii</label>
+          <input type="number" id="packageMaxKids" value="15" min="1" max="50" class="w-full px-5 py-4 rounded-xl border-2 border-gray-100">
+        </div>
+        <div>
+          <label class="block text-sm font-bold text-gray-700 mb-2">Max adulți</label>
+          <input type="number" id="packageMaxAdults" value="10" min="1" max="30" class="w-full px-5 py-4 rounded-xl border-2 border-gray-100">
+        </div>
+        <div>
+          <label class="block text-sm font-bold text-gray-700 mb-2">Ce include (separate prin virgulă)</label>
+          <input type="text" id="packageIncludes" class="w-full px-5 py-4 rounded-xl border-2 border-gray-100" placeholder="Acces la toate echipamentele, Supraveghere inclusă">
+        </div>
+        <div>
+          <label class="block text-sm font-bold text-gray-700 mb-2">Ordine sortare</label>
+          <input type="number" id="packageSort" value="0" class="w-full px-5 py-4 rounded-xl border-2 border-gray-100">
+        </div>
+        <div class="flex items-center gap-3">
+          <input type="checkbox" id="packageActive" checked class="w-5 h-5 rounded">
+          <label for="packageActive" class="font-medium">Activ</label>
+        </div>
+        <button type="submit" class="btn-primary w-full">Salvează</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+  let token = localStorage.getItem('skykids_token');
+  let categories = [];
+  let products = [];
+  let gallery = [];
+  let packages = [];
+  let allBookings = [];
+
+  // ===== Auth =====
+  // No auto-login - always show login screen
+  document.getElementById('loginScreen').classList.remove('hidden');
+  document.getElementById('adminDashboard').classList.add('hidden');
+
+  document.getElementById('loginForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    try {
+      const res = await fetch('/api/admin/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: document.getElementById('loginUsername').value, password: document.getElementById('loginPassword').value })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      token = data.token;
+      localStorage.setItem('skykids_token', token);
+      showDashboard();
+    } catch (err) {
+      document.getElementById('loginError').textContent = err.message;
+      document.getElementById('loginError').classList.remove('hidden');
+    }
+  });
+
+  function logout() {
+    token = null;
+    localStorage.removeItem('skykids_token');
+    document.getElementById('adminDashboard').classList.add('hidden');
+    document.getElementById('loginScreen').classList.remove('hidden');
+  }
+
+  function showDashboard() {
+    document.getElementById('loginScreen').classList.add('hidden');
+    document.getElementById('adminDashboard').classList.remove('hidden');
+    showSection('categories');
+    loadAll();
+  }
+
+  function showSection(name) {
+    document.querySelectorAll('.section').forEach(s => s.classList.add('hidden'));
+    document.getElementById('section-' + name).classList.remove('hidden');
+    document.querySelectorAll('.sidebar-item').forEach(b => b.classList.toggle('active', b.dataset.section === name));
+    if (name === 'dashboard') loadStats();
+  }
+
+  function authHeaders() { return { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' }; }
+
+  async function loadAll() {
+    await Promise.all([loadCategories(), loadGallery(), loadContact(), loadSettings(), loadBookings(), loadPackages()]);
+    // Load stats for dashboard
+    try { await loadStats(); } catch(e) {}
+  }
+
+  // ===== CATEGORIES =====
+  async function loadCategories() {
+    categories = await (await fetch('/api/admin/categories', { headers: authHeaders() })).json();
+    renderCategories();
+    updateCategorySelects();
+  }
+
+  function renderCategories() {
+    const list = document.getElementById('categoriesList');
+    if (!categories.length) {
+      list.innerHTML = '<div class="card p-12 text-center text-gray-400">Nicio categorie adăugată încă.</div>';
+      return;
+    }
+    list.innerHTML = categories.map(c => `
+      <div class="card p-5 flex items-center justify-between">
+        <div class="flex items-center gap-4">
+          <div class="text-4xl">${c.icon}</div>
+          <div>
+            <h4 class="font-bold text-lg">${c.name}</h4>
+            <p class="text-sm text-gray-400">Ordine: ${c.sort_order}</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-3">
+          <span class="text-xs font-bold px-3 py-1 rounded-full ${c.active ? 'badge-active' : 'badge-inactive'}">${c.active ? 'Activ' : 'Inactiv'}</span>
+          <button onclick="editCategory(${c.id})" class="p-2 hover:bg-blue-50 rounded-xl transition-colors"><iconify-icon icon="lucide:edit" width="18"></iconify-icon></button>
+          <button onclick="deleteCategory(${c.id})" class="p-2 hover:bg-red-50 rounded-xl transition-colors"><iconify-icon icon="lucide:trash" width="18" class="text-red-500"></iconify-icon></button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function openCategoryModal(cat = null) {
+    document.getElementById('categoryId').value = cat ? cat.id : '';
+    document.getElementById('categoryName').value = cat ? cat.name : '';
+    document.getElementById('categoryIcon').value = cat ? cat.icon : '';
+    document.getElementById('categorySort').value = cat ? cat.sort_order : 0;
+    document.getElementById('categoryActive').checked = cat ? cat.active : true;
+    document.getElementById('categoryModalTitle').textContent = cat ? 'Editează categorie' : 'Adaugă categorie';
+    showModal('categoryModal');
+  }
+
+  function closeCategoryModal() { hideModal('categoryModal'); }
+
+  function editCategory(id) {
+    const cat = categories.find(c => c.id === id);
+    if (cat) openCategoryModal(cat);
+  }
+
+  async function deleteCategory(id) {
+    if (!confirm('Ștergi această categorie?')) return;
+    await fetch('/api/admin/categories/' + id, { method: 'DELETE', headers: authHeaders() });
+    loadCategories();
+  }
+
+  document.getElementById('categoryForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const id = document.getElementById('categoryId').value;
+    const data = {
+      name: document.getElementById('categoryName').value,
+      icon: document.getElementById('categoryIcon').value || '🍽️',
+      sort_order: parseInt(document.getElementById('categorySort').value) || 0,
+      active: document.getElementById('categoryActive').checked
+    };
+    if (id) await fetch('/api/admin/categories/' + id, { method: 'PUT', headers: authHeaders(), body: JSON.stringify(data) });
+    else await fetch('/api/admin/categories', { method: 'POST', headers: authHeaders(), body: JSON.stringify(data) });
+    closeCategoryModal();
+    loadCategories();
+  });
+
+  // ===== PRODUCTS =====
+  async function loadProducts() {
+    const filter = document.getElementById('productCategoryFilter')?.value || '';
+    const url = filter ? '/api/admin/products?category_id=' + filter : '/api/admin/products';
+    products = await (await fetch(url, { headers: authHeaders() })).json();
+    renderProducts();
+  }
+
+  function renderProducts() {
+    const list = document.getElementById('productsList');
+    if (!products.length) {
+      list.innerHTML = '<div class="col-span-full card p-12 text-center text-gray-400">Niciun produs adăugat încă.</div>';
+      return;
+    }
+    list.innerHTML = products.map(p => `
+      <div class="card overflow-hidden">
+        ${p.image ? `<img src="${p.image}" alt="${p.name}" class="w-full h-36 object-cover">` : '<div class="w-full h-36 bg-gray-100 flex items-center justify-center text-5xl opacity-30">🍽️</div>'}
+        <div class="p-5">
+          <div class="flex items-start justify-between mb-2">
+            <div>
+              <h4 class="font-bold text-lg">${p.name}</h4>
+              ${p.category_name ? `<p class="text-xs text-candy-pink font-bold">${p.category_name}</p>` : ''}
+            </div>
+            ${p.price ? `<span class="font-black text-xl text-candy-pink">${p.price}</span>` : ''}
+          </div>
+          ${p.description ? `<p class="text-sm text-gray-500 mb-2 line-clamp-2">${p.description}</p>` : ''}
+          ${p.weight ? `<p class="text-xs text-gray-400 mb-3">${p.weight}</p>` : ''}
+          ${p.badge ? `<span class="inline-block bg-candy-yellow text-dark text-xs font-bold px-3 py-1 rounded-full mb-3">${p.badge}</span>` : ''}
+          <div class="flex items-center justify-between pt-3 border-t">
+            <span class="text-xs font-bold px-3 py-1 rounded-full ${p.active ? 'badge-active' : 'badge-inactive'}">${p.active ? 'Activ' : 'Inactiv'}</span>
+            <div class="flex gap-1">
+              <button onclick="editProduct(${p.id})" class="p-2 hover:bg-blue-50 rounded-xl"><iconify-icon icon="lucide:edit" width="16"></iconify-icon></button>
+              <button onclick="deleteProduct(${p.id})" class="p-2 hover:bg-red-50 rounded-xl"><iconify-icon icon="lucide:trash" width="16" class="text-red-500"></iconify-icon></button>
+            </div>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function updateCategorySelects() {
+    const opts = categories.map(c => `<option value="${c.id}">${c.icon} ${c.name}</option>`).join('');
+    const sel1 = document.getElementById('productCategory');
+    if (sel1) sel1.innerHTML = '<option value="">Selectează categoria</option>' + opts;
+    const sel2 = document.getElementById('productCategoryFilter');
+    if (sel2) sel2.innerHTML = '<option value="">Toate categoriile</option>' + opts;
+  }
+
+  function openProductModal(prod = null) {
+    document.getElementById('productId').value = prod ? prod.id : '';
+    document.getElementById('productCategory').value = prod ? prod.category_id || '' : '';
+    document.getElementById('productName').value = prod ? prod.name : '';
+    document.getElementById('productDesc').value = prod ? prod.description || '' : '';
+    document.getElementById('productPrice').value = prod ? prod.price || '' : '';
+    document.getElementById('productWeight').value = prod ? prod.weight || '' : '';
+    document.getElementById('productImage').value = prod ? prod.image || '' : '';
+    document.getElementById('productBadge').value = prod ? prod.badge || '' : '';
+    document.getElementById('productSort').value = prod ? prod.sort_order : 0;
+    document.getElementById('productActive').checked = prod ? prod.active : true;
+    document.getElementById('productModalTitle').textContent = prod ? 'Editează produs' : 'Adaugă produs';
+    showModal('productModal');
+  }
+
+  function closeProductModal() { hideModal('productModal'); }
+
+  function editProduct(id) {
+    const prod = products.find(p => p.id === id);
+    if (prod) openProductModal(prod);
+  }
+
+  async function deleteProduct(id) {
+    if (!confirm('Ștergi acest produs?')) return;
+    await fetch('/api/admin/products/' + id, { method: 'DELETE', headers: authHeaders() });
+    loadProducts();
+  }
+
+  document.getElementById('productForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const id = document.getElementById('productId').value;
+    const data = {
+      category_id: document.getElementById('productCategory').value || null,
+      name: document.getElementById('productName').value,
+      description: document.getElementById('productDesc').value,
+      price: document.getElementById('productPrice').value,
+      weight: document.getElementById('productWeight').value,
+      image: document.getElementById('productImage').value,
+      badge: document.getElementById('productBadge').value,
+      sort_order: parseInt(document.getElementById('productSort').value) || 0,
+      active: document.getElementById('productActive').checked
+    };
+    if (id) await fetch('/api/admin/products/' + id, { method: 'PUT', headers: authHeaders(), body: JSON.stringify(data) });
+    else await fetch('/api/admin/products', { method: 'POST', headers: authHeaders(), body: JSON.stringify(data) });
+    closeProductModal();
+    loadProducts();
+  });
+
+  // ===== Upload helpers =====
+  async function uploadProductImage(fileInput) {
+    const file = fileInput.files[0];
+    if (!file) return;
+    const status = document.getElementById('uploadStatus');
+    if (!status) return;
+    status.textContent = 'Se încarcă...';
+    status.classList.remove('hidden');
+    status.className = 'text-xs text-candy-blue mt-2';
+    const formData = new FormData();
+    formData.append('image', file);
+    try {
+      const res = await fetch('/api/admin/upload', {
+        method: 'POST',
+        headers: { 'Authorization': 'Bearer ' + token },
+        body: formData
+      });
+      const data = await res.json();
+      if (data.url) {
+        document.getElementById('productImage').value = window.location.origin + data.url;
+        status.textContent = '✓ Imagine încărcată!';
+        status.className = 'text-xs text-candy-green mt-2';
+        setTimeout(() => { status.classList.add('hidden'); }, 2000);
+      }
+    } catch(e) {
+      status.textContent = 'Eroare la încărcare';
+      status.className = 'text-xs text-red-500 mt-2';
+    }
+  }
+
+  async function uploadGalleryImage(fileInput) {
+    const file = fileInput.files[0];
+    if (!file) return;
+    const status = document.getElementById('galleryUploadStatus');
+    if (!status) return;
+    status.textContent = 'Se încarcă...';
+    status.classList.remove('hidden');
+    const formData = new FormData();
+    formData.append('image', file);
+    try {
+      const res = await fetch('/api/admin/upload', {
+        method: 'POST',
+        headers: { 'Authorization': 'Bearer ' + token },
+        body: formData
+      });
+      const data = await res.json();
+      if (data.url) {
+        document.getElementById('galleryUrl').value = window.location.origin + data.url;
+        status.textContent = '✓ Imagine încărcată!';
+        status.className = 'text-xs text-candy-green mt-2';
+        setTimeout(() => { status.classList.add('hidden'); }, 2000);
+      }
+    } catch(e) {
+      status.textContent = 'Eroare';
+    }
+  }
+
+  // ===== PACKAGES =====
+  async function loadPackages() {
+    packages = await (await fetch('/api/admin/packages', { headers: authHeaders() })).json();
+    renderPackages();
+  }
+
+  function renderPackages() {
+    const list = document.getElementById('packagesList');
+    if (!packages.length) {
+      list.innerHTML = '<div class="col-span-full card p-12 text-center text-gray-400">Niciun pachet adăugat încă.</div>';
+      return;
+    }
+    list.innerHTML = packages.map(p => `
+      <div class="card overflow-hidden">
+        <div class="p-6">
+          <div class="flex items-start justify-between mb-4">
+            <div class="flex items-center gap-3">
+              <span class="text-4xl">${p.icon}</span>
+              <div>
+                <h4 class="font-bold text-xl">${p.name}</h4>
+                ${p.description ? `<p class="text-sm text-gray-500">${p.description}</p>` : ''}
+              </div>
+            </div>
+            <span class="text-xs font-bold px-3 py-1 rounded-full ${p.active ? 'badge-active' : 'badge-inactive'}">${p.active ? 'Activ' : 'Inactiv'}</span>
+          </div>
+          <div class="space-y-2 mb-4">
+            ${p.price_per_child ? `<div class="flex justify-between text-sm"><span class="text-gray-500">Preț per copil:</span><span class="font-bold text-candy-pink">${p.price_per_child}</span></div>` : ''}
+            ${p.price_group ? `<div class="flex justify-between text-sm"><span class="text-gray-500">Preț grup:</span><span class="font-bold text-candy-pink">${p.price_group}</span></div>` : ''}
+            <div class="flex justify-between text-sm"><span class="text-gray-500">Max copii:</span><span class="font-bold">${p.max_children}</span></div>
+          </div>
+          ${p.includes ? `<div class="text-xs text-gray-400 mb-4">${p.includes}</div>` : ''}
+          <div class="flex gap-2 pt-4 border-t">
+            <button onclick="editPackage(${p.id})" class="flex-1 p-2 bg-blue-50 hover:bg-blue-100 rounded-xl text-sm font-bold">Editează</button>
+            <button onclick="deletePackage(${p.id})" class="p-2 bg-red-50 hover:bg-red-100 rounded-xl text-sm font-bold text-red-500">Șterge</button>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function openPackageModal(pkg = null) {
+    document.getElementById('packageId').value = pkg ? pkg.id : '';
+    document.getElementById('packageName').value = pkg ? pkg.name : '';
+    document.getElementById('packageIcon').value = pkg ? pkg.icon : '';
+    document.getElementById('packageDesc').value = pkg ? pkg.description || '' : '';
+    document.getElementById('packagePriceChild').value = pkg ? pkg.price_per_child || '' : '';
+    document.getElementById('packagePriceAdult').value = pkg ? pkg.price_per_adult || '' : '';
+    document.getElementById('packagePriceGroup').value = pkg ? pkg.price_group || '' : '';
+    document.getElementById('packageMaxKids').value = pkg ? pkg.max_children || 15 : 15;
+    document.getElementById('packageMaxAdults').value = pkg ? pkg.max_adults || 10 : 10;
+    document.getElementById('packageIncludes').value = pkg ? pkg.includes || '' : '';
+    document.getElementById('packageSort').value = pkg ? pkg.sort_order : 0;
+    document.getElementById('packageActive').checked = pkg ? pkg.active : true;
+    document.getElementById('packageModalTitle').textContent = pkg ? 'Editează pachet' : 'Adaugă pachet';
+    showModal('packageModal');
+  }
+
+  function closePackageModal() { hideModal('packageModal'); }
+
+  function editPackage(id) {
+    const pkg = packages.find(p => p.id === id);
+    if (pkg) openPackageModal(pkg);
+  }
+
+  async function deletePackage(id) {
+    if (!confirm('Ștergi acest pachet?')) return;
+    await fetch('/api/admin/packages/' + id, { method: 'DELETE', headers: authHeaders() });
+    loadPackages();
+  }
+
+  document.getElementById('packageForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const id = document.getElementById('packageId').value;
+    const data = {
+      name: document.getElementById('packageName').value,
+      icon: document.getElementById('packageIcon').value || '🎁',
+      description: document.getElementById('packageDesc').value,
+      price_per_child: document.getElementById('packagePriceChild').value,
+      price_per_adult: document.getElementById('packagePriceAdult').value,
+      price_group: document.getElementById('packagePriceGroup').value,
+      max_children: parseInt(document.getElementById('packageMaxKids').value) || 15,
+      max_adults: parseInt(document.getElementById('packageMaxAdults').value) || 10,
+      includes: document.getElementById('packageIncludes').value,
+      sort_order: parseInt(document.getElementById('packageSort').value) || 0,
+      active: document.getElementById('packageActive').checked
+    };
+    if (id) await fetch('/api/admin/packages/' + id, { method: 'PUT', headers: authHeaders(), body: JSON.stringify(data) });
+    else await fetch('/api/admin/packages', { method: 'POST', headers: authHeaders(), body: JSON.stringify(data) });
+    closePackageModal();
+    loadPackages();
+  });
+
+  // ===== GALLERY =====
+  async function loadGallery() {
+    gallery = await (await fetch('/api/admin/gallery', { headers: authHeaders() })).json();
+    renderGallery();
+  }
+
+  function renderGallery() {
+    const list = document.getElementById('galleryList');
+    if (!gallery.length) {
+      list.innerHTML = '<div class="col-span-full card p-12 text-center text-gray-400">Nicio imagine adăugată încă.</div>';
+      return;
+    }
+    list.innerHTML = gallery.map(g => `
+      <div class="card overflow-hidden">
+        <img src="${g.image_url}" alt="${g.caption}" class="w-full h-40 object-cover">
+        <div class="p-4">
+          ${g.caption ? `<p class="text-sm font-medium mb-3">${g.caption}</p>` : ''}
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold px-3 py-1 rounded-full ${g.active ? 'badge-active' : 'badge-inactive'}">${g.active ? 'Activă' : 'Inactivă'}</span>
+            <div class="flex gap-1">
+              <button onclick="editGallery(${g.id})" class="p-2 hover:bg-blue-50 rounded-xl"><iconify-icon icon="lucide:edit" width="14"></iconify-icon></button>
+              <button onclick="deleteGallery(${g.id})" class="p-2 hover:bg-red-50 rounded-xl"><iconify-icon icon="lucide:trash" width="14" class="text-red-500"></iconify-icon></button>
+            </div>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function openGalleryModal(item = null) {
+    document.getElementById('galleryId').value = item ? item.id : '';
+    document.getElementById('galleryUrl').value = item ? item.image_url : '';
+    document.getElementById('galleryCaption').value = item ? item.caption || '' : '';
+    document.getElementById('gallerySort').value = item ? item.sort_order : 0;
+    document.getElementById('galleryActive').checked = item ? item.active : true;
+    document.getElementById('galleryModalTitle').textContent = item ? 'Editează imagine' : 'Adaugă imagine';
+    showModal('galleryModal');
+  }
+
+  function closeGalleryModal() { hideModal('galleryModal'); }
+
+  function editGallery(id) {
+    const item = gallery.find(g => g.id === id);
+    if (item) openGalleryModal(item);
+  }
+
+  async function deleteGallery(id) {
+    if (!confirm('Ștergi această imagine?')) return;
+    await fetch('/api/admin/gallery/' + id, { method: 'DELETE', headers: authHeaders() });
+    loadGallery();
+  }
+
+  document.getElementById('galleryForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const id = document.getElementById('galleryId').value;
+    const data = {
+      image_url: document.getElementById('galleryUrl').value,
+      caption: document.getElementById('galleryCaption').value,
+      sort_order: parseInt(document.getElementById('gallerySort').value) || 0,
+      active: document.getElementById('galleryActive').checked
+    };
+    if (id) await fetch('/api/admin/gallery/' + id, { method: 'PUT', headers: authHeaders(), body: JSON.stringify(data) });
+    else await fetch('/api/admin/gallery', { method: 'POST', headers: authHeaders(), body: JSON.stringify(data) });
+    closeGalleryModal();
+    loadGallery();
+  });
+
+  // ===== CONTACT =====
+  async function loadContact() {
+    const items = await (await fetch('/api/admin/contact', { headers: authHeaders() })).json();
+    const form = document.getElementById('contactForm');
+    items.forEach(item => {
+      const input = form.querySelector(`[name="${item.key}"]`);
+      if (input) input.value = item.value || '';
+    });
+  }
+
+  document.getElementById('contactForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const inputs = e.target.querySelectorAll('input, textarea');
+    const data = {};
+    inputs.forEach(input => { if (input.name) data[input.name] = input.value; });
+    for (const [key, value] of Object.entries(data)) {
+      await fetch('/api/admin/contact/' + key, {
+        method: 'PUT',
+        headers: authHeaders(),
+        body: JSON.stringify({ value, label: key.charAt(0).toUpperCase() + key.slice(1) })
+      });
+    }
+    alert('Contact actualizat cu succes!');
+  });
+
+  // ===== SETTINGS =====
+  async function loadSettings() {
+    const settings = await (await fetch('/api/admin/settings', { headers: authHeaders() })).json();
+    const form = document.getElementById('settingsForm');
+    for (const [key, value] of Object.entries(settings)) {
+      const input = form.querySelector(`[name="${key}"]`);
+      if (input) input.value = value;
+    }
+  }
+
+  document.getElementById('settingsForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const data = {};
+    e.target.querySelectorAll('input').forEach(input => { if (input.name) data[input.name] = input.value; });
+    await fetch('/api/admin/settings', { method: 'PUT', headers: authHeaders(), body: JSON.stringify(data) });
+    alert('Setări salvate!');
+  });
+
+  // ===== BOOKINGS =====
+  async function loadBookings() {
+    const data = await (await fetch('/api/admin/bookings', { headers: authHeaders() })).json();
+    const list = document.getElementById('bookingsList');
+    if (!data.bookings.length) {
+      list.innerHTML = '<div class="card p-12 text-center text-gray-400">Nicio rezervare momentan.</div>';
+      return;
+    }
+    const statusBadge = { pending: 'badge-pending', confirmed: 'badge-confirmed', cancelled: 'badge-cancelled', completed: 'badge-completed' };
+    list.innerHTML = data.bookings.map(b => `
+      <div class="card p-5 flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <h4 class="font-bold text-lg">${b.client_name}</h4>
+          <p class="text-gray-500">${b.client_phone}</p>
+          <p class="text-sm text-gray-400">${b.date} la ${b.time}</p>
+        </div>
+        <div class="text-center">
+          <p class="font-bold text-candy-pink">${b.package}</p>
+          <p class="text-sm">${b.kids_count} copii</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="px-3 py-1 rounded-full text-xs font-bold ${statusBadge[b.status]}">${b.status}</span>
+          ${b.status === 'pending' ? `
+            <button onclick="updateBooking('${b.id}', 'confirmed')" class="px-4 py-2 bg-candy-green text-white rounded-xl text-sm font-bold hover:opacity-90">Confirmă</button>
+            <button onclick="updateBooking('${b.id}', 'cancelled')" class="px-4 py-2 bg-red-500 text-white rounded-xl text-sm font-bold hover:opacity-90">Anulează</button>
+          ` : ''}
+        </div>
+      </div>
+    `).join('');
+  }
+
+  async function updateBooking(id, status) {
+    await fetch('/api/admin/bookings/' + id, { method: 'PATCH', headers: authHeaders(), body: JSON.stringify({ status }) });
+    loadBookings();
+  }
+
+  // ===== Modal helpers =====
+  function showModal(id) {
+    const m = document.getElementById(id);
+    m.classList.remove('hidden');
+    m.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+  }
+
+  function hideModal(id) {
+    const m = document.getElementById(id);
+    m.classList.add('hidden');
+    m.style.display = 'none';
+    document.body.style.overflow = '';
+  }
+  
+  // ===== STATS / DASHBOARD =====
+  async function loadStats() {
+    const period = document.getElementById('statsPeriod').value;
+    const dateFrom = document.getElementById('statsDateFrom').value;
+    const dateTo = document.getElementById('statsDateTo').value;
+    
+    let url = '/api/admin/bookings?all=1';
+    const res = await fetch(url, { headers: authHeaders() });
+    let bookings = (await res.json()).bookings;
+    
+    // Filter by period
+    const now = new Date();
+    let from = new Date();
+    let to = new Date();
+    
+    if (dateFrom && dateTo) {
+      from = new Date(dateFrom);
+      to = new Date(dateTo);
+    } else if (period === 'today') {
+      from = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      to = new Date();
+    } else if (period === 'yesterday') {
+      from = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
+      to = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
+    } else if (period === 'week') {
+      from = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+      to = new Date();
+    } else if (period === 'month') {
+      from = new Date(now.getFullYear(), now.getMonth(), 1);
+      to = new Date();
+    } else if (period === 'year') {
+      from = new Date(now.getFullYear(), 0, 1);
+      to = new Date();
+    } else if (period === 'all') {
+      from = new Date(2020, 0, 1);
+      to = new Date(2030, 0, 1);
+    }
+    
+    bookings = bookings.filter(b => {
+      const d = new Date(b.date);
+      return d >= from && d <= to && b.status !== 'cancelled';
+    });
+    
+    // Calculate stats
+    const totalKids = bookings.reduce((sum, b) => sum + (b.kids_count || 0), 0);
+    const totalAdults = bookings.reduce((sum, b) => sum + (b.adults_count || 0), 0);
+    
+    // Calculate revenue
+    let totalRevenue = 0;
+    const pkgPrices = { standard: 100, premium: 180, birthday: 1500 };
+    bookings.forEach(b => {
+      if (b.package === 'birthday') totalRevenue += 1500;
+      else if (b.package === 'premium') totalRevenue += (b.kids_count || 0) * 180 + (b.adults_count || 0) * 120;
+      else if (b.package === 'standard') totalRevenue += (b.kids_count || 0) * 100 + (b.adults_count || 0) * 80;
+    });
+    
+    document.getElementById('statBookings').textContent = bookings.length;
+    document.getElementById('statKids').textContent = totalKids;
+    document.getElementById('statAdults').textContent = totalAdults;
+    document.getElementById('statRevenue').textContent = totalRevenue + ' lei';
+    
+    // Render stats bookings list
+    const list = document.getElementById('statsBookingsList');
+    if (!bookings.length) {
+      list.innerHTML = '<p class="text-gray-400 text-center py-8">Nicio rezervare în această perioadă.</p>';
+      return;
+    }
+    list.innerHTML = bookings.map(b => `
+      <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+        <div>
+          <p class="font-bold">${b.client_name}</p>
+          <p class="text-sm text-gray-500">${b.date} la ${b.time}</p>
+        </div>
+        <div class="text-right">
+          <p class="font-bold text-candy-pink">${b.package}</p>
+          <p class="text-sm text-gray-500">${b.kids_count} copii, ${b.adults_count || 0} adulți</p>
+        </div>
+        <span class="text-xs font-bold px-3 py-1 rounded-full badge-${b.status}">${b.status}</span>
+      </div>
+    `).join('');
+  }
+
+  // ===== BOOKINGS =====
+  async function loadBookings() {
+    const status = document.getElementById('bookingsStatusFilter')?.value || '';
+    let url = '/api/admin/bookings';
+    if (status) url += '?status=' + status;
+    const data = await (await fetch(url, { headers: authHeaders() })).json();
+    allBookings = data.bookings;
+    renderBookings();
+  }
+
+  function renderBookings() {
+    const list = document.getElementById('bookingsList');
+    if (!allBookings.length) {
+      list.innerHTML = '<div class="card p-12 text-center text-gray-400">Nicio rezervare momentan.</div>';
+      return;
+    }
+    const statusBadge = { pending: 'badge-pending', confirmed: 'badge-confirmed', cancelled: 'badge-cancelled', completed: 'badge-completed' };
+    list.innerHTML = allBookings.map(b => `
+      <div class="card p-5 flex flex-wrap items-center justify-between gap-4 cursor-pointer hover:shadow-lg transition-all" onclick="openBookingEditModal('${b.id}')">
+        <div>
+          <h4 class="font-bold text-lg">${b.client_name}</h4>
+          <p class="text-gray-500">${b.client_phone}</p>
+          <p class="text-sm text-gray-400">${b.date} la ${b.time}</p>
+          ${b.notes ? `<p class="text-sm text-gray-400 mt-1">📝 ${b.notes}</p>` : ''}
+          ${b.admin_notes ? `<p class="text-sm text-candy-blue mt-1 font-medium">🔒 ${b.admin_notes}</p>` : ''}
+        </div>
+        <div class="text-center">
+          <p class="font-bold text-candy-pink">${b.package}</p>
+          <p class="text-sm">${b.kids_count} copii</p>
+          <p class="text-sm">${b.adults_count || 0} adulți</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="px-3 py-1 rounded-full text-xs font-bold ${statusBadge[b.status]}">${b.status}</span>
+          ${b.status === 'pending' ? `
+            <button onclick="event.stopPropagation(); updateBookingStatus('${b.id}', 'confirmed')" class="px-4 py-2 bg-candy-green text-white rounded-xl text-sm font-bold hover:opacity-90">Confirmă</button>
+            <button onclick="event.stopPropagation(); updateBookingStatus('${b.id}', 'cancelled')" class="px-4 py-2 bg-red-500 text-white rounded-xl text-sm font-bold hover:opacity-90">Anulează</button>
+          ` : ''}
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function openBookingEditModal(id) {
+    const b = allBookings.find(b => b.id === id);
+    if (!b) return;
+    document.getElementById('editBookingId').value = b.id;
+    document.getElementById('editClientName').value = b.client_name;
+    document.getElementById('editClientPhone').value = b.client_phone;
+    document.getElementById('editKidsCount').value = b.kids_count;
+    document.getElementById('editAdultsCount').value = b.adults_count || 0;
+    document.getElementById('editNotes').value = b.notes || '';
+    document.getElementById('editAdminNotes').value = b.admin_notes || '';
+    document.getElementById('editStatus').value = b.status;
+    showModal('bookingEditModal');
+  }
+
+  function closeBookingEditModal() { hideModal('bookingEditModal'); }
+
+  async function updateBookingStatus(id, status) {
+    await fetch('/api/admin/bookings/' + id, { method: 'PATCH', headers: authHeaders(), body: JSON.stringify({ status }) });
+    loadBookings();
+  }
+
+  document.getElementById('bookingEditForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const id = document.getElementById('editBookingId').value;
+    const data = {
+      client_name: document.getElementById('editClientName').value,
+      client_phone: document.getElementById('editClientPhone').value,
+      kids_count: parseInt(document.getElementById('editKidsCount').value),
+      adults_count: parseInt(document.getElementById('editAdultsCount').value),
+      notes: document.getElementById('editNotes').value,
+      admin_notes: document.getElementById('editAdminNotes').value,
+      status: document.getElementById('editStatus').value
+    };
+    await fetch('/api/admin/bookings/' + id, { method: 'PUT', headers: authHeaders(), body: JSON.stringify(data) });
+    closeBookingEditModal();
+    loadBookings();
+  });
+
+  async function deleteBooking() {
+    const id = document.getElementById('editBookingId').value;
+    if (!confirm('Ștergi această rezervare?')) return;
+    await fetch('/api/admin/bookings/' + id, { method: 'DELETE', headers: authHeaders() });
+    closeBookingEditModal();
+    loadBookings();
+  }
+
+  function showBookingModal() {
+    // For now just show alert - could implement full modal
+    alert('Pentru a adăuga o rezervare, contactează clientul direct.');
+  }
+
+</script>
+
+  <!-- Booking Edit Modal -->
+  <div id="bookingEditModal" class="fixed inset-0 z-[100] hidden items-center justify-center p-4" style="display:none;">
+    <div class="modal-backdrop absolute inset-0" onclick="closeBookingEditModal()"></div>
+    <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg p-8 max-h-[90vh] overflow-y-auto">
+      <button onclick="closeBookingEditModal()" class="absolute top-4 right-4 w-10 h-10 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center transition-colors">
+        <iconify-icon icon="lucide:x" width="18"></iconify-icon>
+      </button>
+      <h3 class="font-black text-2xl mb-6">Editează rezervare</h3>
+      <form id="bookingEditForm" class="space-y-4">
+        <input type="hidden" id="editBookingId">
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-bold text-gray-700 mb-2">Nume client</label>
+            <input type="text" id="editClientName" class="w-full px-4 py-3 rounded-xl border-2 border-gray-100">
+          </div>
+          <div>
+            <label class="block text-sm font-bold text-gray-700 mb-2">Telefon</label>
+            <input type="tel" id="editClientPhone" class="w-full px-4 py-3 rounded-xl border-2 border-gray-100">
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-bold text-gray-700 mb-2">Număr copii</label>
+            <input type="number" id="editKidsCount" min="0" max="50" class="w-full px-4 py-3 rounded-xl border-2 border-gray-100">
+          </div>
+          <div>
+            <label class="block text-sm font-bold text-gray-700 mb-2">Număr adulți</label>
+            <input type="number" id="editAdultsCount" min="0" max="30" class="w-full px-4 py-3 rounded-xl border-2 border-gray-100">
+          </div>
+        </div>
+        <div>
+          <label class="block text-sm font-bold text-gray-700 mb-2">Notițe client</label>
+          <textarea id="editNotes" rows="2" class="w-full px-4 py-3 rounded-xl border-2 border-gray-100 resize-none"></textarea>
+        </div>
+        <div>
+          <label class="block text-sm font-bold text-gray-700 mb-2">Notițe admin (private)</label>
+          <textarea id="editAdminNotes" rows="3" class="w-full px-4 py-3 rounded-xl border-2 border-gray-100 resize-none" placeholder="Ex: Clientul a sunat, vor fi doar 8 copii în loc de 10..."></textarea>
+        </div>
+        <div>
+          <label class="block text-sm font-bold text-gray-700 mb-2">Status</label>
+          <select id="editStatus" class="w-full px-4 py-3 rounded-xl border-2 border-gray-100 bg-white">
+            <option value="pending">În așteptare</option>
+            <option value="confirmed">Confirmată</option>
+            <option value="completed">Finalizată</option>
+            <option value="cancelled">Anulată</option>
+          </select>
+        </div>
+        <div class="flex gap-4 pt-4">
+          <button type="button" onclick="deleteBooking()" class="flex-1 bg-red-50 text-red-500 py-3 rounded-xl font-bold hover:bg-red-100 transition-colors">Șterge</button>
+          <button type="submit" class="flex-1 btn-primary">Salvează</button>
+        </div>
+      </form>
+    </div>
+  </div>
 </body>
 </html>
