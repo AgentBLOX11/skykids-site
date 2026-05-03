@@ -2207,7 +2207,10 @@
     btn.id = 'cartBadge';
     btn.className = 'relative ml-2 w-10 h-10 bg-candy-pink/10 hover:bg-candy-pink/20 rounded-xl flex items-center justify-center transition-colors';
     btn.onclick = openCart;
-    btn.innerHTML = '<iconify-icon icon="lucide:shopping-cart" width="20" class="text-candy-pink"></iconify-icon><span class="absolute -top-1.5 -right-1.5 w-5 h-5 bg-gradient-to-r from-candy-pink to-candy-orange text-white text-xs font-black rounded-full flex items-center justify-center shadow-md">0</span>';
+    btn.innerHTML = '<div class="relative w-10 h-10 rounded-xl bg-gradient-to-br from-candy-pink/15 to-candy-orange/15 hover:from-candy-pink/25 hover:to-candy-orange/25 flex items-center justify-center transition-all shadow-sm hover:shadow-md">' +
+      '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ff6b9d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m2.5 19.5 4-15a1 1 0 0 1 1.47 0l2.88 7.5a1 1 0 0 0 1 1h9.3a1 1 0 0 1 1 1l-.6 3a1 1 0 0 0 1 1.1l4.3 1.8a1 1 0 0 1 1 1.2v.7a1 1 0 0 1-.8 1l-14.5 2.2a1 1 0 0 1-1-.2l-.1-.1a1 1 0 0 1-.2-1.2v-.4a1 1 0 0 0-.4-1.1z"/><circle cx="9" cy="21" r="1"/><circle cx="17" cy="21" r="1"/></svg>' +
+      '<span class="absolute -top-1.5 -right-1.5 w-5 h-5 bg-gradient-to-r from-candy-pink to-candy-orange text-white text-xs font-black rounded-full flex items-center justify-center shadow-md">0</span>' +
+      '</div>';
     navBook.parentElement.appendChild(btn);
     updateCartBadge();
   }
