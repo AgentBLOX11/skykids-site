@@ -1,0 +1,20 @@
+services:
+  - name: skykids-site
+    plan: free
+    region: frankfurt
+    repo: git@github.com:AgentBLOX11/skykids-site.git
+    branch: main
+    runtime: node
+    buildCommand: cd backend && npm install && npm install -g better-sqlite3 && npm rebuild better-sqlite3
+    startCommand: cd backend && node server.js
+    healthCheckPath: /
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: JWT_SECRET
+        value: skykids2026production
+      - key: PORT
+        value: 10000
+    dirs:
+      - path: ./backend
+        startCommand: node server.js
