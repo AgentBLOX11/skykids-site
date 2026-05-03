@@ -1,0 +1,1690 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sky Kids Soroca 🎈 — Joc & Preparate Delicioase</title>
+  <meta name="description" content="Sky Kids Soroca — zonă de joacă pentru copii 1-12 ani + bucătărie delicioasă. Rezervă un loc și lasă copiii să se distreze!">
+  <meta property="og:title" content="Sky Kids Soroca 🎈 — Joc & Preparate Delicioase">
+  <meta property="og:description" content="Zonă de joacă pentru copii 1-12 ani + bucătărie delicioasă. Rezervă un loc și lasă copiii să se distreze!">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://skykidssoroca.md">
+  <meta property="og:image" content="https://skykidssoroca.md/og-image.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Sky Kids Soroca 🎈">
+  <meta name="twitter:description" content="Zonă de joacă pentru copii + bucătărie delicioasă în Soroca">
+  <link rel="preconnect" href="https://cdn.tailwindcss.com">
+  <link rel="dns-prefetch" href="https://cdn.tailwindcss.com">
+  <script src="https://cdn.tailwindcss.com?async=defer"></script>
+  <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js" defer></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://code.iconify.design">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            sky: { 50:'#f0f9ff',100:'#e0f2fe',200:'#bae6fd',300:'#7dd3fc',400:'#38bdf8',500:'#0ea5e9',600:'#0284c7',700:'#0369a1',800:'#075985',900:'#0c4a6e' },
+            candy: { pink:'#ff6b9d', yellow:'#ffd93d', green:'#6bcb77', orange:'#ff8c42', blue:'#4d96ff', purple:'#9b59b6' },
+            dark: '#1a1a2e', soft: '#fafbfc',
+          },
+          fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] },
+          boxShadow: { card: '0 4px 20px rgba(0,0,0,0.06)', hover: '0 12px 40px rgba(0,0,0,0.12)', glow: '0 0 40px rgba(255,107,157,0.3)' }
+        }
+      }
+    }
+  </script>
+  <style>
+    init();
+
+    * { font-family: 'Inter', system-ui, sans-serif; }
+    
+    html { scroll-behavior: smooth; }
+    body { background: #fafbfc; overflow-x: hidden; }
+    
+    /* Hero */
+    .hero-bg {
+      background: linear-gradient(135deg, #fff5f8 0%, #f0f7ff 50%, #f0fff4 100%);
+      position: relative;
+    }
+    .hero-bg::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -20%;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(255,107,157,0.15) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-bg::after {
+      content: '';
+      position: absolute;
+      bottom: -30%;
+      left: -10%;
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(77,150,255,0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    
+    /* Shapes */
+    .shape-1 {
+      position: absolute;
+      width: 300px;
+      height: 300px;
+      background: linear-gradient(135deg, rgba(255,107,157,0.2), rgba(255,217,61,0.1));
+      border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+      animation: morph 8s ease-in-out infinite;
+    }
+    .shape-2 {
+      position: absolute;
+      width: 200px;
+      height: 200px;
+      background: linear-gradient(135deg, rgba(77,150,255,0.15), rgba(107,203,119,0.1));
+      border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+      animation: morph 10s ease-in-out infinite reverse;
+      animation-delay: -3s;
+    }
+    .shape-3 {
+      position: absolute;
+      width: 150px;
+      height: 150px;
+      background: linear-gradient(135deg, rgba(255,140,66,0.15), rgba(155,89,182,0.1));
+      border-radius: 50% 50% 40% 60% / 60% 40% 60% 40%;
+      animation: morph 12s ease-in-out infinite;
+      animation-delay: -6s;
+    }
+    @keyframes morph {
+      0%, 100% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; transform: translate(0, 0) rotate(0deg); }
+      50% { border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; transform: translate(20px, -20px) rotate(10deg); }
+    }
+    
+    /* Cards */
+    .card {
+      background: white;
+      border-radius: 24px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+      border: 1px solid rgba(0,0,0,0.04);
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .card:hover { transform: translateY(-6px); box-shadow: 0 20px 50px rgba(0,0,0,0.1); }
+    
+    /* Menu item */
+    .menu-item {
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: 2px solid transparent;
+    }
+    .menu-item:hover {
+      border-color: #ff6b9d;
+      transform: translateY(-4px);
+      box-shadow: 0 12px 30px rgba(255,107,157,0.15);
+    }
+    
+    /* Category tab */
+    .cat-tab { transition: all 0.3s ease; }
+    .cat-tab:hover { transform: scale(1.05); }
+    .cat-tab.active {
+      background: linear-gradient(135deg, #ff6b9d, #ff8c42);
+      color: white;
+      box-shadow: 0 4px 15px rgba(255,107,157,0.4);
+      transform: scale(1.05);
+    }
+    .cat-tab { transition: all 0.2s ease; }
+    
+    /* Gradient text */
+    .gradient-text {
+      background: linear-gradient(135deg, #ff6b9d 0%, #ff8c42 50%, #4d96ff 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    /* Nav glass */
+    .nav-glass {
+      background: rgba(255,255,255,0.9);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(0,0,0,0.05);
+    }
+    
+    /* Section divider */
+    .section-divider { height: 1px; background: linear-gradient(90deg, transparent, rgba(0,0,0,0.08), transparent); }
+    
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: linear-gradient(180deg, #ff6b9d, #4d96ff); border-radius: 10px; }
+    
+    /* Stat card */
+    .stat-card {
+      background: white;
+      border-radius: 16px;
+      padding: 16px 8px;
+      text-align: center;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+      border: 1px solid rgba(0,0,0,0.04);
+      transition: all 0.3s ease;
+    }
+    @media (min-width: 640px) {
+      .stat-card { padding: 24px; border-radius: 20px; }
+    }
+    
+    /* Modal */
+    .modal-backdrop { background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); }
+    
+    /* Gallery item */
+    .gallery-item { border-radius: 20px; overflow: hidden; transition: all 0.4s ease; }
+    .gallery-item:hover { transform: scale(1.03); box-shadow: 0 20px 50px rgba(0,0,0,0.15); cursor: pointer; }
+    
+    /* Feature icon */
+    .feature-icon {
+      width: 64px;
+      height: 64px;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      transition: all 0.3s ease;
+    }
+    .feature-icon:hover { transform: scale(1.1) rotate(5deg); }
+    .feature-icon { transition: transform 0.3s ease; }
+    
+    
+    /* Loading skeleton */
+    .skeleton {
+      background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+    }
+    @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+    
+    /* Mobile sticky CTA */
+    @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+    
+    /* Dot navigation active state */
+    #mobileDotNav a.active { background: #ff6b9d; }
+    
+    /* Touch optimization */
+    .touch-manipulation { touch-action: manipulation; }
+    .snap-x { scroll-snap-type: x mandatory; }
+    .snap-center { scroll-snap-align: center; }
+    
+    /* Active state feedback */
+    .active\:scale-95:active { transform: scale(0.95); }
+
+    /* Form inputs */
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: #ff6b9d !important;
+      box-shadow: 0 0 0 4px rgba(255,107,157,0.1);
+    }
+    
+    /* Language switcher */
+    .lang-btn {
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: none;
+      background: transparent;
+      color: #9ca3af;
+    }
+    .lang-btn:hover {
+      background: #f3f4f6;
+      color: #374151;
+    }
+    .lang-btn.active {
+      background: linear-gradient(135deg, #ff6b9d, #ff8c42);
+      color: white;
+    }
+    
+    /* Footer wave */
+    .footer-wave { background: #1a1a2e; position: relative; overflow: hidden; }
+    .footer-wave::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 4px; background: linear-gradient(to right, #ff6b9d, #ff9f43, #4d96ff); }
+    
+    /* Fade up animation */
+    .fade-up { opacity: 0; transform: translateY(30px); transition: all 0.6s ease; }
+    .fade-up.visible { opacity: 1; transform: translateY(0); }
+    
+    /* Spinner */
+    .spinner {
+      width: 48px;
+      height: 48px;
+      border: 4px solid rgba(255,107,157,0.2);
+      border-top-color: #ff6b9d;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    
+    /* Price tag */
+    .price-tag {
+      background: linear-gradient(135deg, #ff6b9d, #ff8c42);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    /* ===== BOOKING WIZARD STYLES ===== */
+    .booking-step {
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    /* Package cards */
+    .package-card {
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: 2px solid #e5e7eb;
+      border-radius: 20px;
+      padding: 24px;
+      background: white;
+    }
+    .package-card:hover {
+      border-color: #ff6b9d;
+      transform: translateY(-4px);
+      box-shadow: 0 12px 30px rgba(255,107,157,0.15);
+    }
+    .package-card.selected {
+      border-color: #ff6b9d;
+      background: linear-gradient(135deg, rgba(255,107,157,0.05), rgba(255,140,66,0.05));
+      box-shadow: 0 0 0 4px rgba(255,107,157,0.2);
+    }
+    .package-card.selected .package-check {
+      background: linear-gradient(135deg, #ff6b9d, #ff8c42);
+      color: white;
+    }
+    
+    /* Step indicators */
+    .step-dot {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      transition: all 0.3s ease;
+      border: 2px solid #e5e7eb;
+      background: white;
+      color: #9ca3af;
+    }
+    .step-dot.active {
+      background: linear-gradient(135deg, #ff6b9d, #ff8c42);
+      border-color: #ff6b9d;
+      color: white;
+      box-shadow: 0 4px 15px rgba(255,107,157,0.3);
+    }
+    .step-dot.completed {
+      background: #6bcb77;
+      border-color: #6bcb77;
+      color: white;
+    }
+    
+    /* Time slot buttons */
+    .time-slot {
+      padding: 10px 16px;
+      border-radius: 12px;
+      border: 2px solid #e5e7eb;
+      background: white;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .time-slot:hover:not(:disabled) {
+      border-color: #4d96ff;
+      background: rgba(77,150,255,0.05);
+    }
+    .time-slot.selected {
+      background: #4d96ff;
+      border-color: #4d96ff;
+      color: white;
+    }
+    .time-slot:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      background: #f3f4f6;
+    }
+    
+    /* Input with icon */
+    .input-icon {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #9ca3af;
+    }
+    
+    /* Success animation */
+    @keyframes checkmark {
+      0% { transform: scale(0); opacity: 0; }
+      50% { transform: scale(1.2); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .animate-checkmark {
+      animation: checkmark 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+    
+    /* Floating label */
+    .floating-label {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #9ca3af;
+      transition: all 0.2s ease;
+      pointer-events: none;
+    }
+    input:focus + .floating-label,
+    input:not(:placeholder-shown) + .floating-label {
+      top: 8px;
+      transform: translateY(0);
+      font-size: 11px;
+      color: #ff6b9d;
+    }
+
+    /* ===== COOKIE BANNER ===== */
+    .cookie-banner {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #1a1a2e;
+      color: white;
+      padding: 16px 20px;
+      z-index: 9999;
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      box-shadow: 0 -4px 20px rgba(0,0,0,0.3);
+    }
+    .cookie-banner.show { display: flex; }
+    .cookie-banner p { margin: 0; font-size: 14px; line-height: 1.4; flex: 1; min-width: 200px; }
+    .cookie-banner a { color: #ff6b9d; text-decoration: underline; }
+    .cookie-banner-btns { display: flex; gap: 10px; flex-shrink: 0; }
+    .cookie-banner button {
+      padding: 10px 20px;
+      border-radius: 25px;
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: none;
+    }
+    .cookie-accept { background: linear-gradient(135deg, #ff6b9d, #ff8c42); color: white; }
+    .cookie-accept:hover { opacity: 0.9; transform: scale(1.02); }
+    .cookie-settings { background: rgba(255,255,255,0.1); color: white; }
+    .cookie-settings:hover { background: rgba(255,255,255,0.2); }
+  </style>
+</head>
+<body class="text-dark">
+
+  <!-- Navigation -->
+  <nav class="nav-glass sticky top-0 z-50">
+    <div class="max-w-6xl mx-auto px-6 py-4">
+      <div class="flex items-center justify-between">
+        <a href="#" class="flex items-center gap-3 group">
+          <div class="w-12 h-12 bg-gradient-to-br from-candy-pink to-candy-orange rounded-xl flex items-center justify-center text-white font-black text-xl shadow-lg group-hover:shadow-xl transition-shadow">
+            S
+          </div>
+          <div>
+            <span class="font-black text-2xl gradient-text">Sky Kids</span>
+            <p class="text-xs text-gray-400 -mt-1">Soroca 🎈</p>
+          </div>
+        </a>
+        <div class="hidden md:flex items-center gap-8">
+          <a href="#despre" class="font-semibold text-gray-600 hover:text-candy-pink transition-colors" data-i18n="nav_about">Despre</a>
+          <a href="#meniu" class="font-semibold text-gray-600 hover:text-candy-pink transition-colors" data-i18n="nav_menu">Meniu</a>
+          <a href="#galerie" class="font-semibold text-gray-600 hover:text-candy-pink transition-colors" data-i18n="nav_gallery">Galerie</a>
+          <a href="#contact" class="font-semibold text-gray-600 hover:text-candy-pink transition-colors" data-i18n="nav_contact">Contact</a>
+          <div class="flex items-center gap-1 border-2 border-gray-200 rounded-xl p-1">
+            <button onclick="setLang('ro')" id="btnRo" class="px-3 py-1.5 rounded-lg font-bold text-sm transition-all">🇷🇴 RO</button>
+            <button onclick="setLang('ru')" id="btnRu" class="px-3 py-1.5 rounded-lg font-bold text-sm transition-all">🇷🇺 RU</button>
+          </div>
+          <a href="#rezervari" class="bg-gradient-to-r from-candy-pink to-candy-orange text-white px-6 py-3 rounded-xl font-bold hover:shadow-lg transition-all inline-flex items-center gap-2">
+            <iconify-icon icon="lucide:calendar" width="18"></iconify-icon>
+            <span data-i18n="nav_book">Rezervă</span>
+          </a>
+        </div>
+        <button id="mobileToggle" class="md:hidden w-10 h-10 flex items-center justify-center rounded-xl bg-gray-100 hover:bg-gray-200 transition-colors">
+          <iconify-icon icon="lucide:menu" width="22"></iconify-icon>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Mobile Menu -->
+  <div id="mobileMenu" class="fixed inset-0 z-40 bg-white hidden flex-col items-center justify-center gap-5 sm:gap-6 pt-20 pb-8 px-4 sm:px-6">
+    <button id="mobileClose" class="absolute top-6 right-6 w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center hover:bg-gray-200 transition-colors">
+      <iconify-icon icon="lucide:x" width="22"></iconify-icon>
+    </button>
+    <a href="#despre" onclick="closeMobile()" class="text-xl sm:text-2xl font-bold text-dark hover:text-candy-pink transition-colors" data-i18n="mobile_about">Despre</a>
+    <a href="#meniu" onclick="closeMobile()" class="text-2xl font-bold text-dark hover:text-candy-pink transition-colors" data-i18n="mobile_menu">Meniu</a>
+    <a href="#galerie" onclick="closeMobile()" class="text-2xl font-bold text-dark hover:text-candy-pink transition-colors" data-i18n="mobile_gallery">Galerie</a>
+    <a href="#contact" onclick="closeMobile()" class="text-2xl font-bold text-dark hover:text-candy-pink transition-colors" data-i18n="mobile_contact">Contact</a>
+    <a href="#rezervari" onclick="closeMobile()" class="bg-gradient-to-r from-candy-pink to-candy-orange text-white px-8 py-4 rounded-xl font-bold" data-i18n="mobile_book">Rezervă un loc</a>
+  </div>
+
+  <!-- Mobile Sticky CTA -->
+  <div id="mobileStickyCTA" class="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-gray-100 p-4 z-50 hidden md:hidden shadow-lg">
+    <div class="flex gap-3">
+      <a href="#rezervari" onclick="closeMobile()" class="flex-1 bg-gradient-to-r from-candy-pink to-candy-orange text-white py-3 rounded-xl font-bold text-center text-sm flex items-center justify-center gap-2">
+        <iconify-icon icon="lucide:calendar" width="16"></iconify-icon>
+        <span data-i18n="nav_book">Rezervă</span>
+      </a>
+      <a href="#meniu" onclick="closeMobile()" class="flex-1 bg-gray-100 text-dark py-3 rounded-xl font-bold text-center text-sm flex items-center justify-center gap-2">
+        <iconify-icon icon="lucide:utensils" width="16"></iconify-icon>
+        <span data-i18n="nav_menu">Meniu</span>
+      </a>
+    </div>
+  </div>
+
+
+  <section class="hero-bg relative overflow-hidden py-16 sm:py-20 md:py-32">
+    <div class="shape-1" style="top: 10%; right: 5%;"></div>
+    <div class="shape-2" style="bottom: 20%; left: -5%;"></div>
+    <div class="shape-3" style="top: 50%; right: 30%;"></div>
+    
+    <div class="relative max-w-6xl mx-auto px-6">
+      <div class="text-center">
+        <!-- Badge with live open/closed status -->
+        <div class="inline-flex items-center gap-2 bg-white rounded-full px-5 py-2 shadow-md mb-8">
+          <iconify-icon icon="lucide:map-pin" width="16" class="text-candy-pink"></iconify-icon>
+          <span class="text-sm font-bold text-gray-600" data-i18n="hero_badge">Soroca, Moldova</span>
+          <span class="w-2 h-2 bg-candy-green rounded-full animate-pulse"></span>
+          <span id="openStatusBadge" class="text-sm font-bold text-candy-green" data-i18n="hero_checking">Se verifică...</span>
+        </div>
+        
+        <!-- Headline -->
+        <h1 class="font-black text-4xl sm:text-5xl md:text-7xl lg:text-8xl text-dark leading-tight mb-6">
+          <span class="gradient-text">Sky Kids</span> Soroca
+        </h1>
+        
+        <!-- Subheadline -->
+        <p class="text-xl md:text-2xl text-gray-500 max-w-2xl mx-auto mb-10 leading-relaxed" data-i18n="hero_subtitle">
+          Zonă de joacă profesională + bucătărie delicioasă.<br>
+          <span data-i18n="hero_subtitle2">Copiii se distrează, părinții se relaxează!</span>
+        </p>
+        
+        <!-- CTA Buttons -->
+        <div class="flex flex-col sm:flex-row gap-4 justify-center mb-16">
+          <a href="#rezervari" class="bg-gradient-to-r from-candy-pink to-candy-orange text-white px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-bold text-base sm:text-lg shadow-lg hover:shadow-xl transition-all inline-flex items-center justify-center gap-2" data-i18n="btn_book">
+            <iconify-icon icon="lucide:calendar" width="20"></iconify-icon>
+            Rezervă un loc
+          </a>
+          <a href="#meniu" class="bg-white text-dark px-8 py-4 rounded-xl font-bold text-lg shadow-md hover:shadow-lg transition-all border-2 border-gray-100 hover:border-candy-pink inline-flex items-center justify-center gap-2" data-i18n="btn_menu">
+            <iconify-icon icon="lucide:utensils" width="20"></iconify-icon>
+            Vezi meniul
+          </a>
+        </div>
+        
+        <!-- Stats -->
+        <div class="grid grid-cols-3 gap-2 sm:gap-4 max-w-lg sm:max-w-xl mx-auto">
+          <div class="stat-card">
+            <div class="text-4xl font-black text-candy-pink mb-1">1-12</div>
+            <div class="text-sm text-gray-400 font-medium" data-i18n="stats_years">Ani</div>
+          </div>
+          <div class="stat-card">
+            <div class="text-4xl font-black text-candy-blue mb-1">100%</div>
+            <div class="text-sm text-gray-400 font-medium" data-i18n="stats_safe">Sigur</div>
+          </div>
+          <div class="stat-card">
+            <div class="text-4xl font-black text-candy-green mb-1">10-22</div>
+            <div class="text-sm text-gray-400 font-medium" data-i18n="stats_hours">Ore</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- About Section -->
+  <section id="despre" class="py-16 sm:py-24 relative scroll-mt-20">
+    <div class="max-w-6xl mx-auto px-6">
+      <div class="text-center mb-16 fade-up">
+        <span class="inline-block bg-candy-orange/10 text-candy-orange text-sm font-bold tracking-widest uppercase px-4 py-2 rounded-full mb-4" data-i18n="about_badge">Despre Noi</span>
+        <h2 class="font-black text-4xl md:text-5xl text-dark" data-i18n="about_title">De ce să alegi Sky Kids?</h2>
+      </div>
+      
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 md:gap-8">
+        <div class="card shadow-card hover:shadow-hover p-6 sm:p-8 text-center fade-up" style="transition-delay: 0.1s">
+          <div class="feature-icon bg-gradient-to-br from-candy-pink to-candy-orange mx-auto mb-6 text-white shadow-lg">
+            <iconify-icon icon="lucide:gamepad-2" width="32"></iconify-icon>
+          </div>
+          <h3 class="font-bold text-xl text-dark mb-3" data-i18n="about_1_title">Zonă de Joacă Premium</h3>
+          <p class="text-gray-500 leading-relaxed" data-i18n="about_1_desc">Echipamente sigure și verificate. Supraveghere permanentă de către personal calificat.</p>
+        </div>
+        
+        <div class="card shadow-card hover:shadow-hover p-6 sm:p-8 text-center fade-up" style="transition-delay: 0.2s">
+          <div class="feature-icon bg-gradient-to-br from-candy-blue to-candy-purple mx-auto mb-6 text-white shadow-lg">
+            <iconify-icon icon="lucide:chef-hat" width="32"></iconify-icon>
+          </div>
+          <h3 class="font-bold text-xl text-dark mb-3" data-i18n="about_2_title">Bucătărie Delicioasă</h3>
+          <p class="text-gray-500 leading-relaxed" data-i18n="about_2_desc">Preparate proaspete, făcute zilnic. Meniu variat — de la sushi și pizza la paste și salate proaspete.</p>
+        </div>
+        
+        <div class="card shadow-card hover:shadow-hover p-6 sm:p-8 text-center fade-up" style="transition-delay: 0.3s">
+          <div class="feature-icon bg-gradient-to-br from-candy-green to-candy-blue mx-auto mb-6 text-white shadow-lg">
+            <iconify-icon icon="lucide:heart-handshake" width="32"></iconify-icon>
+          </div>
+          <h3 class="font-bold text-xl text-dark mb-3" data-i18n="about_3_title">Pentru Întreaga Familie</h3>
+          <p class="text-gray-500 leading-relaxed" data-i18n="about_3_desc">Copiii se joacă în siguranță, părinții se relaxează cu o cafea sau o masă gustoasă.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider max-w-6xl mx-auto my-8 sm:my-16"></div>
+
+  <!-- Menu Section -->
+  <section id="meniu" class="py-24 bg-white">
+    <div class="max-w-6xl mx-auto px-6">
+      <div class="text-center mb-12 fade-up">
+        <span class="inline-block bg-candy-pink/10 text-candy-pink text-sm font-bold tracking-widest uppercase px-4 py-2 rounded-full mb-4" data-i18n="menu_badge">Bucătărie</span>
+        <h2 class="font-black text-3xl sm:text-4xl md:text-5xl text-dark mb-4" data-i18n="menu_title">Meniul Nostru</h2>
+        <p class="text-gray-500 text-lg" data-i18n="menu_hint">apasă pe orice produs pentru detalii complete</p>
+      </div>
+      
+      <div id="categoryTabs" class="flex overflow-x-auto snap-x snap-mandatory gap-2 sm:gap-3 px-4 -mx-4 sm:mx-0 sm:px-0 sm:justify-center mb-8 sm:mb-12 fade-up pb-2 sm:pb-0"></div>
+      <div id="menuGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mt-8"></div>
+      <div id="menuLoading" class="text-center py-16">
+        <div class="spinner mx-auto mb-4"></div>
+        <p class="text-gray-400 font-medium" data-i18n="menu_loading">Se încarcă meniul...</p>
+      </div>
+      <div id="menuEmpty" class="hidden text-center py-16">
+        <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <iconify-icon icon="lucide:utensils" width="36" class="text-gray-300"></iconify-icon>
+        </div>
+        <p class="text-gray-400 font-medium text-lg" data-i18n="menu_empty">Nicio categorie disponibilă momentan</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider max-w-6xl mx-auto my-8 sm:my-16"></div>
+
+  <!-- Gallery Section -->
+  <section id="galerie" class="py-16 sm:py-24 relative scroll-mt-20">
+    <div class="max-w-6xl mx-auto px-6">
+      <div class="text-center mb-12 fade-up">
+        <span class="inline-block bg-candy-green/10 text-candy-green text-sm font-bold tracking-widest uppercase px-4 py-2 rounded-full mb-4" data-i18n="gallery_badge">Galerie</span>
+        <h2 class="font-black text-4xl md:text-5xl text-dark" data-i18n="gallery_title">Sky Kids în imagini</h2>
+      </div>
+      
+      <div id="galleryGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4 overflow-x-auto pb-2 -mx-4 px-4 snap-x snap-mandatory"></div>
+      <div id="galleryLoading" class="text-center py-16">
+        <div class="spinner mx-auto mb-4"></div>
+        <p id="galleryLoading" class="text-gray-400 font-medium" data-i18n="gallery_loading">Se încarcă galeria...</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider max-w-6xl mx-auto my-8 sm:my-16"></div>
+
+  <!-- Contact Section -->
+  <section id="contact" class="py-24 bg-white">
+    <div class="max-w-6xl mx-auto px-6">
+      <div class="text-center mb-12 fade-up">
+        <span class="inline-block bg-candy-purple/10 text-candy-purple text-sm font-bold tracking-widest uppercase px-4 py-2 rounded-full mb-4">Contact</span>
+        <h2 class="font-black text-4xl md:text-5xl text-dark" data-i18n="contact_title">Găsește-ne</h2>
+      </div>
+      
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+        <div class="card shadow-card hover:shadow-hover p-8 fade-up">
+          <h3 class="font-bold text-xl text-dark" data-i18n="contact_info_title">Informații contact</h3>
+          <div id="contactInfo" class="space-y-4"></div>
+        </div>
+        
+        <div class="card shadow-card hover:shadow-hover overflow-hidden fade-up" style="transition-delay: 0.1s">
+          <div id="mapEmbed" class="w-full h-full min-h-[350px] bg-gray-50"></div>
+        </div>
+      </div>
+      
+      <div class="flex justify-center gap-4 mt-10 fade-up">
+        <a id="socialFacebook" href="#" target="_blank" class="w-14 h-14 bg-gray-100 hover:bg-candy-blue hover:text-white rounded-xl flex items-center justify-center transition-all hover:scale-110">
+          <iconify-icon icon="logos:facebook" width="24"></iconify-icon>
+        </a>
+        <a id="socialInstagram" href="#" target="_blank" class="w-14 h-14 bg-gray-100 hover:bg-candy-pink hover:text-white rounded-xl flex items-center justify-center transition-all hover:scale-110">
+          <iconify-icon icon="skill-icons:instagram" width="24"></iconify-icon>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider max-w-6xl mx-auto my-8 sm:my-16"></div>
+
+  <!-- Booking Section -->
+  <section id="rezervari" class="py-16 sm:py-24 relative scroll-mt-20">
+    <div class="max-w-3xl mx-auto px-6">
+      <div class="text-center mb-12 fade-up">
+        <span class="inline-block bg-candy-blue/10 text-candy-blue text-sm font-bold tracking-widest uppercase px-4 py-2 rounded-full mb-4" data-i18n="booking_badge">Rezervări</span>
+        <h2 class="font-black text-4xl md:text-5xl text-dark" data-i18n="booking_title">Rezervă un loc pentru copil</h2>
+        <p class="text-gray-500 mt-4" data-i18n="booking_subtitle">Completează pașii pentru a trimite o rezervare</p>
+      </div>
+      
+      <!-- Step indicators -->
+      <div class="flex items-center justify-center gap-4 mb-10">
+        <div class="step-dot active" data-step="1">1</div>
+        <div class="w-12 h-0.5 bg-gray-200"></div>
+        <div class="step-dot" data-step="2">2</div>
+        <div class="w-12 h-0.5 bg-gray-200"></div>
+        <div class="step-dot" data-step="3">3</div>
+      </div>
+      
+      <!-- Booking form card -->
+      <div class="card shadow-card hover:shadow-hover p-8 md:p-10 fade-up">
+        <form id="bookingForm">
+          <!-- Step 1: Package selection -->
+          <div id="step1" class="booking-step">
+            <h3 class="font-bold text-lg sm:text-xl mb-4 sm:mb-6 flex items-center gap-2 sm:gap-3">
+              <span class="w-8 h-8 bg-candy-pink text-white rounded-lg flex items-center justify-center text-sm font-bold">1</span>
+              <span data-i18n="booking_step1_label">Alege pachetul</span>
+            </h3>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mb-8" id="packageCardsContainer">
+              <div class="package-card bg-white rounded-2xl p-4 sm:p-6 border-2 border-gray-100 hover:border-candy-pink active:scale-95 transition-all cursor-pointer" onclick="selectPackage('standard', 10, 15, 10)" data-max-kids="15" data-max-adults="10">
+                <div class="flex items-center gap-3 sm:gap-4 mb-3 sm:mb-4">
+                  <div class="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-candy-pink/10 to-candy-orange/10 rounded-2xl flex items-center justify-center text-2xl sm:text-3xl shrink-0">🎈</div>
+                  <div class="flex-1 min-w-0">
+                    <h4 class="font-bold text-base sm:text-lg text-dark truncate" data-i18n="pkg_standard_name">Standard</h4>
+                    <p class="text-xs sm:text-sm text-gray-500 line-clamp-2" data-i18n="pkg_standard_desc">Acces la zona de joacă + o băutură</p>
+                  </div>
+                </div>
+                <div class="flex items-end justify-between">
+                  <div class="flex-1">
+                    <p class="text-2xl sm:text-3xl font-black text-candy-pink leading-none">100</p>
+                    <p class="text-xs text-gray-400 mt-1" data-i18n="pkg_per_child">per copil</p>
+                  </div>
+                  <div class="flex flex-wrap gap-x-3 gap-y-1 text-xs text-gray-500 mt-3 sm:mt-4">
+                    <span class="flex items-center gap-1"><iconify-icon icon="lucide:check-circle" width="12" class="text-candy-green"></iconify-icon><span data-i18n="pkg_zone">Zona de joacă</span></span>
+                    <span class="flex items-center gap-1"><iconify-icon icon="lucide:check-circle" width="12" class="text-candy-green"></iconify-icon><span data-i18n="pkg_drink">O băutură</span></span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="package-card bg-white rounded-2xl p-4 sm:p-6 border-2 border-gray-100 hover:border-candy-pink active:scale-95 transition-all cursor-pointer" onclick="selectPackage('premium', 11, 15, 10)" data-max-kids="15" data-max-adults="10">
+                <div class="flex items-center gap-3 sm:gap-4 mb-3 sm:mb-4">
+                  <div class="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-candy-pink/10 to-candy-orange/10 rounded-2xl flex items-center justify-center text-2xl sm:text-3xl shrink-0">⭐</div>
+                  <div class="flex-1 min-w-0">
+                    <h4 class="font-bold text-base sm:text-lg text-dark truncate" data-i18n="pkg_premium_name">Premium</h4>
+                    <p class="text-xs sm:text-sm text-gray-500 line-clamp-2" data-i18n="pkg_premium_desc">Acces + farfurie + băutură + dulciuri</p>
+                  </div>
+                </div>
+                <div class="flex items-end justify-between">
+                  <div class="flex-1">
+                    <p class="text-2xl sm:text-3xl font-black text-candy-pink leading-none">180</p>
+                    <p class="text-xs text-gray-400 mt-1" data-i18n="pkg_per_child">per copil</p>
+                  </div>
+                  <div class="flex flex-wrap gap-x-3 gap-y-1 text-xs text-gray-500 mt-3 sm:mt-4">
+                    <span class="flex items-center gap-1"><iconify-icon icon="lucide:check-circle" width="12" class="text-candy-green"></iconify-icon><span data-i18n="pkg_zone">Zona de joacă</span></span>
+                    <span class="flex items-center gap-1"><iconify-icon icon="lucide:check-circle" width="12" class="text-candy-green"></iconify-icon><span data-i18n="pkg_main">Fel principal</span></span>
+                    <span class="flex items-center gap-1"><iconify-icon icon="lucide:check-circle" width="12" class="text-candy-green"></iconify-icon><span data-i18n="pkg_drink">Băutură</span></span>
+                    <span class="flex items-center gap-1"><iconify-icon icon="lucide:check-circle" width="12" class="text-candy-green"></iconify-icon><span data-i18n="pkg_dessert">Desert</span></span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="package-card bg-white rounded-2xl p-4 sm:p-6 border-2 border-gray-100 hover:border-candy-pink active:scale-95 transition-all cursor-pointer" onclick="selectPackage('zi-de-nastere', 12, 15, 10)" data-max-kids="15" data-max-adults="10">
+                <div class="flex items-center gap-3 sm:gap-4 mb-3 sm:mb-4">
+                  <div class="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-candy-pink/10 to-candy-orange/10 rounded-2xl flex items-center justify-center text-2xl sm:text-3xl shrink-0">🎂</div>
+                  <div class="flex-1 min-w-0">
+                    <h4 class="font-bold text-base sm:text-lg text-dark truncate" data-i18n="pkg_birthday_name">Zi de Naștere</h4>
+                    <p class="text-xs sm:text-sm text-gray-500 line-clamp-2" data-i18n="pkg_birthday_desc">Pachet complet petrecere copii (max 15 copii)</p>
+                  </div>
+                </div>
+                <div class="flex items-end justify-between">
+                  <div class="flex-1">
+                    <p class="text-2xl sm:text-3xl font-black text-candy-pink leading-none">1500</p>
+                    <p class="text-xs text-gray-400 mt-1" data-i18n="pkg_per_group">per grup</p>
+                  </div>
+                  <div class="flex flex-wrap gap-x-3 gap-y-1 text-xs text-gray-500 mt-3 sm:mt-4">
+                    <span class="flex items-center gap-1"><iconify-icon icon="lucide:check-circle" width="12" class="text-candy-green"></iconify-icon><span data-i18n="pkg_private">Zonă privată</span></span>
+                    <span class="flex items-center gap-1"><iconify-icon icon="lucide:check-circle" width="12" class="text-candy-green"></iconify-icon><span data-i18n="pkg_catering">Catering complet</span></span>
+                    <span class="flex items-center gap-1"><iconify-icon icon="lucide:check-circle" width="12" class="text-candy-green"></iconify-icon><span data-i18n="pkg_decor">Decorare</span></span>
+                    <span class="flex items-center gap-1"><iconify-icon icon="lucide:check-circle" width="12" class="text-candy-green"></iconify-icon><span data-i18n="pkg_animator">Animator</span></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="mb-6">
+              <label class="block text-sm sm:text-base font-bold text-gray-700 mb-2" data-i18n="booking_kids_label">Număr de copii *</label>
+              <div class="flex items-center gap-4">
+                <button type="button" onclick="changeKids(-1)" class="w-12 h-12 bg-gray-100 hover:bg-gray-200 rounded-xl flex items-center justify-center text-xl font-bold transition-colors">−</button>
+                <input type="number" id="kids_count" value="1" min="1" max="30" class="w-20 text-center text-2xl font-bold border-2 border-gray-200 rounded-xl transition-all focus:border-candy-pink focus:ring-2 focus:ring-candy-pink/20 py-3">
+                <button type="button" onclick="changeKids(1)" class="w-12 h-12 bg-gray-100 hover:bg-gray-200 rounded-xl flex items-center justify-center text-xl font-bold transition-colors">+</button>
+                <span class="text-gray-400 ml-2" data-i18n="booking_kids_suffix">copii</span>
+              </div>
+            </div>
+            
+            <div class="mb-6">
+              <label class="block text-sm sm:text-base font-bold text-gray-700 mb-2" data-i18n="booking_adults_label">Număr de adulți</label>
+              <div class="flex items-center gap-4">
+                <button type="button" onclick="changeAdults(-1)" class="w-12 h-12 bg-gray-100 hover:bg-gray-200 rounded-xl flex items-center justify-center text-xl font-bold transition-colors">−</button>
+                <input type="number" id="adults_count" value="0" min="0" max="20" class="w-20 text-center text-2xl font-bold border-2 border-gray-200 rounded-xl transition-all focus:border-candy-pink focus:ring-2 focus:ring-candy-pink/20 py-3">
+                <button type="button" onclick="changeAdults(1)" class="w-12 h-12 bg-gray-100 hover:bg-gray-200 rounded-xl flex items-center justify-center text-xl font-bold transition-colors">+</button>
+                <span class="text-gray-400 ml-2" data-i18n="booking_adults_suffix">adulți</span>
+              </div>
+            </div>
+            
+            <button type="button" onclick="goToStep(2)" id="btnStep1" class="w-full bg-candy-pink hover:bg-candy-pink/90 text-white py-4 rounded-xl font-bold text-lg disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all shadow-lg hover:shadow-xl" disabled>
+              <span data-i18n="booking_continue">Continuă</span>
+              <iconify-icon icon="lucide:arrow-right" width="20"></iconify-icon>
+            </button>
+          </div>
+          
+          <!-- Step 2: Date & Time -->
+          <div id="step2" class="booking-step hidden">
+            <h3 class="font-bold text-lg sm:text-xl mb-4 sm:mb-6 flex items-center gap-2 sm:gap-3">
+              <span class="w-8 h-8 bg-candy-pink text-white rounded-lg flex items-center justify-center text-sm">2</span>
+              <span data-i18n="booking_step2_label">Alege data și ora</span>
+            </h3>
+            
+            <div class="mb-6">
+              <label class="block text-sm sm:text-base font-bold text-gray-700 mb-2" data-i18n="booking_date_label">Data *</label>
+              <input type="date" id="date" required class="w-full px-4 sm:px-5 py-3 sm:py-4 rounded-xl border-2 border-gray-200 text-base sm:text-lg font-medium">
+            </div>
+            
+            <div id="timeSlots" class="mb-8 hidden">
+              <label class="block text-sm sm:text-base font-bold text-gray-700 mb-2" data-i18n="booking_time_label">Ora *</label>
+              <div id="slotsGrid" class="grid grid-cols-3 sm:grid-cols-4 gap-2 sm:gap-3"></div>
+            </div>
+            
+            <div class="flex gap-4">
+              <button type="button" onclick="goToStep(1)" class="flex-1 bg-gray-100 text-gray-700 py-4 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-gray-200 transition-colors">
+                <iconify-icon icon="lucide:arrow-left" width="20"></iconify-icon>
+                <span data-i18n="booking_back">Înapoi</span>
+              </button>
+            <button type="button" onclick="goToStep(3)" id="btnStep2" class="flex-1 bg-candy-pink hover:bg-candy-pink/90 text-white py-4 rounded-xl font-bold flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-lg" disabled>
+                <span data-i18n="booking_continue">Continuă</span>
+                <iconify-icon icon="lucide:arrow-right" width="20"></iconify-icon>
+              </button>
+            </div>
+          </div>
+          
+          <!-- Step 3: Contact info -->
+          <div id="step3" class="booking-step hidden">
+            <h3 class="font-bold text-lg sm:text-xl mb-4 sm:mb-6 flex items-center gap-2 sm:gap-3">
+              <span class="w-8 h-8 bg-candy-pink text-white rounded-lg flex items-center justify-center text-sm">3</span>
+              <span data-i18n="booking_step3_label">Datele tale de contact</span>
+            </h3>
+            
+            <div class="space-y-5 mb-8">
+              <div>
+                <label class="block text-sm font-bold text-gray-700 mb-2" data-i18n="booking_name_label">Nume părinte *</label>
+                <div class="relative">
+                  <iconify-icon icon="lucide:user" width="18" class="input-icon"></iconify-icon>
+                  <input type="text" id="client_name" required placeholder="Numele tău complet" data-i18n-placeholder="booking_name_placeholder" class="w-full pl-12 pr-5 py-4 rounded-xl border-2 border-gray-200">
+                </div>
+              </div>
+              
+              <div>
+                <label class="block text-sm font-bold text-gray-700 mb-2" data-i18n="booking_phone_label">Telefon *</label>
+                <div class="relative">
+                  <iconify-icon icon="lucide:phone" width="18" class="input-icon"></iconify-icon>
+                  <input type="tel" id="client_phone" required placeholder="+373 __ ___ ___" data-i18n-placeholder="booking_phone_placeholder" class="w-full pl-12 pr-5 py-4 rounded-xl border-2 border-gray-200">
+                </div>
+              </div>
+              
+              <div>
+                <label class="block text-sm font-bold text-gray-700 mb-2" data-i18n="booking_notes_label">Notițe (opțional)</label>
+                <div class="relative">
+                  <iconify-icon icon="lucide:message-square" width="18" class="input-icon" style="top: 16px; transform: none;"></iconify-icon>
+                  <textarea id="notes" rows="3" placeholder="Alergii, preferințe, cerințe speciale..." data-i18n-placeholder="booking_notes_placeholder" class="w-full pl-12 pr-5 py-4 rounded-xl border-2 border-gray-200 resize-none"></textarea>
+                </div>
+              </div>
+            </div>
+            
+            <div class="bg-gray-50 rounded-xl p-5 mb-8">
+              <h4 class="font-bold text-sm text-gray-500 uppercase tracking-wide mb-3" data-i18n="booking_summary_title">Rezumat rezervare</h4>
+              <div id="bookingSummary" class="space-y-2 text-sm"></div>
+            </div>
+            
+            <div class="flex gap-4">
+              <button type="button" onclick="goToStep(2)" class="flex-1 bg-gray-100 text-gray-700 py-4 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-gray-200 transition-colors">
+                <iconify-icon icon="lucide:arrow-left" width="20"></iconify-icon>
+                <span data-i18n="booking_back">Înapoi</span>
+              </button>
+              <button type="submit" class="flex-1 bg-gradient-to-r from-candy-pink to-candy-orange text-white py-4 rounded-xl font-bold flex items-center justify-center gap-2">
+                <iconify-icon icon="lucide:send" width="20"></iconify-icon>
+                <span data-i18n="booking_submit">Trimite rezervarea</span>
+              </button>
+            </div>
+          </div>
+        </form>
+        
+        <!-- Success message -->
+        <div id="bookingSuccess" class="hidden text-center py-10">
+          <div class="w-24 h-24 bg-candy-green/20 rounded-full flex items-center justify-center mx-auto mb-6 animate-checkmark">
+            <iconify-icon icon="lucide:check-circle" width="48" class="text-candy-green"></iconify-icon>
+          </div>
+          <h3 class="font-bold text-2xl text-candy-green mb-3" data-i18n="booking_success_title">Rezervare trimisă!</h3>
+          <p class="text-gray-500 mb-6" data-i18n="booking_success_msg">Te vom contacta în scurt timp pentru confirmare. Te așteptăm!</p>
+          <button onclick="resetBooking()" class="bg-gray-100 text-gray-700 px-6 py-3 rounded-xl font-bold hover:bg-gray-200 transition-colors" data-i18n="booking_new">
+            Face o nouă rezervare
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer-wave text-white py-16">
+    <div class="max-w-6xl mx-auto px-6">
+      <div class="flex flex-col md:flex-row justify-between items-center gap-8">
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 bg-gradient-to-br from-candy-pink to-candy-blue rounded-xl flex items-center justify-center font-black text-xl text-white">
+            <span class="gradient-text">SKY</span>
+          </div>
+          <div>
+            <span class="font-black text-2xl text-white">Kids Soroca</span>
+            <p class="text-gray-400 text-sm" data-i18n="footer_magic">Magic pentru copii 🎈</p>
+          </div>
+        </div>
+        
+        <div class="flex gap-3">
+          <a id="footerFacebook" href="#" class="w-11 h-11 bg-white/10 hover:bg-candy-blue rounded-xl flex items-center justify-center transition-all">
+            <iconify-icon icon="logos:facebook" width="20"></iconify-icon>
+          </a>
+          <a id="footerInstagram" href="#" class="w-11 h-11 bg-white/10 hover:bg-candy-pink rounded-xl flex items-center justify-center transition-all">
+            <iconify-icon icon="skill-icons:instagram" width="20"></iconify-icon>
+          </a>
+        </div>
+      </div>
+      
+      <div class="border-t border-white/10 mt-10 pt-8 text-center">
+        <p class="text-gray-400 text-sm" data-i18n="footer_rights">
+          © 2026 Sky Kids Soroca. Toate drepturile rezervate.
+          <span class="mx-2">•</span>
+          <span data-i18n="footer_made_with">Făcut cu ❤️ pentru copii</span>
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Product Modal -->
+  <div id="productModal" class="fixed inset-0 z-[100] hidden items-center justify-center p-4" style="display:none;">
+    <div class="modal-backdrop absolute inset-0" onclick="closeProductModal()"></div>
+    <div class="relative bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden">
+      <button onclick="closeProductModal()" class="absolute top-4 right-4 z-10 w-10 h-10 bg-white/90 hover:bg-white rounded-full flex items-center justify-center shadow-lg transition-all">
+        <iconify-icon icon="lucide:x" width="20"></iconify-icon>
+      </button>
+      
+      <div class="relative">
+        <img id="modalImg" src="" alt="" class="w-full h-56 object-cover" width="400" height="224" decoding="async">
+        <div id="modalImgPlaceholder" class="w-full h-56 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center hidden">
+          <iconify-icon icon="lucide:image" width="48" class="text-gray-300"></iconify-icon>
+        </div>
+        <span id="modalBadge" class="hidden absolute top-4 left-4 bg-candy-yellow text-dark text-xs font-bold px-3 py-1.5 rounded-full shadow" data-i18n="modal_kids_badge">PENTRU COPII</span>
+      </div>
+      
+      <div class="p-6 md:p-8">
+        <h3 id="modalTitle" class="font-black text-2xl text-dark mb-2"></h3>
+        <p id="modalDesc" class="text-gray-500 leading-relaxed mb-4"></p>
+        <p id="modalWeight" class="text-sm text-gray-400 mb-5"></p>
+        
+        <div class="border-t pt-5">
+          <p class="text-sm text-gray-400 font-medium mb-1" data-i18n="modal_price_label">PREȚ</p>
+          <p id="modalPrice" class="text-3xl font-black price-tag"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  // ===== State =====
+  let categories = [];
+  let products = [];
+  let packages = [];
+  let currentCategory = null;
+  let selectedPackage = null;
+  let selectedPackageId = null;
+  let currentMaxKids = 15;
+  let currentMaxAdults = 10;
+  let selectedTime = null;
+  let currentStep = 1;
+  let currentLang = localStorage.getItem('skykids_lang') || 'ro';
+
+  // ===== Translations =====
+  const translations = {
+    ro: {
+      nav_about: 'Despre',
+      nav_menu: 'Meniu',
+      nav_gallery: 'Galerie',
+      nav_contact: 'Contact',
+      nav_book: 'Rezervă',
+      mobile_about: 'Despre',
+      mobile_menu: 'Meniu',
+      mobile_gallery: 'Galerie',
+      mobile_contact: 'Contact',
+      mobile_book: 'Rezervă un loc',
+      hero_badge: 'Soroca, Moldova',
+      hero_open: 'Deschis acum',
+      hero_closed: 'Închis',
+      hero_checking: 'Se verifică...',
+      hero_subtitle: 'Zonă de joacă profesională + bucătărie delicioasă.',
+      hero_subtitle2: 'Copiii se distrează, părinții se relaxează!',
+      btn_book: 'Rezervă un loc',
+      btn_menu: 'Vezi meniul',
+      stats_years: 'Ani',
+      stats_safe: 'Sigur',
+      stats_hours: 'Ore',
+      about_badge: 'Despre Noi',
+      about_title: 'De ce să alegi Sky Kids?',
+      about_1_title: 'Zonă de Joacă Premium',
+      about_1_desc: 'Echipamente sigure și verificate. Supraveghere permanentă de către personal calificat.',
+      about_2_title: 'Bucătărie Delicioasă',
+      about_2_desc: 'Preparate proaspete, făcute zilnic. Meniu variat — de la sushi și pizza la paste și salate proaspete.',
+      about_3_title: 'Pentru Întreaga Familie',
+      about_3_desc: 'Copiii se joacă în siguranță, părinții se relaxează cu o cafea sau o masă gustoasă.',
+      menu_badge: 'Bucătărie',
+      menu_title: 'Meniul Nostru',
+      menu_hint: 'apasă pe orice produs pentru detalii complete',
+      menu_loading: 'Se încarcă meniul...',
+      menu_empty: 'Nicio categorie disponibilă momentan',
+      gallery_badge: 'Galerie',
+      gallery_title: 'Sky Kids în imagini',
+      gallery_loading: 'Se încarcă galeria...',
+      contact_badge: 'Contact',
+      contact_title: 'Găsește-ne',
+      contact_info_title: 'Informații contact',
+      booking_badge: 'Rezervări',
+      booking_title: 'Rezervă un loc pentru copil',
+      booking_subtitle: 'Completează pașii pentru a trimite o rezervare',
+      booking_step1_label: 'Alege pachetul',
+      booking_kids_label: 'Număr de copii *',
+      booking_kids_suffix: 'copii',
+      booking_adults_label: 'Număr de adulți',
+      booking_adults_suffix: 'adulți',
+      booking_continue: 'Continuă',
+      booking_back: 'Înapoi',
+      booking_step2_label: 'Alege data și ora',
+      booking_date_label: 'Data *',
+      booking_time_label: 'Ora *',
+      booking_step3_label: 'Datele tale de contact',
+      booking_name_label: 'Nume părinte *',
+      booking_name_placeholder: 'Numele tău complet',
+      booking_phone_label: 'Telefon *',
+      booking_phone_placeholder: '+373 __ ___ ___',
+      booking_notes_label: 'Notițe (opțional)',
+      booking_notes_placeholder: 'Alergii, preferințe, cerințe speciale...',
+      booking_summary_title: 'Rezumat rezervare',
+      booking_submit: 'Trimite rezervarea',
+      booking_success_title: 'Rezervare trimisă!',
+      booking_success_msg: 'Te vom contacta în scurt timp pentru confirmare. Te așteptăm!',
+      booking_new: 'Face o nouă rezervare',
+      pkg_standard_name: 'Standard',
+      pkg_standard_desc: 'Acces la zona de joacă + o băutură',
+      pkg_premium_name: 'Premium',
+      pkg_premium_desc: 'Acces + farfurie + băutură + dulciuri',
+      pkg_birthday_name: 'Zi de Naștere',
+      pkg_birthday_desc: 'Pachet complet petrecere copii (max 15 copii)',
+      pkg_per_child: 'per copil',
+      pkg_per_group: 'per grup',
+      pkg_zone: 'Zona de joacă',
+      pkg_drink: 'O băutură',
+      pkg_main: 'Fel principal',
+      pkg_dessert: 'Desert',
+      pkg_private: 'Zonă privată',
+      pkg_catering: 'Catering complet',
+      pkg_decor: 'Decorare',
+      pkg_animator: 'Animator',
+      footer_magic: 'Magic pentru copii 🎈',
+      footer_made_with: 'Făcut cu ❤️ pentru copii',
+      footer_rights: 'Toate drepturile rezervate.',
+      modal_price_label: 'PREȚ',
+      modal_kids_badge: 'PENTRU COPII',
+      menu_category_all: 'Toate',
+    },
+    ru: {
+      nav_about: 'О нас',
+      nav_menu: 'Меню',
+      nav_gallery: 'Галерея',
+      nav_contact: 'Контакты',
+      nav_book: 'Бронировать',
+      mobile_about: 'О нас',
+      mobile_menu: 'Меню',
+      mobile_gallery: 'Галерея',
+      mobile_contact: 'Контакты',
+      mobile_book: 'Забронировать место',
+      hero_badge: 'Сорока, Молдова',
+      hero_open: 'Открыто сейчас',
+      hero_closed: 'Закрыто',
+      hero_checking: 'Проверяется...',
+      hero_subtitle: 'Профессиональная игровая зона + вкусная кухня.',
+      hero_subtitle2: 'Дети веселятся, родители отдыхают!',
+      btn_book: 'Забронировать место',
+      btn_menu: 'Смотреть меню',
+      stats_years: 'Лет',
+      stats_safe: 'Безопасно',
+      stats_hours: 'Часов',
+      about_badge: 'О нас',
+      about_title: 'Почему выбирают Sky Kids?',
+      about_1_title: 'Премиум игровая зона',
+      about_1_desc: 'Безопасное и проверенное оборудование. Постоянное наблюдение квалифицированного персонала.',
+      about_2_title: 'Вкусная кухня',
+      about_2_desc: 'Свежие блюда, готовые каждый день. Разнообразное меню — от суши и пиццы до пасты и свежих салатов.',
+      about_3_title: 'Для всей семьи',
+      about_3_desc: 'Дети играют безопасно, родители отдыхают с кофе или вкусной едой.',
+      menu_badge: 'Кухня',
+      menu_title: 'Наше меню',
+      menu_hint: 'нажмите на продукт для подробностей',
+      menu_loading: 'Загрузка меню...',
+      menu_empty: 'Категории временно недоступны',
+      gallery_badge: 'Галерея',
+      gallery_title: 'Sky Kids в фотографиях',
+      gallery_loading: 'Загрузка галереи...',
+      contact_badge: 'Контакты',
+      contact_title: 'Найдите нас',
+      contact_info_title: 'Контактная информация',
+      booking_badge: 'Бронирование',
+      booking_title: 'Забронируйте место для ребёнка',
+      booking_subtitle: 'Заполните шаги для отправки бронирования',
+      booking_step1_label: 'Выберите пакет',
+      booking_kids_label: 'Количество детей *',
+      booking_kids_suffix: 'детей',
+      booking_adults_label: 'Количество взрослых',
+      booking_adults_suffix: 'взрослых',
+      booking_continue: 'Продолжить',
+      booking_back: 'Назад',
+      booking_step2_label: 'Выберите дату и время',
+      booking_date_label: 'Дата *',
+      booking_time_label: 'Время *',
+      booking_step3_label: 'Ваши контактные данные',
+      booking_name_label: 'Имя родителя *',
+      booking_name_placeholder: 'Ваше полное имя',
+      booking_phone_label: 'Телефон *',
+      booking_phone_placeholder: '+373 __ ___ ___',
+      booking_notes_label: 'Заметки (опционально)',
+      booking_notes_placeholder: 'Аллергии, предпочтения, особые требования...',
+      booking_summary_title: 'Резюме бронирования',
+      booking_submit: 'Отправить бронирование',
+      booking_success_title: 'Бронирование отправлено!',
+      booking_success_msg: 'Мы свяжемся с вами в ближайшее время для подтверждения. Ждём вас!',
+      booking_new: 'Сделать новое бронирование',
+      pkg_standard_name: 'Стандарт',
+      pkg_standard_desc: 'Доступ на игровую площадку + напиток',
+      pkg_premium_name: 'Премиум',
+      pkg_premium_desc: 'Доступ + порция + напиток + сладости',
+      pkg_birthday_name: 'День рождения',
+      pkg_birthday_desc: 'Полный пакет для детского праздника (макс 15 детей)',
+      pkg_per_child: 'за ребёнка',
+      pkg_per_group: 'за группу',
+      pkg_zone: 'Игровая площадка',
+      pkg_drink: 'Напиток',
+      pkg_main: 'Основное блюдо',
+      pkg_dessert: 'Десерт',
+      pkg_private: 'Частная зона',
+      pkg_catering: 'Полный кейтеринг',
+      pkg_decor: 'Декор',
+      pkg_animator: 'Аниматор',
+      footer_magic: 'Волшебство для детей 🎈',
+      footer_made_with: 'Сделано с ❤️ для детей',
+      footer_rights: 'Все права защищены.',
+      modal_price_label: 'ЦЕНА',
+      modal_kids_badge: 'ДЛЯ ДЕТЕЙ',
+      menu_category_all: 'Все',
+    }
+  };
+
+  function setLang(lang) {
+    currentLang = lang;
+    localStorage.setItem('skykids_lang', lang);
+    document.getElementById('btnRo').classList.toggle('active', lang === 'ro');
+    document.getElementById('btnRu').classList.toggle('active', lang === 'ru');
+    // Reload dynamic content with new language
+    loadMenu();
+    loadGallery();
+    loadPackages();
+    applyTranslations();
+  }
+
+  function t(key) {
+    return translations[currentLang][key] || translations['ro'][key] || key;
+  }
+
+  function applyTranslations() {
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const key = el.getAttribute('data-i18n');
+      el.textContent = t(key);
+    });
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+      const key = el.getAttribute('data-i18n-placeholder');
+      el.placeholder = t(key);
+    });
+    // Static translations only — dynamic content (menu, packages, gallery) is reloaded via loadMenu()/loadPackages() in setLang()
+    updateOpenStatus();
+  }
+
+  // ===== Mobile menu =====
+  document.getElementById('mobileToggle').addEventListener('click', () => {
+    const menu = document.getElementById('mobileMenu');
+    menu.classList.remove('hidden');
+    menu.classList.add('flex');
+  });
+  document.getElementById('mobileClose').addEventListener('click', closeMobile);
+  function closeMobile() {
+    const menu = document.getElementById('mobileMenu');
+    menu.classList.add('hidden');
+    menu.classList.remove('flex');
+  }
+
+  // ===== Init =====
+  // ===== Check if restaurant is currently open (10:00 - 22:00) =====
+  function updateOpenStatus() {
+    const now = new Date();
+    const hour = now.getHours();
+    const badge = document.getElementById('openStatusBadge');
+    if (hour >= 10 && hour < 22) {
+      badge.textContent = t('hero_open');
+      badge.className = 'text-sm font-bold text-candy-green';
+    } else {
+      badge.textContent = t('hero_closed');
+      badge.className = 'text-sm font-bold text-red-500';
+    }
+  }
+
+  async function init() {
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('date').min = today;
+    
+    await Promise.all([loadMenu(), loadGallery(), loadContact(), loadPackages()]);
+    
+    // Update open/closed status
+    updateOpenStatus();
+    setInterval(updateOpenStatus, 60000); // Update every minute
+    
+    document.getElementById('date').addEventListener('change', loadSlots);
+    
+    observeFadeElements();
+    // Show/hide mobile sticky CTA on scroll
+    // Initialize language
+    setLang(currentLang);
+    const stickyCTA = document.getElementById('mobileStickyCTA');
+    let lastScroll = 0;
+    window.addEventListener('scroll', () => {
+      const currentScroll = window.pageYOffset;
+      if (currentScroll > 300) {
+        stickyCTA.classList.remove('hidden');
+      } else {
+        stickyCTA.classList.add('hidden');
+      }
+      lastScroll = currentScroll;
+    });
+  }
+
+  // ===== Load packages from API =====
+  async function loadPackages() {
+    try {
+      const res = await fetch(`/api/packages?lang=${currentLang}&t=${Date.now()}`);
+      packages = await res.json();
+      renderPackageCards();
+    } catch (e) {
+      console.error('Packages load failed:', e);
+    }
+  }
+
+  function renderPackageCards() {
+    const container = document.getElementById('packageCardsContainer');
+    if (!packages.length) {
+      container.innerHTML = '<p class="col-span-full text-gray-400 text-center py-8">Niciun pachet disponibil momentan.</p>';
+      return;
+    }
+    container.innerHTML = packages.map((p, i) => `
+      <div class="package-card bg-white rounded-2xl p-4 sm:p-6 border-2 border-gray-100 hover:border-candy-pink active:scale-95 transition-all cursor-pointer touch-manipulation mb-3 sm:mb-0" onclick="selectPackage('${p.name.toLowerCase().replace(/\s+/g, '-')}', ${p.id}, ${p.max_children || 15}, ${p.max_adults || 10})" data-package="${p.name.toLowerCase().replace(/\s+/g, '-')}" data-id="${p.id}" data-max-kids="${p.max_children || 15}" data-max-adults="${p.max_adults || 10}">
+        <div class="flex items-center gap-3 sm:gap-4 mb-3 sm:mb-4">
+          <div class="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-candy-pink/10 to-candy-orange/10 rounded-2xl flex items-center justify-center text-2xl sm:text-3xl shrink-0">
+            ${p.icon}
+          </div>
+          <div class="flex-1 min-w-0">
+            <h4 class="font-bold text-base sm:text-lg text-dark truncate">${p.name}</h4>
+            ${p.description ? `<p class="text-xs sm:text-sm text-gray-500 line-clamp-2">${p.description}</p>` : ''}
+          </div>
+        </div>
+        <div class="flex items-end justify-between">
+          <div class="flex-1">
+            <p class="text-2xl sm:text-3xl font-black text-candy-pink leading-none">${p.price_per_child || p.price_group}</p>
+            <p class="text-xs text-gray-400 mt-1">${p.price_per_child ? 'per copil' : 'per grup'}</p>
+          </div>
+          ${p.includes ? `<div class="flex flex-wrap gap-x-3 gap-y-1 text-xs text-gray-500 mt-3 sm:mt-4">
+            ${p.includes.split(',').map(item => `<span class="flex items-center gap-1"><iconify-icon icon="lucide:check-circle" width="12" class="text-candy-green"></iconify-icon>${item.trim()}</span>`).join('')}
+          </div>` : ''}
+        </div>
+      </div>
+    `).join('');
+    
+    // Re-attach click listeners
+    document.querySelectorAll('.package-card').forEach(card => {
+      card.addEventListener('click', () => {
+        const maxK = parseInt(card.dataset.maxKids) || 15;
+        const maxA = parseInt(card.dataset.maxAdults) || 10;
+        selectPackage(card.dataset.package, parseInt(card.dataset.id), maxK, maxA);
+      });
+    });
+  }
+
+  // ===== Booking wizard =====
+  function selectPackage(pkg, pkgId, maxKids = 15, maxAdults = 10) {
+    selectedPackage = pkg;
+    selectedPackageId = pkgId;
+    currentMaxKids = maxKids;
+    currentMaxAdults = maxAdults;
+    // Reset inputs to valid values within new limits
+    const kidsInput = document.getElementById('kids_count');
+    const adultsInput = document.getElementById('adults_count');
+    if (parseInt(kidsInput.value) > maxKids) kidsInput.value = maxKids;
+    if (parseInt(adultsInput.value) > maxAdults) adultsInput.value = maxAdults;
+    document.querySelectorAll('.package-card').forEach(c => {
+      c.classList.remove('selected');
+      const check = c.querySelector('.package-check');
+      if (check) { check.classList.remove('flex'); check.classList.add('hidden'); }
+    });
+    const selected = document.querySelector(`[data-package="${pkg}"]`);
+    if (selected) {
+      selected.classList.add('selected');
+      const check = selected.querySelector('.package-check');
+      if (check) { check.classList.remove('hidden'); check.classList.add('flex'); }
+    }
+    document.getElementById('btnStep1').disabled = false;
+    updateSummary();
+  }
+
+  function changeKids(delta) {
+    const input = document.getElementById('kids_count');
+    let val = parseInt(input.value) + delta;
+    if (val < 1) val = 1;
+    if (val > currentMaxKids) val = currentMaxKids;
+    input.value = val;
+    updateSummary();
+  }
+
+  function changeAdults(delta) {
+    const input = document.getElementById('adults_count');
+    let val = parseInt(input.value) + delta;
+    if (val < 0) val = 0;
+    if (val > currentMaxAdults) val = currentMaxAdults;
+    input.value = val;
+    updateSummary();
+  }
+
+  function goToStep(step) {
+    // Validate current step before going forward
+    if (step > currentStep) {
+      if (currentStep === 1 && !selectedPackage) return;
+      if (currentStep === 2 && (!document.getElementById('date').value || !selectedTime)) return;
+    }
+    
+    // Hide current step
+    document.getElementById(`step${currentStep}`).classList.add('hidden');
+    
+    // Update step dots
+    document.querySelectorAll('.step-dot').forEach((dot, i) => {
+      dot.classList.remove('active', 'completed');
+      if (i + 1 < step) dot.classList.add('completed');
+      if (i + 1 === step) dot.classList.add('active');
+    });
+    
+    // Show new step
+    document.getElementById(`step${step}`).classList.remove('hidden');
+    currentStep = step;
+    
+    if (step === 3) updateSummary();
+  }
+
+  async function loadSlots() {
+    const date = document.getElementById('date').value;
+    if (!date) return;
+    
+    try {
+      const res = await fetch(`/api/slots/${date}`);
+      const data = await res.json();
+      const grid = document.getElementById('slotsGrid');
+      const timeSlotsContainer = document.getElementById('timeSlots');
+      
+      timeSlotsContainer.classList.remove('hidden');
+      grid.innerHTML = '';
+      
+      data.slots.forEach(slot => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'time-slot' + (slot.available ? '' : ' disabled');
+        btn.textContent = slot.time;
+        btn.disabled = !slot.available;
+        btn.onclick = () => selectTime(slot.time, btn);
+        grid.appendChild(btn);
+      });
+    } catch (e) {
+      console.error('Slots load failed:', e);
+    }
+  }
+
+  function selectTime(time, btn) {
+    selectedTime = time;
+    document.querySelectorAll('.time-slot').forEach(s => s.classList.remove('selected'));
+    btn.classList.add('selected');
+    document.getElementById('btnStep2').disabled = false;
+    updateSummary();
+  }
+
+  function updateSummary() {
+    const summary = document.getElementById('bookingSummary');
+    const pkgNames = { standard: 'Standard (100 lei/copil)', premium: 'Premium (180 lei/copil)', birthday: 'Zi de Naștere (1500 lei/grup)' };
+    const kids = document.getElementById('kids_count').value || 1;
+    const date = document.getElementById('date').value || '';
+    const time = selectedTime || '';
+    
+    let price = '';
+    if (selectedPackage === 'birthday') price = '1500 lei';
+    else if (selectedPackage === 'premium') price = `${180 * kids} lei`;
+    else if (selectedPackage === 'standard') price = `${100 * kids} lei`;
+    
+    summary.innerHTML = `
+      <div class="flex justify-between"><span class="text-gray-500">Pachet:</span><span class="font-bold">${pkgNames[selectedPackage] || '—'}</span></div>
+      <div class="flex justify-between"><span class="text-gray-500">Copii:</span><span class="font-bold">${kids}</span></div>
+      <div class="flex justify-between"><span class="text-gray-500">Adulți:</span><span class="font-bold">${document.getElementById('adults_count').value || 0}</span></div>
+      <div class="flex justify-between"><span class="text-gray-500">Data:</span><span class="font-bold">${date || '—'}</span></div>
+      <div class="flex justify-between"><span class="text-gray-500">Ora:</span><span class="font-bold">${time || '—'}</span></div>
+      <div class="flex justify-between border-t pt-2 mt-2"><span class="text-gray-500">Total:</span><span class="font-black text-candy-pink">${price || '—'}</span></div>
+    `;
+  }
+
+  function resetBooking() {
+    selectedPackage = null;
+    selectedPackageId = null;
+    selectedTime = null;
+    currentStep = 1;
+    document.getElementById('bookingForm').reset();
+    document.querySelectorAll('.package-card').forEach(c => {
+      c.classList.remove('selected');
+      const check = c.querySelector('.package-check');
+      if (check) check.classList.add('hidden');
+    });
+    document.querySelectorAll('.step-dot').forEach((dot, i) => {
+      dot.classList.remove('active', 'completed');
+      if (i === 0) dot.classList.add('active');
+    });
+    document.getElementById('step1').classList.remove('hidden');
+    document.getElementById('step2').classList.add('hidden');
+    document.getElementById('step3').classList.add('hidden');
+    document.getElementById('bookingSuccess').classList.add('hidden');
+    document.getElementById('bookingForm').classList.remove('hidden');
+    document.getElementById('btnStep1').disabled = true;
+    document.getElementById('btnStep2').disabled = true;
+    document.getElementById('kids_count').value = 1;
+    document.getElementById('adults_count').value = 0;
+    document.getElementById('timeSlots').classList.add('hidden');
+  }
+
+  // ===== Booking form submit =====
+  document.getElementById('bookingForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const data = {
+      package: selectedPackage,
+      date: document.getElementById('date').value,
+      time: selectedTime,
+      kids_count: parseInt(document.getElementById('kids_count').value),
+      client_name: document.getElementById('client_name').value,
+      client_phone: document.getElementById('client_phone').value,
+      notes: document.getElementById('notes').value
+    };
+    
+    try {
+      const res = await fetch('/api/bookings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      const result = await res.json();
+      if (!res.ok) throw new Error(result.error || 'Booking failed');
+      
+      document.getElementById('bookingForm').classList.add('hidden');
+      document.getElementById('bookingSuccess').classList.remove('hidden');
+    } catch (err) {
+      alert('Eroare: ' + err.message);
+    }
+  });
+
+  // ===== Load Menu =====
+  async function loadMenu() {
+    try {
+      const lang = currentLang;
+      const ts = Date.now();
+      const [catsRes, prodsRes] = await Promise.all([
+        fetch(`/api/categories?lang=${lang}&t=${ts}`),
+        fetch(`/api/products?lang=${lang}&t=${ts}`)
+      ]);
+      categories = await catsRes.json();
+      products = await prodsRes.json();
+      
+      renderCategoryTabs();
+      
+      if (categories.length > 0) {
+        currentCategory = categories[0].id;
+        renderMenu();
+      } else {
+        document.getElementById('menuEmpty').classList.remove('hidden');
+        document.getElementById('menuGrid').classList.add('hidden');
+      }
+    } catch (e) {
+      console.error('Menu load failed:', e);
+    } finally {
+      document.getElementById('menuLoading').classList.add('hidden');
+    }
+  }
+
+  function renderCategoryTabs() {
+    const container = document.getElementById('categoryTabs');
+    if (!categories.length) { container.classList.add('hidden'); return; }
+    container.innerHTML = categories.map(cat => `
+      <button onclick="selectCategory(${cat.id})" 
+        class="cat-tab px-6 py-3 rounded-xl font-bold text-sm border-2 border-gray-100 ${currentCategory === cat.id ? 'active' : 'bg-white text-gray-600 hover:border-candy-pink'}">
+        ${cat.icon} ${cat.name}
+      </button>
+    `).join('');
+  }
+
+  function selectCategory(id) {
+    currentCategory = id;
+    renderCategoryTabs();
+    renderMenu();
+  }
+
+  function renderMenu() {
+    const grid = document.getElementById('menuGrid');
+    const filtered = products.filter(p => p.category_id === currentCategory);
+    
+    if (!filtered.length) {
+      grid.innerHTML = '<div class="col-span-full text-center py-12 text-gray-400">Niciun produs în această categorie.</div>';
+      return;
+    }
+    
+    grid.innerHTML = filtered.map(p => `
+      <div class="menu-item card overflow-hidden" onclick="openProductModal('${p.image}', '${p.name.replace(/'/g, "\\'")}', '${(p.description||'').replace(/'/g, "\\'")}', '${p.price}', '${p.weight}', '${p.badge}')">
+        ${p.image ? 
+          `<img src="${p.image}" alt="${p.name}" class="w-full h-40 object-cover" width="400" height="160" loading="lazy" decoding="async">` : 
+          `<div class="w-full h-40 bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center text-5xl opacity-30">${p.icon || '🍽️'}</div>`
+        }
+        <div class="p-5">
+          ${p.badge ? `<span class="inline-block bg-candy-yellow text-dark text-xs font-bold px-3 py-1 rounded-full mb-3">${p.badge}</span>` : ''}
+          <h4 class="font-bold text-lg text-dark mb-2 leading-tight">${p.name}</h4>
+          ${p.description ? `<p class="text-gray-500 text-sm mb-3 line-clamp-2">${p.description}</p>` : ''}
+          <div class="flex items-center justify-between">
+            ${p.weight ? `<span class="text-xs text-gray-400">${p.weight}</span>` : '<span></span>'}
+            ${p.price ? `<span class="font-black text-xl price-tag">${p.price}</span>` : ''}
+          </div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  // ===== Product Modal =====
+  function openProductModal(img, name, desc, price, weight, badge) {
+    const modal = document.getElementById('productModal');
+    const imgEl = document.getElementById('modalImg');
+    const placeholder = document.getElementById('modalImgPlaceholder');
+    
+    if (img) {
+      imgEl.src = img;
+      imgEl.classList.remove('hidden');
+      placeholder.classList.add('hidden');
+    } else {
+      imgEl.classList.add('hidden');
+      placeholder.classList.remove('hidden');
+    }
+    
+    document.getElementById('modalTitle').textContent = name || '';
+    document.getElementById('modalDesc').textContent = desc || '';
+    document.getElementById('modalPrice').textContent = price || '';
+    document.getElementById('modalWeight').textContent = weight || '';
+    
+    const badgeEl = document.getElementById('modalBadge');
+    if (badge && badge.trim()) { badgeEl.textContent = badge; badgeEl.classList.remove('hidden'); }
+    else { badgeEl.classList.add('hidden'); }
+    
+    modal.classList.remove('hidden');
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeProductModal() {
+    const modal = document.getElementById('productModal');
+    modal.classList.add('hidden');
+    modal.style.display = 'none';
+    document.body.style.overflow = '';
+  }
+
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeProductModal(); });
+
+  // ===== Gallery =====
+  async function loadGallery() {
+    try {
+      const res = await fetch(`/api/gallery?lang=${currentLang}&t=${Date.now()}`);
+      const gallery = await res.json();
+      const grid = document.getElementById('galleryGrid');
+      
+      if (!gallery.length) {
+        grid.innerHTML = '<p class="col-span-full text-center text-gray-400 py-12">Galeria momentan indisponibilă.</p>';
+      } else {
+        grid.innerHTML = gallery.map(item => `
+          <div class="gallery-item cursor-pointer">
+            <img src="${item.image_url}" alt="${item.caption || ''}" class="w-full h-48 object-cover" width="400" height="192" loading="lazy" decoding="async">
+            ${item.caption ? `<div class="p-3 bg-white"><p class="text-sm font-medium text-gray-700">${item.caption}</p></div>` : ''}
+          </div>
+        `).join('');
+      }
+    } catch (e) {
+      console.error('Gallery load failed:', e);
+    } finally {
+      document.getElementById('galleryLoading').classList.add('hidden');
+    }
+  }
+
+  // ===== Contact =====
+  async function loadContact() {
+    try {
+      const res = await fetch('/api/contact');
+      const contact = await res.json();
+      const infoDiv = document.getElementById('contactInfo');
+      
+      let html = '';
+      const contactItems = [
+        { key: 'phone', icon: 'lucide:phone', color: 'candy-pink', label: 'Telefon' },
+        { key: 'address', icon: 'lucide:map-pin', color: 'candy-blue', label: 'Adresă' },
+        { key: 'email', icon: 'lucide:mail', color: 'candy-green', label: 'Email' },
+      ];
+      
+      contactItems.forEach(item => {
+        if (contact[item.key]) {
+          const val = contact[item.key].value || contact[item.key];
+          html += `
+            <div class="flex items-center gap-4 p-4 bg-gray-50 rounded-xl">
+              <div class="w-12 h-12 bg-${item.color}/10 rounded-xl flex items-center justify-center flex-shrink-0">
+                <iconify-icon icon="${item.icon}" width="22" class="text-${item.color}"></iconify-icon>
+              </div>
+              <div>
+                <p class="text-xs text-gray-400 font-medium uppercase tracking-wide">${item.label}</p>
+                <p class="font-bold text-dark">${val}</p>
+              </div>
+            </div>
+          `;
+        }
+      });
+      
+      infoDiv.innerHTML = html || '<p class="text-gray-400 text-center py-8">Informații indisponibile momentan.</p>';
+      
+      if (contact.map_embed && contact.map_embed.value) {
+        // Use search URL instead of embed (embed requires API key for most sites)
+        const mapSearchUrl = encodeURIComponent(contact.map_embed.value) || 'Sky+Kids+Soroca';
+        document.getElementById('mapEmbed').innerHTML = `
+          <div class="w-full h-full flex flex-col items-center justify-center bg-gray-100 rounded-xl p-6">
+            <iconify-icon icon="logos:google-maps" width="48" class="text-gray-400 mb-4"></iconify-icon>
+            <p class="text-gray-500 text-center mb-4">Deschide harta pentru a găsi Sky Kids Soroca</p>
+            <a href="https://www.google.com/maps/search/Sky+Kids+Soroca" target="_blank" class="bg-candy-pink text-white px-6 py-3 rounded-xl font-bold hover:opacity-90 transition-all">
+              Deschide în Google Maps
+            </a>
+          </div>
+        `;
+      } else {
+        document.getElementById('mapEmbed').innerHTML = `
+          <div class="w-full h-full flex items-center justify-center text-gray-400">
+            <div class="text-center">
+              <iconify-icon icon="lucide:map" width="48" class="mx-auto mb-3 opacity-50"></iconify-icon>
+              <p class="text-sm">Hartă indisponibilă</p>
+            </div>
+          </div>
+        `;
+      }
+      
+      if (contact.facebook) {
+        const fbUrl = contact.facebook.value || contact.facebook;
+        document.getElementById('socialFacebook').href = fbUrl;
+        document.getElementById('footerFacebook').href = fbUrl;
+      }
+      if (contact.instagram) {
+        const igUrl = contact.instagram.value || contact.instagram;
+        document.getElementById('socialInstagram').href = igUrl.startsWith('http') ? igUrl : `https://instagram.com/${igUrl.replace('@','')}`;
+        document.getElementById('footerInstagram').href = igUrl.startsWith('http') ? igUrl : `https://instagram.com/${igUrl.replace('@','')}`;
+      }
+    } catch (e) {
+      console.error('Contact load failed:', e);
+    }
+  }
+
+  // ===== Scroll animations =====
+  function observeFadeElements() {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) entry.target.classList.add('visible');
+      });
+    }, { threshold: 0.1 });
+    
+    document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+  }
+
+  init();
+  </script>
+
+  <!-- Cookie Consent Banner -->
+  <div id="cookieBanner" class="cookie-banner">
+    <p>🍪 Utilizăm cookies pentru a îmbunătăți experiența ta pe site. Continuând, accepți <a href="#" onclick="alert('Politica de confidențialitate: Folosim doar cookies esențiale pentru funcționarea site-ului.'); return false;">politica noastră de cookies</a>.</p>
+    <div class="cookie-banner-btns">
+      <button class="cookie-settings" onclick="localStorage.setItem('cookie_consent', 'essential'); document.getElementById('cookieBanner').classList.remove('show');">Doar esențiale</button>
+      <button class="cookie-accept" onclick="localStorage.setItem('cookie_consent', 'all'); document.getElementById('cookieBanner').classList.remove('show');">Accept toate</button>
+    </div>
+  </div>
+  <script>
+    if (!localStorage.getItem('cookie_consent')) {
+      document.getElementById('cookieBanner').classList.add('show');
+    }
+  </script>
+</body>
+</html>
