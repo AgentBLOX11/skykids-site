@@ -2074,6 +2074,13 @@
     document.getElementById('decorDesc').value = d ? d.description || '' : '';
     document.getElementById('decorPrice').value = d ? d.price : '';
     document.getElementById('decorImage').value = d ? d.image || '' : '';
+    if (d && d.image) {
+      document.getElementById('decorPreviewImg').src = d.image;
+      document.getElementById('decorImagePreview').classList.remove('hidden');
+    } else {
+      document.getElementById('decorImagePreview').classList.add('hidden');
+      document.getElementById('decorPreviewImg').src = '';
+    }
     document.getElementById('decorModalTitle').textContent = d ? 'Editează decor' : 'Adaugă decor';
     document.body.style.overflow = 'hidden';
   }
@@ -2113,7 +2120,8 @@
         setTimeout(() => { status.classList.add('hidden'); }, 2000);
       }
     } catch(e) {
-      status.textContent = 'Eroare la încărcare';
+      console.error('Decor upload error:', e);
+      status.textContent = 'Eroare la încărcare: ' + (e.message || 'necunoscută');
       status.className = 'text-xs text-red-500 mt-2';
     }
   }
