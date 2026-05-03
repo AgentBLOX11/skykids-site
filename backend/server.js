@@ -48,6 +48,28 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const JWT_SECRET = process.env.JWT_SECRET || 'skykids2026production';
 
+// ===== SECURITY HEADERS =====
+app.use((req, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('X-XSS-Protection', '1; mode=block');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+  // Content Security Policy
+  res.setHeader('Content-Security-Policy', "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://code.iconify.design; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https:; connect-src 'self';");
+  next();
+});
+
+// Force HTTPS (only in production)
+if (process.env.NODE_ENV === 'production') {
+  app.use((req, res, next) => {
+    if (req.headers['x-forwarded-proto'] !== 'https') {
+      return res.redirect('https://' + req.hostname + req.url);
+    }
+    next();
+  });
+}
+
 // Middleware
 app.use(cors());
 app.use(express.json());
@@ -264,6 +286,21 @@ const defaultSettings = {
 const insertSetting = db.prepare('INSERT OR IGNORE INTO settings (key, value) VALUES (?, ?)');
 for (const [key, value] of Object.entries(defaultSettings)) {
   insertSetting.run(key, value);
+}
+
+// Seed business info settings
+const businessSettings = [
+  { key: 'company_name', value: 'Sky Kids SRL' },
+  { key: 'company_address', value: 'Soroca, Moldova' },
+  { key: 'company_phone', value: '+373 60 123 456' },
+  { key: 'company_email', value: 'contact@skykids.md' },
+  { key: 'fiscal_code', value: '' },
+  { key: 'legal_address', value: 'Str. Principală 1, or. Soroca, MD-3000, Republica Moldova' }
+];
+for(const s of businessSettings) {
+  try {
+    db.prepare('INSERT OR IGNORE INTO settings (key, value) VALUES (?, ?)').run(s.key, s.value);
+  } catch(e) {}
 }
 
 // Insert default contact_info
@@ -776,6 +813,66 @@ app.get('/api/admin/decor', authMiddleware, (req, res) => {
   const decor = db.prepare('SELECT * FROM decor_types ORDER BY sort_order ASC').all();
   res.json(decor);
 });
+
+// ===== BUSINESS INFO HELPER =====
+function getBusinessInfo() {
+  const company_name = db.prepare("SELECT value FROM settings WHERE key = 'company_name'").get();
+  const company_address = db.prepare("SELECT value FROM settings WHERE key = 'company_address'").get();
+  const company_phone = db.prepare("SELECT value FROM settings WHERE key = 'company_phone'").get();
+  const company_email = db.prepare("SELECT value FROM settings WHERE key = 'company_email'").get();
+  const fiscal_code = db.prepare("SELECT value FROM settings WHERE key = 'fiscal_code'").get();
+  const legal_address = db.prepare("SELECT value FROM settings WHERE key = 'legal_address'").get();
+  return {
+    companyName: company_name ? company_name.value : 'Sky Kids SRL',
+    address: company_address ? company_address.value : 'Soroca, Moldova',
+    phone: company_phone ? company_phone.value : '+373 60 123 456',
+    email: company_email ? company_email.value : 'contact@skykids.md',
+    fiscalCode: fiscal_code ? fiscal_code.value : '1234567890123',
+    legalAddress: legal_address ? legal_address.value : 'Str. Principală 1, or. Soroca, MD-3000',
+    siteUrl: 'skykidssoroca.md',
+    city: 'Soroca'
+  };
+}
+
+function getLegalPage(title, content, bi) {
+  return `<!DOCTYPE html><html lang="ro"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>${title} - Sky Kids Soroca</title><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"><script src="https://cdn.tailwindcss.com"></script><style>:root{--candy-pink:#ff6b9d;--candy-orange:#ff9f43;--candy-blue:#54a0ff;--candy-green:#26de81;}.gradient-text{background:linear-gradient(135deg,var(--candy-pink),var(--candy-orange));-webkit-background-clip:text;-webkit-text-fill-color:transparent}.footer-wave{background:linear-gradient(135deg,#1a1a2e 0%,#16213e 100%)}.legal-content h2{font-size:1.25rem;font-weight:800;color:#1a1a2e;margin:2rem 0 1rem;padding-bottom:0.5rem;border-bottom:2px solid #ff6b9d20}.legal-content p{color:#4a5568;line-height:1.8;margin-bottom:1rem}.legal-content ul{list-style:disc;padding-left:1.5rem;color:#4a5568;margin-bottom:1rem}.legal-content li{margin-bottom:0.5rem}.legal-content strong{color:#1a1a2e}.legal-container{max-width:800px;margin:0 auto;padding:2rem 1.5rem}.legal-badge{display:inline-block;background:linear-gradient(135deg,var(--candy-pink),var(--candy-orange));color:white;font-size:0.75rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:0.375rem 1rem;border-radius:9999px;margin-bottom:1rem}body{font-family:'Inter',sans-serif}</style></head><body class="bg-gray-50 min-h-screen"><nav class="bg-white shadow-sm sticky top-0 z-50"><div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between"><a href="/" class="flex items-center gap-3"><div class="w-10 h-10 bg-gradient-to-br from-[#ff6b9d] to-[#ff9f43] rounded-xl flex items-center justify-center text-white font-black text-lg">S</div><div><span class="font-black text-xl gradient-text">Sky Kids</span><p class="text-xs text-gray-400 -mt-1">Soroca</p></div></a><a href="/" class="bg-candy-pink text-white px-4 py-2 rounded-xl font-bold text-sm hover:opacity-90">← Înapoi la site</a></div></nav><div class="legal-container"><div class="mb-8"><span class="legal-badge">${bi.companyName}</span><h1 class="text-4xl font-black text-dark mb-2">${title}</h1><p class="text-gray-400 text-sm">Ultima actualizare: Mai 2026</p></div><div class="bg-white rounded-2xl shadow-card p-8 md:p-10 legal-content">${content}</div></div><footer class="footer-wave text-white py-10 mt-16"><div class="max-w-6xl mx-auto px-6 text-center"><p class="font-bold text-lg mb-2">${bi.companyName}</p><p class="text-gray-400 text-sm">${bi.legalAddress}</p><p class="text-gray-400 text-sm mt-1">${bi.phone} · ${bi.email}</p></div></footer></body></html>`;
+}
+
+// ===== LEGAL PAGES =====
+app.get('/terms', (req, res) => {
+  const bi = getBusinessInfo();
+  res.setHeader('Content-Type', 'text/html; charset=utf-8');
+  res.send(getLegalPage('Termeni și Condiții', `<h2>1. Acceptarea termenilor</h2><p>Prin utilizarea site-ului <strong>${bi.companyName}</strong> (${bi.siteUrl}), acceptați acești Termeni și Condiții în totalitate.</p><h2>2. Serviciile oferite</h2><p>${bi.companyName} oferă servicii de zonă de joacă pentru copii, servire mâncare și organizare petreceri în locația din ${bi.address}.</p><h2>3. Rezervări</h2><p>Rezervările sunt confirmate după contactarea clientului. Plata se face la sosire sau în avans conform înțelegerii.</p><p>Cancelarea este posibilă cu 24 de ore înainte. În caz contrar, se poate percepe o taxă de anulare.</p><h2>4. Comezi de mâncare</h2><p>Comenzile sunt pregătite în maximum 45 de minute. Livrarea este disponibilă în raza ${bi.city}.</p><h2>5. Responsabilități</h2><p>Părinții sunt responsabili pentru supravegherea copiilor în zona de joacă. Personalul ${bi.companyName} nu este responsabil pentru accidentări rezultate din utilizarea normală a echipamentelor.</p><h2>6. Proprietate intelectuală</h2><p>Întregul conținut al site-ului este proprietatea ${bi.companyName} și nu poate fi copiat fără acord.</p><h2>7. Contact</h2><p>Pentru întrebări: <strong>${bi.phone}</strong> sau <strong>${bi.email}</strong></p><p>${bi.legalAddress}</p>`, bi));
+});
+
+app.get('/privacy', (req, res) => {
+  const bi = getBusinessInfo();
+  res.setHeader('Content-Type', 'text/html; charset=utf-8');
+  res.send(getLegalPage('Politica de Confidențialitate (GDPR)', `<h2>1. Introducere</h2><p>${bi.companyName} respectă confidențialitatea datelor dumneavoastră. Această politică explică ce date colectăm și cum le utilizăm.</p><h2>2. Date colectate</h2><p>Colectăm: nume, prenume, număr de telefon, adresă de email, adresă de livrare pentru comenzi.</p><p>Aceste date sunt colectate doar cu consimțământul dumneavoastră prin formularele de contact și rezervare.</p><h2>3. Scopul colectării</h2><p>Datele sunt utilizate pentru: procesarea rezervărilor, preluarea comenzilor, contactarea clienților, îmbunătățirea serviciilor.</p><h2>4. Protecția datelor</h2><p>Datele sunt protejate prin măsuri tehnice și organizatorice adecvate. Nu vindem și nu transmitem datele către terți.</p><h2>5. Drepturile dumneavoastră (GDPR)</h2><ul><li>Dreptul de acces la date</li><li>Dreptul de rectificare</li><li>Dreptul de ștergere</li><li>Dreptul de portabilitate</li><li>Dreptul de obiecție</li></ul><p>Pentru exercitarea drepturilor: <strong>${bi.email}</strong></p><h2>6. Cookie-uri</h2><p>Utilizăm doar cookie-uri esențiale pentru funcționarea site-ului (preferințe limba, coș de cumpărături). Nu folosim cookie-uri de marketing.</p><h2>7. Date de contact</h2><p><strong>${bi.companyName}</strong></p><p>${bi.legalAddress}</p><p>Email: ${bi.email}</p><p>Telefon: ${bi.phone}</p>`, bi));
+});
+app.get('/delivery', (req, res) => {
+  const bi = getBusinessInfo();
+  res.setHeader('Content-Type', 'text/html; charset=utf-8');
+  res.send(getLegalPage('Politica de Livrare și Retur', `<h2>1. Livrare la domiciliu</h2><p>Oferim livrare în raza ${bi.city}. Costul livrării și timpul de așteptare vor fi comunicate la confirmarea comenzii.</p><p>Comenzile pentru livrare sunt confirmate telefonic înainte de pregătire.</p><h2>2. Anularea rezervărilor</h2><p>Rezervările pot fi anulate gratuit cu minim 24 de ore înainte de data programată.</p><p>Anularea cu mai puțin de 24 de ore poate atrage o taxă de 30% din valoarea pachetului.</p><p>Rezervările anulate cu mai puțin de 3 ore nu sunt rambursabile.</p><h2>3. Schimbarea datei</h2><p>Schimbarea datei petrecerii este posibilă o singură dată, cu minim 48 de ore înainte, în funcție de disponibilitate.</p><h2>4. Reclamații</h2><p>Orice problemă trebuie raportată pe loc personalului sau telefonic la <strong>${bi.phone}</strong>.</p><p>Ne străduim să rezolvăm orice nemulțumire în maximum 24 de ore.</p><h2>5. Contact</h2><p>Email: ${bi.email} | Telefon: ${bi.phone}</p><p>${bi.legalAddress}</p>`, bi));
+});
+
+
+// Business info settings API
+app.post('/api/settings/business', authMiddleware, (req, res) => {
+  const { company_name, company_address, company_phone, company_email, fiscal_code, legal_address } = req.body;
+  const keys = { company_name, company_address, company_phone, company_email, fiscal_code, legal_address };
+  for(const [key, value] of Object.entries(keys)) {
+    if(value !== undefined) db.prepare('INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)').run(key, value);
+  }
+  res.json({ success: true });
+});
+app.get('/api/settings/business', authMiddleware, (req, res) => {
+  const rows = db.prepare("SELECT key, value FROM settings WHERE key IN ('company_name','company_address','company_phone','company_email','fiscal_code','legal_address')").all();
+  const data = {};
+  for(const row of rows) data[row.key] = row.value;
+  res.json(data);
+});
+
 
 // ============== SERVE PAGES ==============
 app.get('/admin', (req, res) => {
