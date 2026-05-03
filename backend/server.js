@@ -10,24 +10,29 @@ const cors = require('cors');
 const fs = require('fs');
 const https = require('https');
 
-// ============== TRANSLATION HELPER ==============
+// ============== TRANSLATION HELPER (LibreTranslate) ==============
+const LIBRE_TRANSLATE_URL = 'https://libretranslate.com/translate';
+
 function translate(text, targetLang = 'ru') {
   return new Promise((resolve) => {
     if (!text || targetLang !== 'ru') return resolve(text);
-    const encoded = encodeURIComponent(text);
-    const url = `https://api.mymemory.translated.net/get?q=${encoded}&langpair=ro|ru`;
-    https.get(url, (res) => {
+    const body = JSON.stringify({ q: text, source: 'ro', target: 'ru', format: 'text' });
+    const req = https.request(LIBRE_TRANSLATE_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(body) }
+    }, (res) => {
       let data = '';
       res.on('data', chunk => data += chunk);
       res.on('end', () => {
         try {
           const json = JSON.parse(data);
-          resolve(json.responseData?.translatedText || text);
-        } catch (e) {
-          resolve(text);
-        }
+          resolve(json?.translatedText || text);
+        } catch (e) { resolve(text); }
       });
-    }).on('error', () => resolve(text));
+    });
+    req.on('error', () => resolve(text));
+    req.write(body);
+    req.end();
   });
 }
 
@@ -41,7 +46,7 @@ async function translateObject(obj, fields) {
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const JWT_SECRET = process.env.JWT_SECRET || 'skykids-secret-key-change-in-production-2026';
+const JWT_SECRET = process.env.JWT_SECRET || 'skykids2026production';
 
 // Middleware
 app.use(cors());
@@ -233,15 +238,19 @@ for (const c of defaultContact) {
   insertContact.run(c.key, c.value, c.label);
 }
 
-// Insert default packages
-const defaultPackages = [
-  { name: 'Standard', icon: '🥨', description: 'Acces complet la zonă de joacă', price_per_child: '100 lei', price_per_adult: '80 lei', price_group: '', max_children: 15, max_adults: 10, includes: 'Acces la toate echipamentele, Supraveghere inclusă', sort_order: 1 },
-  { name: 'Premium', icon: '✨', description: 'Include gustare delicioasă', price_per_child: '180 lei', price_per_adult: '120 lei', price_group: '', max_children: 15, max_adults: 10, includes: 'Totul din Standard, Gustare inclusă (băutură + covrigei)', sort_order: 2 },
-  { name: 'Zi de Naștere', icon: '🎂', description: 'Pachet complet pentru petrecere', price_per_child: '', price_per_adult: '', price_group: '1500 lei', max_children: 15, max_adults: 10, includes: 'Zonă privată de joacă, Tort + decorațiuni inclus', sort_order: 3 },
-];
-const insertPackage = db.prepare('INSERT OR IGNORE INTO packages (name, icon, description, price_per_child, price_per_adult, price_group, max_children, max_adults, includes, sort_order) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
-for (const p of defaultPackages) {
-  insertPackage.run(p.name, p.icon, p.description, p.price_per_child, p.price_per_adult, p.price_group, p.max_children, p.max_adults, p.includes, p.sort_order);
+// Insert default packages (only if table is empty)
+const packageCount = db.prepare('SELECT COUNT(*) as c FROM packages').get().c;
+if (packageCount === 0) {
+  const defaultPackages = [
+    { name: 'Standard', icon: '🎈', description: 'Acces la zona de joacă + o băutură', price_per_child: '100', price_per_adult: '', price_group: '', max_children: 15, max_adults: 10, includes: 'Zona de joacă, O băutură', sort_order: 0 },
+    { name: 'Premium', icon: '⭐', description: 'Acces + farfurie + băutură + dulciuri', price_per_child: '180', price_per_adult: '', price_group: '', max_children: 15, max_adults: 10, includes: 'Zona de joacă, Fel principal, Băutură, Desert', sort_order: 1 },
+    { name: 'Zi de Naștere', icon: '🎂', description: 'Pachet complet petrecere copii (max 15 copii)', price_per_child: '', price_per_adult: '', price_group: '1500', max_children: 15, max_adults: 10, includes: 'Zonă privată, Catering complet, Decorare, animator', sort_order: 2 },
+  ];
+  const insertPackage = db.prepare('INSERT INTO packages (name, icon, description, price_per_child, price_per_adult, price_group, max_children, max_adults, includes, sort_order) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+  for (const p of defaultPackages) {
+    insertPackage.run(p.name, p.icon, p.description, p.price_per_child, p.price_per_adult, p.price_group, p.max_children, p.max_adults, p.includes, p.sort_order);
+  }
+  console.log('✅ Packages inițializate');
 }
 
 // ============== AUTH MIDDLEWARE ==============
@@ -413,9 +422,16 @@ app.post('/api/admin/packages', authMiddleware, (req, res) => {
 app.put('/api/admin/packages/:id', authMiddleware, (req, res) => {
   const { id } = req.params;
   const { name, icon, description, price_per_child, price_per_adult, price_group, max_children, max_adults, includes, sort_order, active, name_ru, description_ru, includes_ru } = req.body;
-  db.prepare('UPDATE packages SET name = ?, icon = ?, description = ?, price_per_child = ?, price_per_adult = ?, price_group = ?, max_children = ?, max_adults = ?, includes = ?, sort_order = ?, active = ?, name_ru = ?, description_ru = ?, includes_ru = ? WHERE id = ?').run(name, icon, description || '', price_per_child || '', price_per_adult || '', price_group || '', max_children || 15, max_adults || 10, includes || '', sort_order || 0, active !== undefined ? active : 1, name_ru || '', description_ru || '', includes_ru || '', id);
-  const pkg = db.prepare('SELECT * FROM packages WHERE id = ?').get(id);
-  res.json(pkg);
+  console.log('PUT /packages/' + id, { name, max_children, max_adults, active });
+  try {
+    const activeVal = active !== undefined ? (active ? 1 : 0) : 1;
+    db.prepare('UPDATE packages SET name = ?, icon = ?, description = ?, price_per_child = ?, price_per_adult = ?, price_group = ?, max_children = ?, max_adults = ?, includes = ?, sort_order = ?, active = ?, name_ru = ?, description_ru = ?, includes_ru = ? WHERE id = ?').run(name, icon, description || '', price_per_child || '', price_per_adult || '', price_group || '', max_children || 15, max_adults || 10, includes || '', sort_order || 0, activeVal, name_ru || '', description_ru || '', includes_ru || '', id);
+    const pkg = db.prepare('SELECT * FROM packages WHERE id = ?').get(id);
+    res.json(pkg);
+  } catch(e) {
+    console.error('Package update error:', e);
+    res.status(500).json({ error: e.message });
+  }
 });
 
 app.delete('/api/admin/packages/:id', authMiddleware, (req, res) => {
@@ -507,12 +523,22 @@ app.put('/api/admin/settings', authMiddleware, (req, res) => {
 
 // ============== BOOKINGS API (existing) ==============
 app.post('/api/bookings', (req, res) => {
-  const { package: pkg, date, time, kids_count, client_name, client_phone, notes } = req.body;
+  const { package: pkg, date, time, kids_count, adults_count, client_name, client_phone, notes } = req.body;
   if (!pkg || !date || !time || !client_name || !client_phone) {
     return res.status(400).json({ error: 'Toate câmpurile obligatorii trebuie completate' });
   }
   if (kids_count < 1 || kids_count > 30) {
     return res.status(400).json({ error: 'Număr invalid de copii (1-30)' });
+  }
+  // Check package-specific limits
+  const packageInfo = db.prepare('SELECT max_children, max_adults FROM packages WHERE name = ? OR name LIKE ? LIMIT 1').get(pkg, `%${pkg}%`);
+  if (packageInfo) {
+    if (kids_count > packageInfo.max_children) {
+      return res.status(400).json({ error: `Numărul maxim de copii pentru acest pachet este ${packageInfo.max_children}` });
+    }
+    if ((adults_count || 0) > packageInfo.max_adults) {
+      return res.status(400).json({ error: `Numărul maxim de adulți pentru acest pachet este ${packageInfo.max_adults}` });
+    }
   }
   const blocked = db.prepare('SELECT id FROM blocked_slots WHERE date = ? AND time = ?').get(date, time);
   if (blocked) {
@@ -553,7 +579,7 @@ app.get('/api/admin/bookings', authMiddleware, (req, res) => {
   let query = 'SELECT * FROM bookings';
   const conditions = [];
   const params = [];
-  if (status && status !== 'all') { conditions.push('status = ?'); params.push(status); }
+  if (all !== '1' && status && status !== 'all') { conditions.push('status = ?'); params.push(status); }
   if (date) { conditions.push('date = ?'); params.push(date); }
   if (conditions.length > 0) query += ' WHERE ' + conditions.join(' AND ');
   query += ` ORDER BY ${sort === 'oldest' ? 'created_at ASC' : 'date ASC, time ASC'}`;
@@ -650,7 +676,7 @@ app.get('*', (req, res) => {
 });
 
 // Start server
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`
   🎈 Sky Kids Server running!
   📍 Frontend: http://localhost:${PORT}

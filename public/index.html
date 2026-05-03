@@ -245,7 +245,8 @@
     }
     
     /* Footer wave */
-    .footer-wave { background: #1a1a2e; position: relative; }
+    .footer-wave { background: #1a1a2e; position: relative; overflow: hidden; }
+    .footer-wave::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 4px; background: linear-gradient(to right, #ff6b9d, #ff9f43, #4d96ff); }
     
     /* Fade up animation */
     .fade-up { opacity: 0; transform: translateY(30px); transition: all 0.6s ease; }
@@ -651,8 +652,70 @@
               <span data-i18n="booking_step1_label">Alege pachetul</span>
             </h3>
             
-            <div id="packageCardsContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mb-8">
-              <!-- Loaded dynamically from API -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mb-8" id="packageCardsContainer">
+              <div class="package-card bg-white rounded-2xl p-4 sm:p-6 border-2 border-gray-100 hover:border-candy-pink active:scale-95 transition-all cursor-pointer" onclick="selectPackage('standard', 10, 15, 10)" data-max-kids="15" data-max-adults="10">
+                <div class="flex items-center gap-3 sm:gap-4 mb-3 sm:mb-4">
+                  <div class="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-candy-pink/10 to-candy-orange/10 rounded-2xl flex items-center justify-center text-2xl sm:text-3xl shrink-0">🎈</div>
+                  <div class="flex-1 min-w-0">
+                    <h4 class="font-bold text-base sm:text-lg text-dark truncate" data-i18n="pkg_standard_name">Standard</h4>
+                    <p class="text-xs sm:text-sm text-gray-500 line-clamp-2" data-i18n="pkg_standard_desc">Acces la zona de joacă + o băutură</p>
+                  </div>
+                </div>
+                <div class="flex items-end justify-between">
+                  <div class="flex-1">
+                    <p class="text-2xl sm:text-3xl font-black text-candy-pink leading-none">100</p>
+                    <p class="text-xs text-gray-400 mt-1" data-i18n="pkg_per_child">per copil</p>
+                  </div>
+                  <div class="flex flex-wrap gap-x-3 gap-y-1 text-xs text-gray-500 mt-3 sm:mt-4">
+                    <span class="flex items-center gap-1"><iconify-icon icon="lucide:check-circle" width="12" class="text-candy-green"></iconify-icon><span data-i18n="pkg_zone">Zona de joacă</span></span>
+                    <span class="flex items-center gap-1"><iconify-icon icon="lucide:check-circle" width="12" class="text-candy-green"></iconify-icon><span data-i18n="pkg_drink">O băutură</span></span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="package-card bg-white rounded-2xl p-4 sm:p-6 border-2 border-gray-100 hover:border-candy-pink active:scale-95 transition-all cursor-pointer" onclick="selectPackage('premium', 11, 15, 10)" data-max-kids="15" data-max-adults="10">
+                <div class="flex items-center gap-3 sm:gap-4 mb-3 sm:mb-4">
+                  <div class="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-candy-pink/10 to-candy-orange/10 rounded-2xl flex items-center justify-center text-2xl sm:text-3xl shrink-0">⭐</div>
+                  <div class="flex-1 min-w-0">
+                    <h4 class="font-bold text-base sm:text-lg text-dark truncate" data-i18n="pkg_premium_name">Premium</h4>
+                    <p class="text-xs sm:text-sm text-gray-500 line-clamp-2" data-i18n="pkg_premium_desc">Acces + farfurie + băutură + dulciuri</p>
+                  </div>
+                </div>
+                <div class="flex items-end justify-between">
+                  <div class="flex-1">
+                    <p class="text-2xl sm:text-3xl font-black text-candy-pink leading-none">180</p>
+                    <p class="text-xs text-gray-400 mt-1" data-i18n="pkg_per_child">per copil</p>
+                  </div>
+                  <div class="flex flex-wrap gap-x-3 gap-y-1 text-xs text-gray-500 mt-3 sm:mt-4">
+                    <span class="flex items-center gap-1"><iconify-icon icon="lucide:check-circle" width="12" class="text-candy-green"></iconify-icon><span data-i18n="pkg_zone">Zona de joacă</span></span>
+                    <span class="flex items-center gap-1"><iconify-icon icon="lucide:check-circle" width="12" class="text-candy-green"></iconify-icon><span data-i18n="pkg_main">Fel principal</span></span>
+                    <span class="flex items-center gap-1"><iconify-icon icon="lucide:check-circle" width="12" class="text-candy-green"></iconify-icon><span data-i18n="pkg_drink">Băutură</span></span>
+                    <span class="flex items-center gap-1"><iconify-icon icon="lucide:check-circle" width="12" class="text-candy-green"></iconify-icon><span data-i18n="pkg_dessert">Desert</span></span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="package-card bg-white rounded-2xl p-4 sm:p-6 border-2 border-gray-100 hover:border-candy-pink active:scale-95 transition-all cursor-pointer" onclick="selectPackage('zi-de-nastere', 12, 15, 10)" data-max-kids="15" data-max-adults="10">
+                <div class="flex items-center gap-3 sm:gap-4 mb-3 sm:mb-4">
+                  <div class="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-candy-pink/10 to-candy-orange/10 rounded-2xl flex items-center justify-center text-2xl sm:text-3xl shrink-0">🎂</div>
+                  <div class="flex-1 min-w-0">
+                    <h4 class="font-bold text-base sm:text-lg text-dark truncate" data-i18n="pkg_birthday_name">Zi de Naștere</h4>
+                    <p class="text-xs sm:text-sm text-gray-500 line-clamp-2" data-i18n="pkg_birthday_desc">Pachet complet petrecere copii (max 15 copii)</p>
+                  </div>
+                </div>
+                <div class="flex items-end justify-between">
+                  <div class="flex-1">
+                    <p class="text-2xl sm:text-3xl font-black text-candy-pink leading-none">1500</p>
+                    <p class="text-xs text-gray-400 mt-1" data-i18n="pkg_per_group">per grup</p>
+                  </div>
+                  <div class="flex flex-wrap gap-x-3 gap-y-1 text-xs text-gray-500 mt-3 sm:mt-4">
+                    <span class="flex items-center gap-1"><iconify-icon icon="lucide:check-circle" width="12" class="text-candy-green"></iconify-icon><span data-i18n="pkg_private">Zonă privată</span></span>
+                    <span class="flex items-center gap-1"><iconify-icon icon="lucide:check-circle" width="12" class="text-candy-green"></iconify-icon><span data-i18n="pkg_catering">Catering complet</span></span>
+                    <span class="flex items-center gap-1"><iconify-icon icon="lucide:check-circle" width="12" class="text-candy-green"></iconify-icon><span data-i18n="pkg_decor">Decorare</span></span>
+                    <span class="flex items-center gap-1"><iconify-icon icon="lucide:check-circle" width="12" class="text-candy-green"></iconify-icon><span data-i18n="pkg_animator">Animator</span></span>
+                  </div>
+                </div>
+              </div>
             </div>
             
             <div class="mb-6">
@@ -675,7 +738,7 @@
               </div>
             </div>
             
-            <button type="button" onclick="goToStep(2)" id="btnStep1" class="w-full bg-gradient-to-r from-candy-pink to-candy-orange text-white py-4 rounded-xl font-bold text-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2" disabled>
+            <button type="button" onclick="goToStep(2)" id="btnStep1" class="w-full bg-candy-pink hover:bg-candy-pink/90 text-white py-4 rounded-xl font-bold text-lg disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all shadow-lg hover:shadow-xl" disabled>
               <span data-i18n="booking_continue">Continuă</span>
               <iconify-icon icon="lucide:arrow-right" width="20"></iconify-icon>
             </button>
@@ -703,7 +766,7 @@
                 <iconify-icon icon="lucide:arrow-left" width="20"></iconify-icon>
                 <span data-i18n="booking_back">Înapoi</span>
               </button>
-              <button type="button" onclick="goToStep(3)" id="btnStep2" class="flex-1 bg-gradient-to-r from-candy-pink to-candy-orange text-white py-4 rounded-xl font-bold flex items-center justify-center gap-2 disabled:opacity-50" disabled>
+            <button type="button" onclick="goToStep(3)" id="btnStep2" class="flex-1 bg-candy-pink hover:bg-candy-pink/90 text-white py-4 rounded-xl font-bold flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-lg" disabled>
                 <span data-i18n="booking_continue">Continuă</span>
                 <iconify-icon icon="lucide:arrow-right" width="20"></iconify-icon>
               </button>
@@ -847,6 +910,8 @@
   let currentCategory = null;
   let selectedPackage = null;
   let selectedPackageId = null;
+  let currentMaxKids = 15;
+  let currentMaxAdults = 10;
   let selectedTime = null;
   let currentStep = 1;
   let currentLang = localStorage.getItem('skykids_lang') || 'ro';
@@ -919,6 +984,22 @@
       booking_success_title: 'Rezervare trimisă!',
       booking_success_msg: 'Te vom contacta în scurt timp pentru confirmare. Te așteptăm!',
       booking_new: 'Face o nouă rezervare',
+      pkg_standard_name: 'Standard',
+      pkg_standard_desc: 'Acces la zona de joacă + o băutură',
+      pkg_premium_name: 'Premium',
+      pkg_premium_desc: 'Acces + farfurie + băutură + dulciuri',
+      pkg_birthday_name: 'Zi de Naștere',
+      pkg_birthday_desc: 'Pachet complet petrecere copii (max 15 copii)',
+      pkg_per_child: 'per copil',
+      pkg_per_group: 'per grup',
+      pkg_zone: 'Zona de joacă',
+      pkg_drink: 'O băutură',
+      pkg_main: 'Fel principal',
+      pkg_dessert: 'Desert',
+      pkg_private: 'Zonă privată',
+      pkg_catering: 'Catering complet',
+      pkg_decor: 'Decorare',
+      pkg_animator: 'Animator',
       footer_magic: 'Magic pentru copii 🎈',
       footer_made_with: 'Făcut cu ❤️ pentru copii',
       footer_rights: 'Toate drepturile rezervate.',
@@ -992,6 +1073,22 @@
       booking_success_title: 'Бронирование отправлено!',
       booking_success_msg: 'Мы свяжемся с вами в ближайшее время для подтверждения. Ждём вас!',
       booking_new: 'Сделать новое бронирование',
+      pkg_standard_name: 'Стандарт',
+      pkg_standard_desc: 'Доступ на игровую площадку + напиток',
+      pkg_premium_name: 'Премиум',
+      pkg_premium_desc: 'Доступ + порция + напиток + сладости',
+      pkg_birthday_name: 'День рождения',
+      pkg_birthday_desc: 'Полный пакет для детского праздника (макс 15 детей)',
+      pkg_per_child: 'за ребёнка',
+      pkg_per_group: 'за группу',
+      pkg_zone: 'Игровая площадка',
+      pkg_drink: 'Напиток',
+      pkg_main: 'Основное блюдо',
+      pkg_dessert: 'Десерт',
+      pkg_private: 'Частная зона',
+      pkg_catering: 'Полный кейтеринг',
+      pkg_decor: 'Декор',
+      pkg_animator: 'Аниматор',
       footer_magic: 'Волшебство для детей 🎈',
       footer_made_with: 'Сделано с ❤️ для детей',
       footer_rights: 'Все права защищены.',
@@ -1105,7 +1202,7 @@
       return;
     }
     container.innerHTML = packages.map((p, i) => `
-      <div class="package-card bg-white rounded-2xl p-4 sm:p-6 border-2 border-gray-100 hover:border-candy-pink active:scale-95 transition-all cursor-pointer touch-manipulation mb-3 sm:mb-0" onclick="selectPackage('${p.name.toLowerCase().replace(/\s+/g, '-')}', ${p.id})" data-package="${p.name.toLowerCase().replace(/\s+/g, '-')}" data-id="${p.id}">
+      <div class="package-card bg-white rounded-2xl p-4 sm:p-6 border-2 border-gray-100 hover:border-candy-pink active:scale-95 transition-all cursor-pointer touch-manipulation mb-3 sm:mb-0" onclick="selectPackage('${p.name.toLowerCase().replace(/\s+/g, '-')}', ${p.id}, ${p.max_children || 15}, ${p.max_adults || 10})" data-package="${p.name.toLowerCase().replace(/\s+/g, '-')}" data-id="${p.id}" data-max-kids="${p.max_children || 15}" data-max-adults="${p.max_adults || 10}">
         <div class="flex items-center gap-3 sm:gap-4 mb-3 sm:mb-4">
           <div class="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-candy-pink/10 to-candy-orange/10 rounded-2xl flex items-center justify-center text-2xl sm:text-3xl shrink-0">
             ${p.icon}
@@ -1129,14 +1226,25 @@
     
     // Re-attach click listeners
     document.querySelectorAll('.package-card').forEach(card => {
-      card.addEventListener('click', () => selectPackage(card.dataset.package, card.dataset.id));
+      card.addEventListener('click', () => {
+        const maxK = parseInt(card.dataset.maxKids) || 15;
+        const maxA = parseInt(card.dataset.maxAdults) || 10;
+        selectPackage(card.dataset.package, parseInt(card.dataset.id), maxK, maxA);
+      });
     });
   }
 
   // ===== Booking wizard =====
-  function selectPackage(pkg, pkgId) {
+  function selectPackage(pkg, pkgId, maxKids = 15, maxAdults = 10) {
     selectedPackage = pkg;
     selectedPackageId = pkgId;
+    currentMaxKids = maxKids;
+    currentMaxAdults = maxAdults;
+    // Reset inputs to valid values within new limits
+    const kidsInput = document.getElementById('kids_count');
+    const adultsInput = document.getElementById('adults_count');
+    if (parseInt(kidsInput.value) > maxKids) kidsInput.value = maxKids;
+    if (parseInt(adultsInput.value) > maxAdults) adultsInput.value = maxAdults;
     document.querySelectorAll('.package-card').forEach(c => {
       c.classList.remove('selected');
       const check = c.querySelector('.package-check');
@@ -1156,7 +1264,7 @@
     const input = document.getElementById('kids_count');
     let val = parseInt(input.value) + delta;
     if (val < 1) val = 1;
-    if (val > 30) val = 30;
+    if (val > currentMaxKids) val = currentMaxKids;
     input.value = val;
     updateSummary();
   }
@@ -1165,7 +1273,7 @@
     const input = document.getElementById('adults_count');
     let val = parseInt(input.value) + delta;
     if (val < 0) val = 0;
-    if (val > 20) val = 20;
+    if (val > currentMaxAdults) val = currentMaxAdults;
     input.value = val;
     updateSummary();
   }

@@ -52,19 +52,34 @@
     const totalKids = bookings.reduce((sum, b) => sum + (b.kids_count || 0), 0);
     const totalAdults = bookings.reduce((sum, b) => sum + (b.adults_count || 0), 0);
     
-    // Calculate revenue
-    let totalRevenue = 0;
-    const pkgPrices = { standard: 100, premium: 180, birthday: 1500 };
-    bookings.forEach(b => {
-      if (b.package === 'birthday') totalRevenue += 1500;
-      else if (b.package === 'premium') totalRevenue += (b.kids_count || 0) * 180 + (b.adults_count || 0) * 120;
-      else if (b.package === 'standard') totalRevenue += (b.kids_count || 0) * 100 + (b.adults_count || 0) * 80;
-    });
+    // Calculate revenue using actual package prices from API
+    try {
+      const pkgRes = await fetch('/api/admin/packages', { headers: authHeaders() });
+      const packages = await pkgRes.json();
+      const pkgPriceMap = {};
+      packages.forEach(p => {
+        pkgPriceMap[p.name.toLowerCase().replace(/\s+/g, '-')] = p;
+      });
+      
+      let totalRevenue = 0;
+      bookings.forEach(b => {
+        const pkg = pkgPriceMap[b.package];
+        if (pkg) {
+          if (pkg.price_group) totalRevenue += parseFloat(pkg.price_group);
+          else {
+            totalRevenue += (pkg.price_per_child || 0) * (b.kids_count || 0);
+            totalRevenue += (pkg.price_per_adult || 0) * (b.adults_count || 0);
+          }
+        }
+      });
+      document.getElementById('statRevenue').textContent = Math.round(totalRevenue) + ' lei';
+    } catch(e) {
+      document.getElementById('statRevenue').textContent = '— lei';
+    }
     
     document.getElementById('statBookings').textContent = bookings.length;
     document.getElementById('statKids').textContent = totalKids;
     document.getElementById('statAdults').textContent = totalAdults;
-    document.getElementById('statRevenue').textContent = totalRevenue + ' lei';
     
     // Render stats bookings list
     const list = document.getElementById('statsBookingsList');
@@ -150,30 +165,7 @@
     loadBookings();
   }
 
-  document.getElementById('bookingEditForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const id = document.getElementById('editBookingId').value;
-    const data = {
-      client_name: document.getElementById('editClientName').value,
-      client_phone: document.getElementById('editClientPhone').value,
-      kids_count: parseInt(document.getElementById('editKidsCount').value),
-      adults_count: parseInt(document.getElementById('editAdultsCount').value),
-      notes: document.getElementById('editNotes').value,
-      admin_notes: document.getElementById('editAdminNotes').value,
-      status: document.getElementById('editStatus').value
-    };
-    await fetch('/api/admin/bookings/' + id, { method: 'PUT', headers: authHeaders(), body: JSON.stringify(data) });
-    closeBookingEditModal();
-    loadBookings();
-  });
 
-  async function deleteBooking() {
-    const id = document.getElementById('editBookingId').value;
-    if (!confirm('Ștergi această rezervare?')) return;
-    await fetch('/api/admin/bookings/' + id, { method: 'DELETE', headers: authHeaders() });
-    closeBookingEditModal();
-    loadBookings();
-  }
 
   function showBookingModal() {
     // For now just show alert - could implement full modal
@@ -229,19 +221,34 @@
     const totalKids = bookings.reduce((sum, b) => sum + (b.kids_count || 0), 0);
     const totalAdults = bookings.reduce((sum, b) => sum + (b.adults_count || 0), 0);
     
-    // Calculate revenue
-    let totalRevenue = 0;
-    const pkgPrices = { standard: 100, premium: 180, birthday: 1500 };
-    bookings.forEach(b => {
-      if (b.package === 'birthday') totalRevenue += 1500;
-      else if (b.package === 'premium') totalRevenue += (b.kids_count || 0) * 180 + (b.adults_count || 0) * 120;
-      else if (b.package === 'standard') totalRevenue += (b.kids_count || 0) * 100 + (b.adults_count || 0) * 80;
-    });
+    // Calculate revenue using actual package prices from API
+    try {
+      const pkgRes = await fetch('/api/admin/packages', { headers: authHeaders() });
+      const packages = await pkgRes.json();
+      const pkgPriceMap = {};
+      packages.forEach(p => {
+        pkgPriceMap[p.name.toLowerCase().replace(/\s+/g, '-')] = p;
+      });
+      
+      let totalRevenue = 0;
+      bookings.forEach(b => {
+        const pkg = pkgPriceMap[b.package];
+        if (pkg) {
+          if (pkg.price_group) totalRevenue += parseFloat(pkg.price_group);
+          else {
+            totalRevenue += (pkg.price_per_child || 0) * (b.kids_count || 0);
+            totalRevenue += (pkg.price_per_adult || 0) * (b.adults_count || 0);
+          }
+        }
+      });
+      document.getElementById('statRevenue').textContent = Math.round(totalRevenue) + ' lei';
+    } catch(e) {
+      document.getElementById('statRevenue').textContent = '— lei';
+    }
     
     document.getElementById('statBookings').textContent = bookings.length;
     document.getElementById('statKids').textContent = totalKids;
     document.getElementById('statAdults').textContent = totalAdults;
-    document.getElementById('statRevenue').textContent = totalRevenue + ' lei';
     
     // Render stats bookings list
     const list = document.getElementById('statsBookingsList');
@@ -327,30 +334,7 @@
     loadBookings();
   }
 
-  document.getElementById('bookingEditForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const id = document.getElementById('editBookingId').value;
-    const data = {
-      client_name: document.getElementById('editClientName').value,
-      client_phone: document.getElementById('editClientPhone').value,
-      kids_count: parseInt(document.getElementById('editKidsCount').value),
-      adults_count: parseInt(document.getElementById('editAdultsCount').value),
-      notes: document.getElementById('editNotes').value,
-      admin_notes: document.getElementById('editAdminNotes').value,
-      status: document.getElementById('editStatus').value
-    };
-    await fetch('/api/admin/bookings/' + id, { method: 'PUT', headers: authHeaders(), body: JSON.stringify(data) });
-    closeBookingEditModal();
-    loadBookings();
-  });
 
-  async function deleteBooking() {
-    const id = document.getElementById('editBookingId').value;
-    if (!confirm('Ștergi această rezervare?')) return;
-    await fetch('/api/admin/bookings/' + id, { method: 'DELETE', headers: authHeaders() });
-    closeBookingEditModal();
-    loadBookings();
-  }
 
   function showBookingModal() {
     // For now just show alert - could implement full modal
@@ -420,19 +404,34 @@
     const totalKids = bookings.reduce((sum, b) => sum + (b.kids_count || 0), 0);
     const totalAdults = bookings.reduce((sum, b) => sum + (b.adults_count || 0), 0);
     
-    // Calculate revenue
-    let totalRevenue = 0;
-    const pkgPrices = { standard: 100, premium: 180, birthday: 1500 };
-    bookings.forEach(b => {
-      if (b.package === 'birthday') totalRevenue += 1500;
-      else if (b.package === 'premium') totalRevenue += (b.kids_count || 0) * 180 + (b.adults_count || 0) * 120;
-      else if (b.package === 'standard') totalRevenue += (b.kids_count || 0) * 100 + (b.adults_count || 0) * 80;
-    });
+    // Calculate revenue using actual package prices from API
+    try {
+      const pkgRes = await fetch('/api/admin/packages', { headers: authHeaders() });
+      const packages = await pkgRes.json();
+      const pkgPriceMap = {};
+      packages.forEach(p => {
+        pkgPriceMap[p.name.toLowerCase().replace(/\s+/g, '-')] = p;
+      });
+      
+      let totalRevenue = 0;
+      bookings.forEach(b => {
+        const pkg = pkgPriceMap[b.package];
+        if (pkg) {
+          if (pkg.price_group) totalRevenue += parseFloat(pkg.price_group);
+          else {
+            totalRevenue += (pkg.price_per_child || 0) * (b.kids_count || 0);
+            totalRevenue += (pkg.price_per_adult || 0) * (b.adults_count || 0);
+          }
+        }
+      });
+      document.getElementById('statRevenue').textContent = Math.round(totalRevenue) + ' lei';
+    } catch(e) {
+      document.getElementById('statRevenue').textContent = '— lei';
+    }
     
     document.getElementById('statBookings').textContent = bookings.length;
     document.getElementById('statKids').textContent = totalKids;
     document.getElementById('statAdults').textContent = totalAdults;
-    document.getElementById('statRevenue').textContent = totalRevenue + ' lei';
     
     // Render stats bookings list
     const list = document.getElementById('statsBookingsList');
@@ -518,30 +517,7 @@
     loadBookings();
   }
 
-  document.getElementById('bookingEditForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const id = document.getElementById('editBookingId').value;
-    const data = {
-      client_name: document.getElementById('editClientName').value,
-      client_phone: document.getElementById('editClientPhone').value,
-      kids_count: parseInt(document.getElementById('editKidsCount').value),
-      adults_count: parseInt(document.getElementById('editAdultsCount').value),
-      notes: document.getElementById('editNotes').value,
-      admin_notes: document.getElementById('editAdminNotes').value,
-      status: document.getElementById('editStatus').value
-    };
-    await fetch('/api/admin/bookings/' + id, { method: 'PUT', headers: authHeaders(), body: JSON.stringify(data) });
-    closeBookingEditModal();
-    loadBookings();
-  });
 
-  async function deleteBooking() {
-    const id = document.getElementById('editBookingId').value;
-    if (!confirm('Ștergi această rezervare?')) return;
-    await fetch('/api/admin/bookings/' + id, { method: 'DELETE', headers: authHeaders() });
-    closeBookingEditModal();
-    loadBookings();
-  }
 
   function showBookingModal() {
     // For now just show alert - could implement full modal
@@ -672,35 +648,83 @@
     </div>
 
     <div class="flex">
-      <!-- Sidebar -->
-      <aside class="w-48 sm:w-64 bg-white border-r border-gray-100 min-h-[calc(100vh-73px)] sm:min-h-[calc(100vh-81px)] sticky top-[73px] sm:top-[81px] p-3 sm:p-5">
-        <nav class="space-y-2">
+      <!-- Sidebar (hidden on mobile) -->
+      <aside class="hidden md:flex w-48 lg:w-64 bg-white border-r border-gray-100 min-h-[calc(100vh-73px)] lg:min-h-[calc(100vh-81px)] sticky top-[73px] lg:top-[81px] p-3 lg:p-5 flex-col">
+        <nav class="space-y-2 flex-1">
           <button onclick="showSection('categories')" class="sidebar-item active w-full flex items-center gap-3 px-4 py-3 font-bold text-left" data-section="categories">
             <iconify-icon icon="lucide:folder" width="20"></iconify-icon> Categorii
           </button>
-          <button onclick="showSection('products')" class="sidebar-item w-full flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-3 font-bold text-left text-sm sm:text-base" data-section="products">
+          <button onclick="showSection('products')" class="sidebar-item w-full flex items-center gap-2 lg:gap-3 px-3 lg:px-4 py-2 lg:py-3 font-bold text-left text-sm lg:text-base" data-section="products">
             <iconify-icon icon="lucide:utensils" width="20"></iconify-icon> Produse
           </button>
-          <button onclick="showSection('gallery')" class="sidebar-item w-full flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-3 font-bold text-left text-sm sm:text-base" data-section="gallery">
+          <button onclick="showSection('gallery')" class="sidebar-item w-full flex items-center gap-2 lg:gap-3 px-3 lg:px-4 py-2 lg:py-3 font-bold text-left text-sm lg:text-base" data-section="gallery">
             <iconify-icon icon="lucide:image" width="20"></iconify-icon> Galerie
           </button>
-          <button onclick="showSection('contact')" class="sidebar-item w-full flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-3 font-bold text-left text-sm sm:text-base" data-section="contact">
+          <button onclick="showSection('contact')" class="sidebar-item w-full flex items-center gap-2 lg:gap-3 px-3 lg:px-4 py-2 lg:py-3 font-bold text-left text-sm lg:text-base" data-section="contact">
             <iconify-icon icon="lucide:phone" width="20"></iconify-icon> Contact
           </button>
-          <button onclick="showSection('packages')" class="sidebar-item w-full flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-3 font-bold text-left text-sm sm:text-base" data-section="packages">
+          <button onclick="showSection('packages')" class="sidebar-item w-full flex items-center gap-2 lg:gap-3 px-3 lg:px-4 py-2 lg:py-3 font-bold text-left text-sm lg:text-base" data-section="packages">
             <iconify-icon icon="lucide:gift" width="20"></iconify-icon> Pachete
           </button>
-          <button onclick="showSection('bookings')" class="sidebar-item w-full flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-3 font-bold text-left text-sm sm:text-base" data-section="bookings">
+          <button onclick="showSection('bookings')" class="sidebar-item w-full flex items-center gap-2 lg:gap-3 px-3 lg:px-4 py-2 lg:py-3 font-bold text-left text-sm lg:text-base" data-section="bookings">
             <iconify-icon icon="lucide:calendar" width="20"></iconify-icon> Rezervări
           </button>
-          <button onclick="showSection('dashboard')" class="sidebar-item w-full flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-3 font-bold text-left text-sm sm:text-base" data-section="dashboard">
+          <button onclick="showSection('dashboard')" class="sidebar-item w-full flex items-center gap-2 lg:gap-3 px-3 lg:px-4 py-2 lg:py-3 font-bold text-left text-sm lg:text-base" data-section="dashboard">
             <iconify-icon icon="lucide:layout-dashboard" width="20"></iconify-icon> Dashboard
           </button>
-          <button onclick="showSection('settings')" class="sidebar-item w-full flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-3 font-bold text-left text-sm sm:text-base" data-section="settings">
+          <button onclick="showSection('settings')" class="sidebar-item w-full flex items-center gap-2 lg:gap-3 px-3 lg:px-4 py-2 lg:py-3 font-bold text-left text-sm lg:text-base" data-section="settings">
             <iconify-icon icon="lucide:settings" width="20"></iconify-icon> Setări
           </button>
         </nav>
       </aside>
+
+      <!-- Mobile menu button (visible only on mobile) -->
+      <button onclick="showModal('mobileMenuModal')" class="md:hidden fixed bottom-6 right-6 z-50 w-14 h-14 bg-candy-pink text-white rounded-full shadow-lg flex items-center justify-center hover:scale-105 active:scale-95 transition-all">
+        <iconify-icon icon="lucide:menu" width="24"></iconify-icon>
+      </button>
+
+      <!-- Mobile Menu Modal -->
+      <div id="mobileMenuModal" class="fixed inset-0 z-[100] hidden items-end justify-center" style="display:none;">
+        <div class="modal-backdrop absolute inset-0" onclick="hideModal('mobileMenuModal')"></div>
+        <div class="relative bg-white rounded-t-3xl rounded-b-lg shadow-2xl w-full max-w-lg p-6 pb-10 max-h-[85vh] overflow-y-auto">
+          <div class="w-12 h-1 bg-gray-300 rounded-full mx-auto mb-6"></div>
+          <h3 class="font-black text-xl mb-6 text-center">Meniu Admin</h3>
+          <div class="grid grid-cols-3 gap-3">
+            <button onclick="showSection('categories'); hideModal('mobileMenuModal')" class="flex flex-col items-center gap-2 p-4 bg-gray-50 hover:bg-candy-pink/10 rounded-2xl transition-colors">
+              <iconify-icon icon="lucide:folder" width="28" class="text-candy-pink"></iconify-icon>
+              <span class="text-xs font-bold text-center">Categorii</span>
+            </button>
+            <button onclick="showSection('products'); hideModal('mobileMenuModal')" class="flex flex-col items-center gap-2 p-4 bg-gray-50 hover:bg-candy-pink/10 rounded-2xl transition-colors">
+              <iconify-icon icon="lucide:utensils" width="28" class="text-candy-pink"></iconify-icon>
+              <span class="text-xs font-bold text-center">Produse</span>
+            </button>
+            <button onclick="showSection('gallery'); hideModal('mobileMenuModal')" class="flex flex-col items-center gap-2 p-4 bg-gray-50 hover:bg-candy-pink/10 rounded-2xl transition-colors">
+              <iconify-icon icon="lucide:image" width="28" class="text-candy-pink"></iconify-icon>
+              <span class="text-xs font-bold text-center">Galerie</span>
+            </button>
+            <button onclick="showSection('contact'); hideModal('mobileMenuModal')" class="flex flex-col items-center gap-2 p-4 bg-gray-50 hover:bg-candy-pink/10 rounded-2xl transition-colors">
+              <iconify-icon icon="lucide:phone" width="28" class="text-candy-pink"></iconify-icon>
+              <span class="text-xs font-bold text-center">Contact</span>
+            </button>
+            <button onclick="showSection('packages'); hideModal('mobileMenuModal')" class="flex flex-col items-center gap-2 p-4 bg-gray-50 hover:bg-candy-pink/10 rounded-2xl transition-colors">
+              <iconify-icon icon="lucide:gift" width="28" class="text-candy-pink"></iconify-icon>
+              <span class="text-xs font-bold text-center">Pachete</span>
+            </button>
+            <button onclick="showSection('bookings'); hideModal('mobileMenuModal')" class="flex flex-col items-center gap-2 p-4 bg-gray-50 hover:bg-candy-pink/10 rounded-2xl transition-colors">
+              <iconify-icon icon="lucide:calendar" width="28" class="text-candy-pink"></iconify-icon>
+              <span class="text-xs font-bold text-center">Rezervări</span>
+            </button>
+            <button onclick="showSection('dashboard'); hideModal('mobileMenuModal')" class="flex flex-col items-center gap-2 p-4 bg-gray-50 hover:bg-candy-pink/10 rounded-2xl transition-colors">
+              <iconify-icon icon="lucide:layout-dashboard" width="28" class="text-candy-blue"></iconify-icon>
+              <span class="text-xs font-bold text-center">Dashboard</span>
+            </button>
+            <button onclick="showSection('settings'); hideModal('mobileMenuModal')" class="flex flex-col items-center gap-2 p-4 bg-gray-50 hover:bg-candy-pink/10 rounded-2xl transition-colors">
+              <iconify-icon icon="lucide:settings" width="28" class="text-gray-500"></iconify-icon>
+              <span class="text-xs font-bold text-center">Setări</span>
+            </button>
+          </div>
+        </div>
+      </div>
 
       <!-- Main Content -->
       <main class="flex-1 p-4 sm:p-6 md:p-8">
@@ -809,64 +833,64 @@
 
         <!-- ===== DASHBOARD ===== -->
         <section id="section-dashboard" class="section hidden">
-          <div class="mb-8">
-            <h2 class="font-black text-3xl text-dark">Dashboard</h2>
-            <p class="text-gray-400 mt-1">Statistici și venituri</p>
+          <div class="mb-6 sm:mb-8">
+            <h2 class="font-black text-2xl sm:text-3xl text-dark">Dashboard</h2>
+            <p class="text-gray-400 mt-1 text-sm sm:text-base">Statistici și venituri</p>
           </div>
           
           <!-- Period selector -->
-          <div class="flex flex-wrap items-center gap-4 mb-8">
-            <select id="statsPeriod" onchange="loadStats()" class="px-5 py-3 rounded-xl border-2 border-gray-100 font-medium bg-white">
+          <div class="flex flex-col gap-3 mb-6 sm:mb-8">
+            <select id="statsPeriod" onchange="loadStats()" class="w-full px-4 py-3 rounded-xl border-2 border-gray-100 font-medium bg-white text-sm sm:text-base">
               <option value="today">Astăzi</option>
               <option value="yesterday">Ieri</option>
-              <option value="week" selected>Ultima săptămână</option>
+              <option value="week">Ultima săptămână</option>
               <option value="month">Luna aceasta</option>
               <option value="year">Anul acesta</option>
-              <option value="all">Toate timpurile</option>
+              <option value="all" selected>Toate timpurile</option>
             </select>
             <div class="flex items-center gap-2">
-              <input type="date" id="statsDateFrom" class="px-4 py-3 rounded-xl border-2 border-gray-100">
-              <span class="text-gray-400">—</span>
-              <input type="date" id="statsDateTo" class="px-4 py-3 rounded-xl border-2 border-gray-100">
-              <button onclick="loadStats()" class="px-5 py-3 bg-candy-blue text-white rounded-xl font-bold hover:opacity-90 transition-opacity">Filtrează</button>
+              <input type="date" id="statsDateFrom" class="flex-1 px-3 py-3 rounded-xl border-2 border-gray-100 text-sm">
+              <span class="text-gray-400 text-sm">—</span>
+              <input type="date" id="statsDateTo" class="flex-1 px-3 py-3 rounded-xl border-2 border-gray-100 text-sm">
             </div>
+            <button onclick="loadStats()" class="w-full px-4 py-3 bg-candy-blue text-white rounded-xl font-bold hover:opacity-90 transition-opacity text-sm">Filtrează</button>
           </div>
           
           <!-- Stats cards -->
           <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5 mb-6 sm:mb-8">
-            <div class="card p-6">
-              <div class="w-12 h-12 bg-candy-pink/10 rounded-xl flex items-center justify-center mb-4">
-                <iconify-icon icon="lucide:calendar" width="24" class="text-candy-pink"></iconify-icon>
+            <div class="card p-4 sm:p-6">
+              <div class="w-10 h-10 sm:w-12 sm:h-12 bg-candy-pink/10 rounded-xl sm:rounded-2xl flex items-center justify-center mb-3 sm:mb-4">
+                <iconify-icon icon="lucide:calendar" width="20" class="sm:w-6 sm:h-6 text-candy-pink"></iconify-icon>
               </div>
-              <p class="text-3xl font-black text-dark mb-1" id="statBookings">0</p>
-              <p class="text-sm text-gray-400">Rezervări</p>
+              <p class="text-2xl sm:text-3xl font-black text-dark mb-1" id="statBookings">0</p>
+              <p class="text-xs sm:text-sm text-gray-400">Rezervări</p>
             </div>
-            <div class="card p-6">
-              <div class="w-12 h-12 bg-candy-blue/10 rounded-xl flex items-center justify-center mb-4">
-                <iconify-icon icon="lucide:users" width="24" class="text-candy-blue"></iconify-icon>
+            <div class="card p-4 sm:p-6">
+              <div class="w-10 h-10 sm:w-12 sm:h-12 bg-candy-blue/10 rounded-xl sm:rounded-2xl flex items-center justify-center mb-3 sm:mb-4">
+                <iconify-icon icon="lucide:users" width="20" class="sm:w-6 sm:h-6 text-candy-blue"></iconify-icon>
               </div>
-              <p class="text-3xl font-black text-dark mb-1" id="statKids">0</p>
-              <p class="text-sm text-gray-400">Copii</p>
+              <p class="text-2xl sm:text-3xl font-black text-dark mb-1" id="statKids">0</p>
+              <p class="text-xs sm:text-sm text-gray-400">Copii</p>
             </div>
-            <div class="card p-6">
-              <div class="w-12 h-12 bg-candy-green/10 rounded-xl flex items-center justify-center mb-4">
-                <iconify-icon icon="lucide:user" width="24" class="text-candy-green"></iconify-icon>
+            <div class="card p-4 sm:p-6">
+              <div class="w-10 h-10 sm:w-12 sm:h-12 bg-candy-green/10 rounded-xl sm:rounded-2xl flex items-center justify-center mb-3 sm:mb-4">
+                <iconify-icon icon="lucide:user" width="20" class="sm:w-6 sm:h-6 text-candy-green"></iconify-icon>
               </div>
-              <p class="text-3xl font-black text-dark mb-1" id="statAdults">0</p>
-              <p class="text-sm text-gray-400">Adulți</p>
+              <p class="text-2xl sm:text-3xl font-black text-dark mb-1" id="statAdults">0</p>
+              <p class="text-xs sm:text-sm text-gray-400">Adulți</p>
             </div>
-            <div class="card p-6">
-              <div class="w-12 h-12 bg-candy-yellow/20 rounded-xl flex items-center justify-center mb-4">
-                <iconify-icon icon="lucide:wallet" width="24" class="text-candy-orange"></iconify-icon>
+            <div class="card p-4 sm:p-6">
+              <div class="w-10 h-10 sm:w-12 sm:h-12 bg-candy-yellow/20 rounded-xl sm:rounded-2xl flex items-center justify-center mb-3 sm:mb-4">
+                <iconify-icon icon="lucide:wallet" width="20" class="sm:w-6 sm:h-6 text-candy-orange"></iconify-icon>
               </div>
-              <p class="text-3xl font-black text-candy-pink mb-1" id="statRevenue">0 lei</p>
-              <p class="text-sm text-gray-400">Venituri</p>
+              <p class="text-2xl sm:text-3xl font-black text-candy-pink mb-1" id="statRevenue">0 lei</p>
+              <p class="text-xs sm:text-sm text-gray-400">Venituri</p>
             </div>
           </div>
           
           <!-- Recent bookings -->
-          <div class="card p-8">
-            <h3 class="font-bold text-xl mb-4">Rezervări în perioada selectată</h3>
+          <div class="card p-4 sm:p-6 sm:p-8">
+            <h3 class="font-bold text-lg sm:text-xl mb-4">Rezervări în perioada selectată</h3>
             <div id="statsBookingsList" class="space-y-3"></div>
           </div>
         </section>
@@ -1015,9 +1039,9 @@
         </div>
         <div>
           <label class="block text-sm font-bold text-gray-700 mb-2">URL imagine (sau încarcă din folder)</label>
-          <div class="flex gap-3">
-            <input type="url" id="productImage" class="flex-1 px-5 py-4 rounded-xl border-2 border-gray-100" placeholder="https://... (opțional)">
-            <label class="px-5 py-4 bg-gray-100 hover:bg-gray-200 rounded-xl font-bold cursor-pointer flex items-center gap-2 transition-colors">
+          <div class="flex max-sm:flex-col sm:gap-3 gap-3">
+            <input type="url" id="productImage" class="flex-1 px-4 py-3 sm:px-5 sm:py-4 rounded-xl border-2 border-gray-100" placeholder="https://... (opțional)">
+            <label class="px-4 py-3 sm:px-5 sm:py-4 bg-gray-100 hover:bg-gray-200 rounded-xl font-bold cursor-pointer flex items-center justify-center gap-2 transition-colors text-sm sm:text-base">
               <iconify-icon icon="lucide:upload" width="18"></iconify-icon>
               <input type="file" id="productImageFile" accept="image/*" class="hidden" onchange="uploadProductImage(this)" onclick="this.focus()">
               Încarcă
@@ -1054,9 +1078,9 @@
         <input type="hidden" id="galleryId">
         <div>
           <label class="block text-sm font-bold text-gray-700 mb-2">URL imagine (sau încarcă din folder)</label>
-          <div class="flex gap-3">
-            <input type="url" id="galleryUrl" required class="flex-1 px-5 py-4 rounded-xl border-2 border-gray-100" placeholder="https://...">
-            <label class="px-5 py-4 bg-gray-100 hover:bg-gray-200 rounded-xl font-bold cursor-pointer flex items-center gap-2 transition-colors">
+          <div class="flex max-sm:flex-col sm:gap-3 gap-3">
+            <input type="url" id="galleryUrl" required class="flex-1 px-4 py-3 sm:px-5 sm:py-4 rounded-xl border-2 border-gray-100" placeholder="https://...">
+            <label class="px-4 py-3 sm:px-5 sm:py-4 bg-gray-100 hover:bg-gray-200 rounded-xl font-bold cursor-pointer flex items-center justify-center gap-2 transition-colors text-sm sm:text-base">
               <iconify-icon icon="lucide:upload" width="18"></iconify-icon>
               <input type="file" id="galleryImageFile" accept="image/*" class="hidden" onchange="uploadGalleryImage(this)" onclick="this.focus()">
               Încarcă
@@ -1194,7 +1218,7 @@
     document.querySelectorAll('.section').forEach(s => s.classList.add('hidden'));
     document.getElementById('section-' + name).classList.remove('hidden');
     document.querySelectorAll('.sidebar-item').forEach(b => b.classList.toggle('active', b.dataset.section === name));
-    if (name === 'dashboard') loadStats();
+    if (name === 'dashboard') { loadStats(); return; }
   }
 
   function authHeaders() { return { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' }; }
@@ -1513,10 +1537,23 @@
       sort_order: parseInt(document.getElementById('packageSort').value) || 0,
       active: document.getElementById('packageActive').checked
     };
-    if (id) await fetch('/api/admin/packages/' + id, { method: 'PUT', headers: authHeaders(), body: JSON.stringify(data) });
-    else await fetch('/api/admin/packages', { method: 'POST', headers: authHeaders(), body: JSON.stringify(data) });
-    closePackageModal();
-    loadPackages();
+    console.log('Saving package:', id ? 'EDIT' : 'CREATE', data);
+    try {
+      if (id) {
+        const res = await fetch('/api/admin/packages/' + id, { method: 'PUT', headers: authHeaders(), body: JSON.stringify(data) });
+        const result = await res.json();
+        console.log('Edit result:', result);
+      } else {
+        const res = await fetch('/api/admin/packages', { method: 'POST', headers: authHeaders(), body: JSON.stringify(data) });
+        const result = await res.json();
+        console.log('Create result:', result);
+      }
+      closePackageModal();
+      loadPackages();
+    } catch(err) {
+      console.error('Package save error:', err);
+      alert('Eroare la salvare: ' + err.message);
+    }
   });
 
   // ===== GALLERY =====
@@ -1629,6 +1666,25 @@
     alert('Setări salvate!');
   });
 
+  document.getElementById('changePasswordForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const current = document.getElementById('currentPassword').value;
+    const newPass = document.getElementById('newPassword').value;
+    const confirm = document.getElementById('confirmPassword').value;
+    const msg = document.getElementById('passwordChangeMsg');
+    msg.classList.add('hidden');
+    if (newPass !== confirm) { msg.textContent = 'Parolele noi nu coincid!'; msg.classList.remove('hidden'); msg.classList.replace('text-green-500', 'text-red-500'); return; }
+    try {
+      const res = await fetch('/api/admin/change-password', { method: 'POST', headers: authHeaders(), body: JSON.stringify({ currentPassword: current, newPassword: newPass, confirmPassword: confirm }) });
+      const result = await res.json();
+      if (!res.ok) throw new Error(result.error || 'Eroare');
+      msg.textContent = 'Parolă schimbată cu succes!'; msg.classList.remove('hidden', 'text-red-500'); msg.classList.add('text-green-500');
+      document.getElementById('changePasswordForm').reset();
+    } catch(err) {
+      msg.textContent = err.message; msg.classList.remove('hidden', 'text-green-500'); msg.classList.add('text-red-500');
+    }
+  });
+
   // ===== BOOKINGS =====
   async function loadBookings() {
     const data = await (await fetch('/api/admin/bookings', { headers: authHeaders() })).json();
@@ -1727,19 +1783,34 @@
     const totalKids = bookings.reduce((sum, b) => sum + (b.kids_count || 0), 0);
     const totalAdults = bookings.reduce((sum, b) => sum + (b.adults_count || 0), 0);
     
-    // Calculate revenue
-    let totalRevenue = 0;
-    const pkgPrices = { standard: 100, premium: 180, birthday: 1500 };
-    bookings.forEach(b => {
-      if (b.package === 'birthday') totalRevenue += 1500;
-      else if (b.package === 'premium') totalRevenue += (b.kids_count || 0) * 180 + (b.adults_count || 0) * 120;
-      else if (b.package === 'standard') totalRevenue += (b.kids_count || 0) * 100 + (b.adults_count || 0) * 80;
-    });
+    // Calculate revenue using actual package prices from API
+    try {
+      const pkgRes = await fetch('/api/admin/packages', { headers: authHeaders() });
+      const packages = await pkgRes.json();
+      const pkgPriceMap = {};
+      packages.forEach(p => {
+        pkgPriceMap[p.name.toLowerCase().replace(/\s+/g, '-')] = p;
+      });
+      
+      let totalRevenue = 0;
+      bookings.forEach(b => {
+        const pkg = pkgPriceMap[b.package];
+        if (pkg) {
+          if (pkg.price_group) totalRevenue += parseFloat(pkg.price_group);
+          else {
+            totalRevenue += (pkg.price_per_child || 0) * (b.kids_count || 0);
+            totalRevenue += (pkg.price_per_adult || 0) * (b.adults_count || 0);
+          }
+        }
+      });
+      document.getElementById('statRevenue').textContent = Math.round(totalRevenue) + ' lei';
+    } catch(e) {
+      document.getElementById('statRevenue').textContent = '— lei';
+    }
     
     document.getElementById('statBookings').textContent = bookings.length;
     document.getElementById('statKids').textContent = totalKids;
     document.getElementById('statAdults').textContent = totalAdults;
-    document.getElementById('statRevenue').textContent = totalRevenue + ' lei';
     
     // Render stats bookings list
     const list = document.getElementById('statsBookingsList');
@@ -1825,8 +1896,9 @@
     loadBookings();
   }
 
-  document.getElementById('bookingEditForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
+
+
+  async function saveBookingEdit() {
     const id = document.getElementById('editBookingId').value;
     const data = {
       client_name: document.getElementById('editClientName').value,
@@ -1840,10 +1912,9 @@
     await fetch('/api/admin/bookings/' + id, { method: 'PUT', headers: authHeaders(), body: JSON.stringify(data) });
     closeBookingEditModal();
     loadBookings();
-  });
+  }
 
-  async function deleteBooking() {
-    const id = document.getElementById('editBookingId').value;
+  async function deleteBooking(id) {
     if (!confirm('Ștergi această rezervare?')) return;
     await fetch('/api/admin/bookings/' + id, { method: 'DELETE', headers: authHeaders() });
     closeBookingEditModal();
@@ -1867,46 +1938,46 @@
       <h3 class="font-black text-2xl mb-6">Editează rezervare</h3>
       <form id="bookingEditForm" class="space-y-4">
         <input type="hidden" id="editBookingId">
-        <div class="grid grid-cols-2 gap-4">
+        <div class="grid max-sm:grid-cols-1 grid-cols-2 gap-4">
           <div>
             <label class="block text-sm font-bold text-gray-700 mb-2">Nume client</label>
-            <input type="text" id="editClientName" class="w-full px-4 py-3 rounded-xl border-2 border-gray-100">
+            <input type="text" id="editClientName" class="w-full px-4 py-3 rounded-xl border-2 border-gray-100 text-base sm:text-sm">
           </div>
           <div>
             <label class="block text-sm font-bold text-gray-700 mb-2">Telefon</label>
-            <input type="tel" id="editClientPhone" class="w-full px-4 py-3 rounded-xl border-2 border-gray-100">
+            <input type="tel" id="editClientPhone" inputmode="tel" pattern="[+]?[0-9\s\-()]{7,20}" placeholder="+373 __ ___ ___" class="w-full px-4 py-3 rounded-xl border-2 border-gray-100 text-base sm:text-sm">
           </div>
         </div>
-        <div class="grid grid-cols-2 gap-4">
+        <div class="grid max-sm:grid-cols-1 grid-cols-2 gap-4">
           <div>
             <label class="block text-sm font-bold text-gray-700 mb-2">Număr copii</label>
-            <input type="number" id="editKidsCount" min="0" max="50" class="w-full px-4 py-3 rounded-xl border-2 border-gray-100">
+            <input type="number" id="editKidsCount" min="0" max="50" class="w-full px-4 py-3 rounded-xl border-2 border-gray-100 text-base sm:text-sm">
           </div>
           <div>
             <label class="block text-sm font-bold text-gray-700 mb-2">Număr adulți</label>
-            <input type="number" id="editAdultsCount" min="0" max="30" class="w-full px-4 py-3 rounded-xl border-2 border-gray-100">
+            <input type="number" id="editAdultsCount" min="0" max="30" class="w-full px-4 py-3 rounded-xl border-2 border-gray-100 text-base sm:text-sm">
           </div>
         </div>
         <div>
           <label class="block text-sm font-bold text-gray-700 mb-2">Notițe client</label>
-          <textarea id="editNotes" rows="2" class="w-full px-4 py-3 rounded-xl border-2 border-gray-100 resize-none"></textarea>
+          <textarea id="editNotes" rows="2" class="w-full px-4 py-3 rounded-xl border-2 border-gray-100 resize-none text-base sm:text-sm"></textarea>
         </div>
         <div>
           <label class="block text-sm font-bold text-gray-700 mb-2">Notițe admin (private)</label>
-          <textarea id="editAdminNotes" rows="3" class="w-full px-4 py-3 rounded-xl border-2 border-gray-100 resize-none" placeholder="Ex: Clientul a sunat, vor fi doar 8 copii în loc de 10..."></textarea>
+          <textarea id="editAdminNotes" rows="3" class="w-full px-4 py-3 rounded-xl border-2 border-gray-100 resize-none text-base sm:text-sm" placeholder="Ex: Clientul a sunat, vor fi doar 8 copii în loc de 10..."></textarea>
         </div>
         <div>
           <label class="block text-sm font-bold text-gray-700 mb-2">Status</label>
-          <select id="editStatus" class="w-full px-4 py-3 rounded-xl border-2 border-gray-100 bg-white">
+          <select id="editStatus" class="w-full px-4 py-3 rounded-xl border-2 border-gray-100 bg-white text-base sm:text-sm">
             <option value="pending">În așteptare</option>
             <option value="confirmed">Confirmată</option>
             <option value="completed">Finalizată</option>
             <option value="cancelled">Anulată</option>
           </select>
         </div>
-        <div class="flex gap-4 pt-4">
-          <button type="button" onclick="deleteBooking()" class="flex-1 bg-red-50 text-red-500 py-3 rounded-xl font-bold hover:bg-red-100 transition-colors">Șterge</button>
-          <button type="submit" class="flex-1 btn-primary">Salvează</button>
+        <div class="flex max-sm:flex-col gap-4 pt-4">
+          <button type="button" onclick="deleteBooking(document.getElementById('editBookingId').value)" class="flex-1 bg-red-50 text-red-500 py-3 rounded-xl font-bold hover:bg-red-100 transition-colors text-base sm:text-sm">Șterge</button>
+          <button type="button" onclick="saveBookingEdit()" class="flex-1 btn-primary text-base sm:text-sm">Salvează</button>
         </div>
       </form>
     </div>
