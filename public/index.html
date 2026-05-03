@@ -37,6 +37,41 @@
     }
   </script>
   <style>
+    .cookie-banner {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #1a1a2e;
+      color: white;
+      padding: 16px 20px;
+      z-index: 9999;
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      box-shadow: 0 -4px 20px rgba(0,0,0,0.3);
+    }
+    .cookie-banner.show { display: flex; }
+    .cookie-banner p { margin: 0; font-size: 14px; line-height: 1.4; flex: 1; min-width: 200px; }
+    .cookie-banner a { color: #ff6b9d; text-decoration: underline; }
+    .cookie-banner-btns { display: flex; gap: 10px; flex-shrink: 0; }
+    .cookie-banner button {
+      padding: 10px 20px;
+      border-radius: 25px;
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: none;
+    }
+    .cookie-accept { background: linear-gradient(135deg, #ff6b9d, #ff8c42); color: white; }
+    .cookie-accept:hover { opacity: 0.9; transform: scale(1.02); }
+    .cookie-settings { background: rgba(255,255,255,0.1); color: white; }
+    .cookie-settings:hover { background: rgba(255,255,255,0.2); }
+  </style>
+
     * { font-family: 'Inter', system-ui, sans-serif; }
     
     html { scroll-behavior: smooth; }
@@ -1634,6 +1669,27 @@
   }
 
   init();
+  </script>
+
+  <!-- Cookie Consent Banner -->
+  <div id="cookieBanner" class="cookie-banner">
+    <p>🍪 Utilizăm cookies pentru a îmbunătăți experiența ta pe site. Continuând, accepți <a href="#" onclick="alert('Politica de confidențialitate: Folosim doar cookies esențiale pentru funcționarea site-ului.'); return false;">politica noastră de cookies</a>.</p>
+    <div class="cookie-banner-btns">
+      <button class="cookie-settings" onclick="
+        localStorage.setItem('cookie_consent', 'essential');
+        document.getElementById('cookieBanner').classList.remove('show');
+      ">Doar esențiale</button>
+      <button class="cookie-accept" onclick="
+        localStorage.setItem('cookie_consent', 'all');
+        document.getElementById('cookieBanner').classList.remove('show');
+      ">Accept toate</button>
+    </div>
+  </div>
+  <script>
+    // Show cookie banner if not already accepted
+    if (!localStorage.getItem('cookie_consent')) {
+      document.getElementById('cookieBanner').classList.add('show');
+    }
   </script>
 </body>
 </html>
