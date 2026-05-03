@@ -483,6 +483,10 @@
     <a href="#decoruri" onclick="closeMobile()" class="text-2xl font-bold text-dark hover:text-candy-pink transition-colors" data-i18n="mobile_decor">Decoruri</a>
     <a href="/terms" onclick="closeMobile()" class="text-lg font-bold text-gray-500 hover:text-candy-pink transition-colors">Termeni și Condiții</a>
     <a href="/privacy" onclick="closeMobile()" class="text-lg font-bold text-gray-500 hover:text-candy-pink transition-colors">Confidențialitate</a>
+    <button onclick="openLoginModal(); closeMobile();" class="text-2xl font-bold text-dark hover:text-candy-pink transition-colors flex items-center gap-2">
+      <iconify-icon icon="lucide:log-in" width="20"></iconify-icon>
+      <span data-i18n="mobile_login">Autentificare</span>
+    </button>
     <a href="#rezervari" onclick="closeMobile()" class="bg-gradient-to-r from-candy-pink to-candy-orange text-white px-8 py-4 rounded-xl font-bold" data-i18n="mobile_book">Rezervă un loc</a>
   </div>
 
@@ -1073,6 +1077,70 @@
     </div>
   </div>
 
+  <!-- OTP Login Modal -->
+  <div id="loginModal" class="fixed inset-0 z-[200] hidden">
+    <div class="modal-backdrop absolute inset-0 bg-black/50" onclick="closeLoginModal()"></div>
+    <div class="absolute inset-4 sm:inset-auto sm:top-1/2 sm:left-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 sm:w-full sm:max-w-md bg-white rounded-2xl shadow-xl flex flex-col overflow-hidden">
+      <div class="p-5 border-b border-gray-100 flex items-center justify-between">
+        <div>
+          <h3 id="loginModalTitle" class="font-bold text-xl text-dark">Autentificare</h3>
+          <p id="loginModalSubtitle" class="text-xs text-gray-400 mt-0.5">Introdu adresa de email pentru a continua</p>
+        </div>
+        <button onclick="closeLoginModal()" class="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center hover:bg-gray-200">
+          <iconify-icon icon="lucide:x" width="20"></iconify-icon>
+        </button>
+      </div>
+      
+      <!-- Step 1: Email input -->
+      <div id="loginStep1" class="p-5 space-y-4">
+        <div>
+          <label class="text-sm font-semibold text-gray-700 mb-1 block">Adresă de email</label>
+          <input type="email" id="loginEmail" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-candy-pink" placeholder="exemplu@email.com">
+          <p id="loginEmailError" class="text-red-500 text-xs mt-1 hidden"></p>
+        </div>
+        <button onclick="sendLoginOtp()" id="loginSendBtn" class="w-full bg-gradient-to-r from-candy-pink to-candy-orange text-white py-4 rounded-xl font-bold hover:shadow-lg transition-all flex items-center justify-center gap-2">
+          <iconify-icon icon="lucide:mail" width="18"></iconify-icon>
+          Trimite codul
+        </button>
+        <p class="text-xs text-gray-400 text-center">Nu ai cont? Este suficientă o adresă de email validă.</p>
+      </div>
+      
+      <!-- Step 2: OTP code input -->
+      <div id="loginStep2" class="p-5 space-y-4 hidden">
+        <div class="text-center mb-2">
+          <p class="text-sm text-gray-500">Am trimis un cod la</p>
+          <p id="loginEmailDisplay" class="font-bold text-dark"></p>
+        </div>
+        <div>
+          <label class="text-sm font-semibold text-gray-700 mb-1 block">Cod de verificare (6 cifre)</label>
+          <input type="text" id="loginOtpCode" maxlength="6" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-candy-pink text-center text-2xl tracking-[0.5em] font-bold" placeholder="_ _ _ _ _ _">
+          <p id="loginOtpError" class="text-red-500 text-xs mt-1 hidden"></p>
+        </div>
+        <button onclick="verifyLoginOtp()" id="loginVerifyBtn" class="w-full bg-gradient-to-r from-candy-pink to-candy-orange text-white py-4 rounded-xl font-bold hover:shadow-lg transition-all flex items-center justify-center gap-2">
+          <iconify-icon icon="lucide:check-circle" width="18"></iconify-icon>
+          Verifică și intră
+        </button>
+        <button onclick="resetLoginModal()" class="w-full bg-gray-100 text-gray-600 py-3 rounded-xl font-bold hover:bg-gray-200 text-sm">Schimbă email-ul</button>
+        <p class="text-xs text-gray-400 text-center">Nu ai primit codul? Verifică folderul de spam.</p>
+      </div>
+      
+      <!-- Success -->
+      <div id="loginSuccess" class="hidden text-center py-10 px-5">
+        <div class="w-16 h-16 bg-candy-green/20 rounded-full flex items-center justify-center mx-auto mb-4">
+          <iconify-icon icon="lucide:check-circle" width="32" class="text-candy-green"></iconify-icon>
+        </div>
+        <h3 class="font-bold text-xl text-dark mb-2">Bine ai venit!</h3>
+        <p class="text-gray-500 text-sm mb-4">Ești autentificat cu succes.</p>
+        <button onclick="closeLoginModal()" class="bg-gradient-to-r from-candy-pink to-candy-orange text-white px-6 py-3 rounded-xl font-bold">Continuă</button>
+      </div>
+      
+      <!-- Loading spinner overlay -->
+      <div id="loginLoading" class="hidden absolute inset-0 bg-white/80 flex items-center justify-center">
+        <div class="w-10 h-10 border-4 border-candy-pink/30 border-t-candy-pink rounded-full animate-spin"></div>
+      </div>
+    </div>
+  </div>
+
   <!-- Footer -->
   <footer class="footer-wave text-white py-16">
     <div class="max-w-6xl mx-auto px-6">
@@ -1182,6 +1250,7 @@
       mobile_decor: 'Decoruri',
       mobile_contact: 'Contact',
       mobile_book: 'Rezervă un loc',
+      mobile_login: 'Autentificare',
       hero_badge: 'Soroca, Moldova',
       hero_open: 'Deschis acum',
       hero_closed: 'Închis',
@@ -1274,6 +1343,7 @@
       mobile_decor: 'Декор',
       mobile_contact: 'Контакты',
       mobile_book: 'Забронировать место',
+      mobile_login: 'Вход',
       hero_badge: 'Сорока, Молдова',
       hero_open: 'Открыто сейчас',
       hero_closed: 'Закрыто',
@@ -1479,6 +1549,187 @@
   }
 
   
+  // ===== OTP LOGIN MODAL =====
+  let isLoggedIn = false;
+  let currentCustomer = null;
+  let customerToken = localStorage.getItem('skykids_customer_token') || null;
+  let pendingAction = null; // 'checkout' or 'booking'
+
+  function openLoginModal(action) {
+    pendingAction = action;
+    resetLoginModal();
+    document.getElementById('loginModal').classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+    
+    // Check if already logged in
+    if(customerToken) {
+      checkCustomerSession();
+    }
+  }
+
+  function closeLoginModal() {
+    document.getElementById('loginModal').classList.add('hidden');
+    document.body.style.overflow = '';
+  }
+
+  function resetLoginModal() {
+    document.getElementById('loginStep1').classList.remove('hidden');
+    document.getElementById('loginStep2').classList.add('hidden');
+    document.getElementById('loginSuccess').classList.add('hidden');
+    document.getElementById('loginLoading').classList.add('hidden');
+    document.getElementById('loginEmail').value = '';
+    document.getElementById('loginOtpCode').value = '';
+    document.getElementById('loginEmailError').classList.add('hidden');
+    document.getElementById('loginOtpError').classList.add('hidden');
+    document.getElementById('loginModalTitle').textContent = 'Autentificare';
+    document.getElementById('loginModalSubtitle').textContent = 'Introdu adresa de email pentru a continua';
+  }
+
+  async function checkCustomerSession() {
+    if(!customerToken) return;
+    try {
+      const res = await fetch('/api/auth/me', { headers: { 'Authorization': 'Bearer ' + customerToken } });
+      if(res.ok) {
+        currentCustomer = await res.json();
+        isLoggedIn = true;
+        updateLoginBadge();
+      } else {
+        // Token expired or invalid
+        customerToken = null;
+        localStorage.removeItem('skykids_customer_token');
+      }
+    } catch(e) {}
+  }
+
+  async function sendLoginOtp() {
+    const email = document.getElementById('loginEmail').value.trim();
+    const errorEl = document.getElementById('loginEmailError');
+    
+    if(!email || !email.includes('@') || !email.includes('.')) {
+      errorEl.textContent = 'Adresă de email invalidă';
+      errorEl.classList.remove('hidden');
+      return;
+    }
+    
+    errorEl.classList.add('hidden');
+    document.getElementById('loginLoading').classList.remove('hidden');
+    
+    try {
+      const res = await fetch('/api/auth/send-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email })
+      });
+      const data = await res.json();
+      
+      document.getElementById('loginLoading').classList.add('hidden');
+      
+      if(!res.ok) throw new Error(data.error || 'Eroare');
+      
+      // Show step 2
+      document.getElementById('loginStep1').classList.add('hidden');
+      document.getElementById('loginStep2').classList.remove('hidden');
+      document.getElementById('loginEmailDisplay').textContent = email;
+      document.getElementById('loginModalSubtitle').textContent = 'Introdu codul primit pe email';
+      document.getElementById('loginOtpCode').focus();
+    } catch(e) {
+      document.getElementById('loginLoading').classList.add('hidden');
+      errorEl.textContent = e.message || 'Eroare la trimitere';
+      errorEl.classList.remove('hidden');
+    }
+  }
+
+  async function verifyLoginOtp() {
+    const email = document.getElementById('loginEmailDisplay').textContent;
+    const code = document.getElementById('loginOtpCode').value.trim();
+    const errorEl = document.getElementById('loginOtpError');
+    
+    if(!code || code.length !== 6) {
+      errorEl.textContent = 'Introdu cele 6 cifre';
+      errorEl.classList.remove('hidden');
+      return;
+    }
+    
+    errorEl.classList.add('hidden');
+    document.getElementById('loginLoading').classList.remove('hidden');
+    document.getElementById('loginVerifyBtn').disabled = true;
+    
+    try {
+      const res = await fetch('/api/auth/verify-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, code })
+      });
+      const data = await res.json();
+      
+      if(!res.ok) throw new Error(data.error || 'Cod invalid');
+      
+      customerToken = data.token;
+      localStorage.setItem('skykids_customer_token', customerToken);
+      currentCustomer = data.customer;
+      isLoggedIn = true;
+      
+      document.getElementById('loginLoading').classList.add('hidden');
+      document.getElementById('loginStep2').classList.add('hidden');
+      document.getElementById('loginSuccess').classList.remove('hidden');
+      document.getElementById('loginModalTitle').textContent = 'Succes!';
+      
+      updateLoginBadge();
+      
+      // If there was a pending action, continue it
+      setTimeout(() => {
+        closeLoginModal();
+        if(pendingAction === 'checkout') openCheckout();
+        else if(pendingAction === 'booking') {
+          // Continue booking to step 4
+          goToStep(4);
+        }
+        pendingAction = null;
+      }, 1500);
+    } catch(e) {
+      errorEl.textContent = e.message || 'Cod invalid sau expirat';
+      errorEl.classList.remove('hidden');
+    } finally {
+      document.getElementById('loginLoading').classList.add('hidden');
+      document.getElementById('loginVerifyBtn').disabled = false;
+    }
+  }
+
+  function updateLoginBadge() {
+    let badge = document.getElementById('customerBadge');
+    if(!badge) {
+      // Create badge in nav
+      const nav = document.querySelector('nav > div > div');
+      if(!nav) return;
+      badge = document.createElement('button');
+      badge.id = 'customerBadge';
+      badge.className = 'ml-2 w-10 h-10 bg-candy-green/10 hover:bg-candy-green/20 rounded-xl flex items-center justify-center transition-colors';
+      badge.onclick = () => openLoginModal();
+      nav.appendChild(badge);
+    }
+    
+    if(isLoggedIn && currentCustomer) {
+      const initial = (currentCustomer.first_name || currentCustomer.email || 'U').charAt(0).toUpperCase();
+      badge.innerHTML = '<span class="font-bold text-candy-green text-sm">' + initial + '</span>';
+      badge.title = currentCustomer.email;
+    } else {
+      badge.innerHTML = '<iconify-icon icon="lucide:user" width="20" class="text-candy-green"></iconify-icon>';
+    }
+  }
+
+  async function logoutCustomer() {
+    if(customerToken) {
+      try {
+        await fetch('/api/auth/logout', { method: 'POST', headers: { 'Authorization': 'Bearer ' + customerToken } });
+      } catch(e) {}
+    }
+    customerToken = null;
+    localStorage.removeItem('skykids_customer_token');
+    currentCustomer = null;
+    isLoggedIn = false;
+    updateLoginBadge();
+  }
+
   // ===== Init =====
   // ===== Check if restaurant is currently open (10:00 - 22:00) =====
   function updateOpenStatus() {
@@ -1498,7 +1749,7 @@
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('date').min = today;
     
-    await Promise.all([loadMenu(), loadGallery(), loadContact(), loadPackages(), loadDecor()]);
+    await Promise.all([loadMenu(), loadGallery(), loadContact(), loadPackages(), loadDecor(), checkCustomerSession()]);
     addCartBadgeToNav();
     
     // Update open/closed status

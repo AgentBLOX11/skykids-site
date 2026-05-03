@@ -1,4 +1,5 @@
 const express = require('express');
+const nodemailer = require('nodemailer');
 const multer = require('multer');
 const crypto = require('crypto');
 const Database = require('better-sqlite3');
@@ -46,6 +47,15 @@ async function translateObject(obj, fields) {
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// Email transporter (Gmail App Password)
+const emailTransporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.SMTP_USER || 'skykids.soroca@gmail.com',
+    pass: process.env.SMTP_PASS || 'YOUR_APP_PASSWORD_HERE'
+  }
+});
 const JWT_SECRET = process.env.JWT_SECRET || 'skykids2026production';
 
 // ===== SECURITY HEADERS =====
@@ -237,6 +247,26 @@ db.exec(`
     sort_order INTEGER DEFAULT 0,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
   );
+
+  -- NEW: Customer users (for site login, not admin)
+  CREATE TABLE IF NOT EXISTS customer_users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    email TEXT UNIQUE NOT NULL,
+    first_name TEXT DEFAULT '',
+    last_name TEXT DEFAULT '',
+    phone TEXT DEFAULT '',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  );
+
+  -- NEW: OTP codes for email verification
+  CREATE TABLE IF NOT EXISTS otp_codes (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    email TEXT NOT NULL,
+    code TEXT NOT NULL,
+    expires_at DATETIME NOT NULL,
+    used INTEGER DEFAULT 0,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  );
 `);
 
 // Create uploads directory
@@ -301,6 +331,15 @@ for(const s of businessSettings) {
   try {
     db.prepare('INSERT OR IGNORE INTO settings (key, value) VALUES (?, ?)').run(s.key, s.value);
   } catch(e) {}
+}
+
+// Seed SMTP settings placeholder
+const smtpSettings = [
+  { key: 'smtp_user', value: 'skykids.soroca@gmail.com' },
+  { key: 'smtp_pass', value: '' }
+];
+for(const s of smtpSettings) {
+  try { db.prepare('INSERT OR IGNORE INTO settings (key, value) VALUES (?, ?)').run(s.key, s.value); } catch(e) {}
 }
 
 // Insert default contact_info
@@ -873,6 +912,149 @@ app.get('/api/settings/business', authMiddleware, (req, res) => {
   res.json(data);
 });
 
+
+
+// ===== OTP AUTH API =====
+
+// Send OTP code to email
+app.post('/api/auth/send-otp', async (req, res) => {
+  const { email } = req.body;
+  if(!email || !email.includes('@')) {
+    return res.status(400).json({ error: 'Adresă de email invalidă' });
+  }
+  
+  // Generate 6-digit code
+  const code = Math.floor(100000 + Math.random() * 900000).toString();
+  const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes
+  
+  try {
+    // Mark old unused codes for this email as used
+    db.prepare('UPDATE otp_codes SET used = 1 WHERE email = ? AND used = 0').run(email);
+    
+    // Insert new code
+    db.prepare('INSERT INTO otp_codes (email, code, expires_at) VALUES (?, ?, ?)').run(email, code, expiresAt.toISOString());
+    
+    // Send email
+    try {
+      await emailTransporter.sendMail({
+        from: '"Sky Kids Soroca" <skykids.soroca@gmail.com>',
+        to: email,
+        subject: 'Cod de acces Sky Kids - ' + code,
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 400px; margin: 0 auto; padding: 20px;">
+            <div style="background: linear-gradient(135deg, #ff6b9d, #ff9f43); padding: 20px; border-radius: 12px 12px 0 0; text-align: center;">
+              <h2 style="color: white; margin: 0;">Sky Kids Soroca</h2>
+            </div>
+            <div style="background: #f9f9f9; padding: 30px; border-radius: 0 0 12px 12px;">
+              <p style="color: #333; font-size: 16px;">Bună!</p>
+              <p style="color: #333; font-size: 16px;">Codul tău de acces:</p>
+              <div style="background: white; padding: 20px; text-align: center; border-radius: 8px; margin: 20px 0; border: 2px solid #ff6b9d20;">
+                <span style="font-size: 36px; font-weight: bold; letter-spacing: 8px; color: #ff6b9d;">${code}</span>
+              </div>
+              <p style="color: #666; font-size: 14px;">Codul expiră în 5 minute.</p>
+              <p style="color: #666; font-size: 14px;">Dacă nu ai solicitat acest cod, ignoră acest email.</p>
+            </div>
+          </div>
+        `
+      });
+    } catch(emailErr) {
+      console.log('Email send failed (SMTP not configured):', emailErr.message);
+      // In dev mode, log the code to console so we can test
+      console.log('DEV OTP CODE for', email, ':', code);
+    }
+    
+    res.json({ success: true, message: 'Cod trimis pe email' + (process.env.NODE_ENV !== 'production' ? ' (DEV: check console)' : '') });
+  } catch(e) {
+    console.error('OTP error:', e);
+    res.status(500).json({ error: 'Eroare la trimitere' });
+  }
+});
+
+// Verify OTP and login
+app.post('/api/auth/verify-otp', (req, res) => {
+  const { email, code } = req.body;
+  if(!email || !code) {
+    return res.status(400).json({ error: 'Completează toate câmpurile' });
+  }
+  
+  const record = db.prepare('SELECT * FROM otp_codes WHERE email = ? AND code = ? AND used = 0 AND expires_at > datetime("now") ORDER BY id DESC LIMIT 1').get(email, code);
+  
+  if(!record) {
+    return res.status(401).json({ error: 'Cod invalid sau expirat' });
+  }
+  
+  // Mark OTP as used
+  db.prepare('UPDATE otp_codes SET used = 1 WHERE id = ?').run(record.id);
+  
+  // Get or create customer
+  let customer = db.prepare('SELECT * FROM customer_users WHERE email = ?').get(email);
+  if(!customer) {
+    const result = db.prepare('INSERT INTO customer_users (email) VALUES (?)').run(email);
+    customer = db.prepare('SELECT * FROM customer_users WHERE id = ?').get(result.lastInsertRowid);
+  }
+  
+  // Generate session token (simple random string)
+  const sessionToken = crypto.randomBytes(32).toString('hex');
+  const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
+  
+  db.prepare('INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)').run('session_' + sessionToken, JSON.stringify({ customer_id: customer.id, email: customer.email, expires: expiresAt.toISOString() }));
+  
+  res.json({ 
+    success: true, 
+    token: sessionToken,
+    customer: { id: customer.id, email: customer.email, first_name: customer.first_name, last_name: customer.last_name, phone: customer.phone }
+  });
+});
+
+// Get current customer info
+app.get('/api/auth/me', (req, res) => {
+  const authHeader = req.headers.authorization;
+  if(!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ error: 'Neautentificat' });
+  }
+  const token = authHeader.slice(7);
+  const sessionData = db.prepare("SELECT value FROM settings WHERE key = ?").get('session_' + token);
+  if(!sessionData) return res.status(401).json({ error: 'Sesie expirată' });
+  
+  try {
+    const data = JSON.parse(sessionData.value);
+    if(new Date(data.expires) < new Date()) {
+      db.prepare('DELETE FROM settings WHERE key = ?').run('session_' + token);
+      return res.status(401).json({ error: 'Sesie expirată' });
+    }
+    const customer = db.prepare('SELECT * FROM customer_users WHERE id = ?').get(data.customer_id);
+    if(!customer) return res.status(401).json({ error: 'Utilizator negăsit' });
+    res.json({ id: customer.id, email: customer.email, first_name: customer.first_name, last_name: customer.last_name, phone: customer.phone });
+  } catch(e) {
+    return res.status(401).json({ error: 'Sesie invalidă' });
+  }
+});
+
+// Update customer profile
+app.put('/api/auth/profile', (req, res) => {
+  const authHeader = req.headers.authorization;
+  if(!authHeader) return res.status(401).json({ error: 'Neautentificat' });
+  const token = authHeader.slice(7);
+  const sessionData = db.prepare("SELECT value FROM settings WHERE key = ?").get('session_' + token);
+  if(!sessionData) return res.status(401).json({ error: 'Sesie expirată' });
+  
+  const data = JSON.parse(sessionData.value);
+  const { first_name, last_name, phone } = req.body;
+  
+  db.prepare('UPDATE customer_users SET first_name = ?, last_name = ?, phone = ? WHERE id = ?').run(first_name || '', last_name || '', phone || '', data.customer_id);
+  const customer = db.prepare('SELECT * FROM customer_users WHERE id = ?').get(data.customer_id);
+  res.json({ success: true, customer });
+});
+
+// Logout
+app.post('/api/auth/logout', (req, res) => {
+  const authHeader = req.headers.authorization;
+  if(authHeader && authHeader.startsWith('Bearer ')) {
+    const token = authHeader.slice(7);
+    db.prepare('DELETE FROM settings WHERE key = ?').run('session_' + token);
+  }
+  res.json({ success: true });
+});
 
 // ============== SERVE PAGES ==============
 app.get('/admin', (req, res) => {
