@@ -53,8 +53,9 @@ const emailTransporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
     user: process.env.SMTP_USER || 'skykids.soroca@gmail.com',
-    pass: process.env.SMTP_PASS || 'YOUR_APP_PASSWORD_HERE'
-  }
+    pass: process.env.SMTP_PASS || ''
+  },
+  tls: { rejectUnauthorized: false }
 });
 const JWT_SECRET = process.env.JWT_SECRET || 'skykids2026production';
 

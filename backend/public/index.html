@@ -459,6 +459,9 @@
             <button onclick="setLang('ro')" id="btnRo" class="px-3 py-1.5 rounded-lg font-bold text-sm transition-all">🇷🇴 RO</button>
             <button onclick="setLang('ru')" id="btnRu" class="px-3 py-1.5 rounded-lg font-bold text-sm transition-all">🇷🇺 RU</button>
           </div>
+          <button id="customerBadgeDesktop" onclick="openLoginModal()" class="w-10 h-10 bg-candy-green/10 hover:bg-candy-green/20 rounded-xl flex items-center justify-center transition-colors" title="Autentificare">
+            <iconify-icon icon="lucide:user" width="18" class="text-candy-green"></iconify-icon>
+          </button>
           <a href="#rezervari" class="bg-gradient-to-r from-candy-pink to-candy-orange text-white px-6 py-3 rounded-xl font-bold hover:shadow-lg transition-all inline-flex items-center gap-2">
             <iconify-icon icon="lucide:calendar" width="18"></iconify-icon>
             <span data-i18n="nav_book">Rezervă</span>
@@ -1696,24 +1699,21 @@
   }
 
   function updateLoginBadge() {
-    let badge = document.getElementById('customerBadge');
-    if(!badge) {
-      // Create badge in nav
-      const nav = document.querySelector('nav > div > div');
-      if(!nav) return;
-      badge = document.createElement('button');
-      badge.id = 'customerBadge';
-      badge.className = 'ml-2 w-10 h-10 bg-candy-green/10 hover:bg-candy-green/20 rounded-xl flex items-center justify-center transition-colors';
-      badge.onclick = () => openLoginModal();
-      nav.appendChild(badge);
-    }
+    // Update both desktop and mobile badge if they exist
+    const desktopBadge = document.getElementById('customerBadgeDesktop');
+    const mobileBadge = document.getElementById('customerBadge');
+    const badge = desktopBadge || mobileBadge;
+    if(!badge) return;
     
     if(isLoggedIn && currentCustomer) {
       const initial = (currentCustomer.first_name || currentCustomer.email || 'U').charAt(0).toUpperCase();
       badge.innerHTML = '<span class="font-bold text-candy-green text-sm">' + initial + '</span>';
-      badge.title = currentCustomer.email;
+      badge.title = currentCustomer.email + ' (logout)';
+      badge.onclick = () => { if(confirm('Sign out?')) logoutCustomer(); };
     } else {
       badge.innerHTML = '<iconify-icon icon="lucide:user" width="20" class="text-candy-green"></iconify-icon>';
+      badge.title = 'Autentificare';
+      badge.onclick = () => openLoginModal();
     }
   }
 
