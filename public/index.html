@@ -447,6 +447,7 @@
           <a href="#meniu" class="font-semibold text-gray-600 hover:text-candy-pink transition-colors" data-i18n="nav_menu">Meniu</a>
           <a href="#galerie" class="font-semibold text-gray-600 hover:text-candy-pink transition-colors" data-i18n="nav_gallery">Galerie</a>
           <a href="#contact" class="font-semibold text-gray-600 hover:text-candy-pink transition-colors" data-i18n="nav_contact">Contact</a>
+          <a href="#decoruri" class="font-semibold text-gray-600 hover:text-candy-pink transition-colors" data-i18n="nav_decor">Decoruri</a>
           <div class="flex items-center gap-1 border-2 border-gray-200 rounded-xl p-1">
             <button onclick="setLang('ro')" id="btnRo" class="px-3 py-1.5 rounded-lg font-bold text-sm transition-all">🇷🇴 RO</button>
             <button onclick="setLang('ru')" id="btnRu" class="px-3 py-1.5 rounded-lg font-bold text-sm transition-all">🇷🇺 RU</button>
@@ -472,6 +473,7 @@
     <a href="#meniu" onclick="closeMobile()" class="text-2xl font-bold text-dark hover:text-candy-pink transition-colors" data-i18n="mobile_menu">Meniu</a>
     <a href="#galerie" onclick="closeMobile()" class="text-2xl font-bold text-dark hover:text-candy-pink transition-colors" data-i18n="mobile_gallery">Galerie</a>
     <a href="#contact" onclick="closeMobile()" class="text-2xl font-bold text-dark hover:text-candy-pink transition-colors" data-i18n="mobile_contact">Contact</a>
+    <a href="#decoruri" onclick="closeMobile()" class="text-2xl font-bold text-dark hover:text-candy-pink transition-colors" data-i18n="mobile_decor">Decoruri</a>
     <a href="#rezervari" onclick="closeMobile()" class="bg-gradient-to-r from-candy-pink to-candy-orange text-white px-8 py-4 rounded-xl font-bold" data-i18n="mobile_book">Rezervă un loc</a>
   </div>
 
@@ -876,6 +878,107 @@
     </div>
   </section>
 
+  <div class="section-divider max-w-6xl mx-auto my-8 sm:my-16"></div>
+
+  <!-- Decoruri Section -->
+  <section id="decoruri" class="py-16 sm:py-24 relative scroll-mt-20">
+    <div class="max-w-6xl mx-auto px-6">
+      <div class="text-center mb-12 fade-up">
+        <span class="inline-block bg-candy-pink/10 text-candy-pink text-sm font-bold tracking-widest uppercase px-4 py-2 rounded-full mb-4" data-i18n="decor_badge">Decoruri</span>
+        <h2 class="font-black text-4xl md:text-5xl text-dark" data-i18n="decor_title">Decoruri pentru petreceri</h2>
+        <p class="text-gray-500 mt-4" data-i18n="decor_subtitle">Alege decorul perfect pentru ziua specială a copilului tău</p>
+      </div>
+      <div id="decorGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="text-center text-gray-400 py-12 col-span-full">Se încarcă...</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Cart Modal -->
+  <div id="cartModal" class="fixed inset-0 z-50 hidden">
+    <div class="modal-backdrop absolute inset-0 bg-black/50" onclick="closeCart()"></div>
+    <div class="absolute right-0 top-0 bottom-0 w-full max-w-md bg-white shadow-xl flex flex-col">
+      <div class="p-5 border-b border-gray-100 flex items-center justify-between">
+        <h3 class="font-bold text-xl text-dark">Coș de cumpărături</h3>
+        <button onclick="closeCart()" class="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center hover:bg-gray-200">
+          <iconify-icon icon="lucide:x" width="20"></iconify-icon>
+        </button>
+      </div>
+      <div id="cartItems" class="flex-1 overflow-y-auto p-5 space-y-3">
+        <p class="text-gray-400 text-center py-8">Coșul este gol</p>
+      </div>
+      <div class="p-5 border-t border-gray-100">
+        <div class="flex justify-between items-center mb-4">
+          <span class="font-bold text-lg text-dark">Total:</span>
+          <span id="cartTotal" class="font-black text-xl text-candy-pink">0 MDL</span>
+        </div>
+        <button onclick="openCheckout()" id="checkoutBtn" class="w-full bg-gradient-to-r from-candy-pink to-candy-orange text-white py-4 rounded-xl font-bold hover:shadow-lg transition-all flex items-center justify-center gap-2 disabled:opacity-50" disabled>
+          <iconify-icon icon="lucide:shopping-bag" width="18"></iconify-icon>
+          Finalizează comanda
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Checkout Modal -->
+  <div id="checkoutModal" class="fixed inset-0 z-50 hidden">
+    <div class="modal-backdrop absolute inset-0 bg-black/50" onclick="closeCheckout()"></div>
+    <div class="absolute inset-4 sm:inset-auto sm:top-1/2 sm:left-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 sm:w-full sm:max-w-lg bg-white rounded-2xl shadow-xl flex flex-col max-h-[90vh] overflow-y-auto">
+      <div class="p-5 border-b border-gray-100 flex items-center justify-between sticky top-0 bg-white rounded-t-2xl">
+        <h3 class="font-bold text-xl text-dark">Finalizează comanda</h3>
+        <button onclick="closeCheckout()" class="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center hover:bg-gray-200">
+          <iconify-icon icon="lucide:x" width="20"></iconify-icon>
+        </button>
+      </div>
+      <div class="p-5 space-y-4">
+        <div class="bg-gray-50 rounded-xl p-4 mb-4">
+          <h4 class="font-bold text-dark mb-2">Produse selectate:</h4>
+          <div id="checkoutItems" class="text-sm text-gray-600 space-y-1"></div>
+          <div class="border-t border-gray-200 mt-3 pt-3 flex justify-between">
+            <span class="font-bold text-dark">Total:</span>
+            <span id="checkoutTotal" class="font-black text-candy-pink">0 MDL</span>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="text-sm font-semibold text-gray-700 mb-1 block">Nume *</label>
+            <input type="text" id="coFirstName" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-candy-pink" placeholder="Nume">
+          </div>
+          <div>
+            <label class="text-sm font-semibold text-gray-700 mb-1 block">Prenume *</label>
+            <input type="text" id="coLastName" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-candy-pink" placeholder="Prenume">
+          </div>
+        </div>
+        <div>
+          <label class="text-sm font-semibold text-gray-700 mb-1 block">Telefon *</label>
+          <input type="tel" id="coPhone" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-candy-pink" placeholder="060 123 456">
+        </div>
+        <div>
+          <label class="text-sm font-semibold text-gray-700 mb-1 block">Adresă de livrare *</label>
+          <input type="text" id="coAddress" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-candy-pink" placeholder="Strada, nr., Orau, MD">
+        </div>
+        <div>
+          <label class="text-sm font-semibold text-gray-700 mb-1 block">Observații</label>
+          <textarea id="coNotes" rows="2" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-candy-pink" placeholder="Note opționale..."></textarea>
+        </div>
+        <p id="coError" class="text-red-500 text-sm hidden"></p>
+        <button onclick="submitOrder()" class="w-full bg-gradient-to-r from-candy-pink to-candy-orange text-white py-4 rounded-xl font-bold hover:shadow-lg transition-all flex items-center justify-center gap-2">
+          <iconify-icon icon="lucide:check-circle" width="18"></iconify-icon>
+          Trimite comanda
+        </button>
+      </div>
+      <div id="checkoutSuccess" class="hidden text-center py-10 px-5">
+        <div class="w-20 h-20 bg-candy-green/20 rounded-full flex items-center justify-center mx-auto mb-5">
+          <iconify-icon icon="lucide:check-circle" width="40" class="text-candy-green"></iconify-icon>
+        </div>
+        <h3 class="font-bold text-2xl text-candy-green mb-3">Comandă trimisă!</h3>
+        <p class="text-gray-500 mb-2">Vei fi contactat pentru confirmare.</p>
+        <p id="orderNumber" class="font-bold text-dark mb-5"></p>
+        <button onclick="closeCheckoutAll()" class="bg-gray-100 text-gray-700 px-6 py-3 rounded-xl font-bold hover:bg-gray-200">Închide</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Footer -->
   <footer class="footer-wave text-white py-16">
     <div class="max-w-6xl mx-auto px-6">
@@ -933,7 +1036,11 @@
         
         <div class="border-t pt-5">
           <p class="text-sm text-gray-400 font-medium mb-1" data-i18n="modal_price_label">PREȚ</p>
-          <p id="modalPrice" class="text-3xl font-black price-tag"></p>
+          <p id="modalPrice" class="text-3xl font-black price-tag mb-4"></p>
+          <button id="modalAddToCartBtn" onclick="addProductToCartFromModal()" class="w-full bg-gradient-to-r from-candy-pink to-candy-orange text-white py-4 rounded-xl font-bold text-lg hover:shadow-lg transition-all flex items-center justify-center gap-2">
+            <iconify-icon icon="lucide:shopping-bag" width="20"></iconify-icon>
+            Adaugă în coș
+          </button>
         </div>
       </div>
     </div>
@@ -945,6 +1052,7 @@
   let products = [];
   let packages = [];
   let currentCategory = null;
+  let currentModalProduct = null;
   let selectedPackage = null;
   let selectedPackageId = null;
   let currentMaxKids = 15;
@@ -964,6 +1072,8 @@
       mobile_about: 'Despre',
       mobile_menu: 'Meniu',
       mobile_gallery: 'Galerie',
+      nav_decor: 'Decoruri',
+      mobile_decor: 'Decoruri',
       mobile_contact: 'Contact',
       mobile_book: 'Rezervă un loc',
       hero_badge: 'Soroca, Moldova',
@@ -1053,6 +1163,8 @@
       mobile_about: 'О нас',
       mobile_menu: 'Меню',
       mobile_gallery: 'Галерея',
+      nav_decor: 'Декор',
+      mobile_decor: 'Декор',
       mobile_contact: 'Контакты',
       mobile_book: 'Забронировать место',
       hero_badge: 'Сорока, Молдова',
@@ -1196,7 +1308,8 @@
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('date').min = today;
     
-    await Promise.all([loadMenu(), loadGallery(), loadContact(), loadPackages()]);
+    await Promise.all([loadMenu(), loadGallery(), loadContact(), loadPackages(), loadDecor()]);
+    addCartBadgeToNav();
     
     // Update open/closed status
     updateOpenStatus();
@@ -1508,7 +1621,7 @@
     }
     
     grid.innerHTML = filtered.map(p => `
-      <div class="menu-item card overflow-hidden" onclick="openProductModal('${p.image}', '${p.name.replace(/'/g, "\\'")}', '${(p.description||'').replace(/'/g, "\\'")}', '${p.price}', '${p.weight}', '${p.badge}')">
+      <div class="menu-item card overflow-hidden" onclick="openProductModal('${p.image}', '${p.name.replace(/'/g, "\\'")}', '${(p.description||'').replace(/'/g, "\\'")}', '${p.price}', '${p.weight}', '${p.badge}', '${p.id}')">
         ${p.image ? 
           `<img src="${p.image}" alt="${p.name}" class="w-full h-40 object-cover" width="400" height="160" loading="lazy" decoding="async">` : 
           `<div class="w-full h-40 bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center text-5xl opacity-30">${p.icon || '🍽️'}</div>`
@@ -1527,10 +1640,12 @@
   }
 
   // ===== Product Modal =====
-  function openProductModal(img, name, desc, price, weight, badge) {
+  function openProductModal(img, name, desc, price, weight, badge, productId) {
     const modal = document.getElementById('productModal');
     const imgEl = document.getElementById('modalImg');
     const placeholder = document.getElementById('modalImgPlaceholder');
+    
+    currentModalProduct = { id: productId, name, price: parseFloat(price) || 0 };
     
     if (img) {
       imgEl.src = img;
@@ -1553,6 +1668,12 @@
     modal.classList.remove('hidden');
     modal.style.display = 'flex';
     document.body.style.overflow = 'hidden';
+  }
+
+  function addProductToCartFromModal() {
+    if(!currentModalProduct) return;
+    addToCart('prod_' + currentModalProduct.id, currentModalProduct.name, currentModalProduct.price);
+    closeProductModal();
   }
 
   function closeProductModal() {
@@ -1668,6 +1789,195 @@
     }, { threshold: 0.1 });
     
     document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+  }
+
+  // ===== CART SYSTEM =====
+  let cart = JSON.parse(localStorage.getItem('skykids_cart') || '[]');
+
+  function updateCartBadge() {
+    const badge = document.getElementById('cartBadge');
+    if(badge) badge.textContent = cart.reduce((s, i) => s + i.quantity, 0);
+  }
+
+  function addToCart(id, name, price) {
+    const existing = cart.find(i => i.id === id);
+    if(existing) {
+      existing.quantity++;
+    } else {
+      cart.push({ id, name, price, quantity: 1 });
+    }
+    localStorage.setItem('skykids_cart', JSON.stringify(cart));
+    updateCartBadge();
+    openCart();
+  }
+
+  function changeCartQty(id, delta) {
+    const item = cart.find(i => i.id === id);
+    if(!item) return;
+    item.quantity += delta;
+    if(item.quantity <= 0) cart = cart.filter(i => i.id !== id);
+    localStorage.setItem('skykids_cart', JSON.stringify(cart));
+    renderCart();
+    updateCartBadge();
+  }
+
+  function getCartTotal() {
+    return cart.reduce((sum, i) => sum + i.price * i.quantity, 0);
+  }
+
+  function openCart() {
+    renderCart();
+    document.getElementById('cartModal').classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeCart() {
+    document.getElementById('cartModal').classList.add('hidden');
+    document.body.style.overflow = '';
+  }
+
+  function renderCart() {
+    const container = document.getElementById('cartItems');
+    const total = getCartTotal();
+    document.getElementById('cartTotal').textContent = total.toFixed(0) + ' MDL';
+    const checkoutBtn = document.getElementById('checkoutBtn');
+    if(cart.length === 0) {
+      container.innerHTML = '<p class="text-gray-400 text-center py-8">Coșul este gol</p>';
+      checkoutBtn.disabled = true;
+      return;
+    }
+    checkoutBtn.disabled = false;
+    container.innerHTML = cart.map(item => `
+      <div class="flex items-center justify-between bg-gray-50 rounded-xl p-4">
+        <div class="flex-1">
+          <div class="font-bold text-dark">${item.name}</div>
+          <div class="text-sm text-gray-500">${item.price} MDL × ${item.quantity}</div>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="changeCartQty(${item.id}, -1)" class="w-8 h-8 bg-white rounded-lg border border-gray-200 flex items-center justify-center hover:bg-gray-100">
+            <iconify-icon icon="lucide:minus" width="14"></iconify-icon>
+          </button>
+          <span class="font-bold text-dark w-8 text-center">${item.quantity}</span>
+          <button onclick="changeCartQty(${item.id}, 1)" class="w-8 h-8 bg-white rounded-lg border border-gray-200 flex items-center justify-center hover:bg-gray-100">
+            <iconify-icon icon="lucide:plus" width="14"></iconify-icon>
+          </button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function openCheckout() {
+    if(cart.length === 0) return;
+    closeCart();
+    document.getElementById('checkoutModal').classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+    document.getElementById('checkoutSuccess').classList.add('hidden');
+    document.querySelector('#checkoutModal .p-5.space-y-4').classList.remove('hidden');
+    const itemsEl = document.getElementById('checkoutItems');
+    itemsEl.innerHTML = cart.map(i => `<div class="flex justify-between"><span>${i.quantity}× ${i.name}</span><span>${(i.price * i.quantity).toFixed(0)} MDL</span></div>`).join('');
+    document.getElementById('checkoutTotal').textContent = getCartTotal().toFixed(0) + ' MDL';
+    document.getElementById('coFirstName').value = '';
+    document.getElementById('coLastName').value = '';
+    document.getElementById('coPhone').value = '';
+    document.getElementById('coAddress').value = '';
+    document.getElementById('coNotes').value = '';
+    document.getElementById('coError').classList.add('hidden');
+  }
+
+  function closeCheckout() {
+    document.getElementById('checkoutModal').classList.add('hidden');
+    document.body.style.overflow = '';
+  }
+
+  function closeCheckoutAll() {
+    closeCheckout();
+    cart = [];
+    localStorage.setItem('skykids_cart', '[]');
+    updateCartBadge();
+  }
+
+  async function submitOrder() {
+    const first_name = document.getElementById('coFirstName').value.trim();
+    const last_name = document.getElementById('coLastName').value.trim();
+    const phone = document.getElementById('coPhone').value.trim();
+    const address = document.getElementById('coAddress').value.trim();
+    const notes = document.getElementById('coNotes').value.trim();
+    const errorEl = document.getElementById('coError');
+
+    if(!first_name || !last_name || !phone || !address) {
+      errorEl.textContent = 'Completează toate câmpurile marcate cu *';
+      errorEl.classList.remove('hidden');
+      return;
+    }
+    if(!/^\d{8,15}$/.test(phone.replace(/\s/g, ''))) {
+      errorEl.textContent = 'Număr de telefon invalid';
+      errorEl.classList.remove('hidden');
+      return;
+    }
+
+    try {
+      const res = await fetch('/api/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ first_name, last_name, phone, address, items: cart, total: getCartTotal(), notes })
+      });
+      const data = await res.json();
+      if(!res.ok) throw new Error(data.error || 'Order failed');
+
+      document.querySelector('#checkoutModal .p-5.space-y-4').classList.add('hidden');
+      document.getElementById('checkoutSuccess').classList.remove('hidden');
+      document.getElementById('orderNumber').textContent = 'Nr. comandă: ' + data.order_number;
+    } catch(e) {
+      errorEl.textContent = e.message || 'Eroare la trimitere. Încearcă din nou.';
+      errorEl.classList.remove('hidden');
+    }
+  }
+
+  // ===== DECOR SECTION =====
+  async function loadDecor() {
+    try {
+      const res = await fetch('/api/decor?lang=' + currentLang + '&t=' + Date.now());
+      const decor = await res.json();
+      const grid = document.getElementById('decorGrid');
+      if(!decor || decor.length === 0) {
+        grid.innerHTML = '<p class="text-gray-400 text-center py-12 col-span-full">Momentan nu avem decoruri disponibile</p>';
+        return;
+      }
+      grid.innerHTML = decor.map(d => `
+        <div class="bg-white rounded-2xl shadow-card overflow-hidden">
+          <div class="h-48 bg-gradient-to-br from-candy-pink/20 to-candy-blue/20 flex items-center justify-center">
+            ${d.image ? `<img src="${d.image}" alt="${d.name}" class="w-full h-full object-cover">` : `<iconify-icon icon="lucide:sparkles" width="48" class="text-candy-pink/40"></iconify-icon>`}
+          </div>
+          <div class="p-5">
+            <h4 class="font-bold text-lg text-dark mb-1">${d.name}</h4>
+            <p class="text-sm text-gray-500 mb-3">${d.description || ''}</p>
+            <div class="flex items-center justify-between">
+              <span class="font-black text-candy-pink">${parseFloat(d.price).toFixed(0)} MDL</span>
+              <button onclick="addToCart('decor_' + ${d.id}, '${d.name.replace(/'/g, "\\'")}', ${d.price})" class="bg-gradient-to-r from-candy-pink to-candy-orange text-white px-4 py-2 rounded-xl text-sm font-bold hover:opacity-90 flex items-center gap-1">
+                <iconify-icon icon="lucide:plus" width="14"></iconify-icon> Adaugă
+              </button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    } catch(e) {
+      console.error('Decor load failed:', e);
+    }
+  }
+
+  // ===== CART BADGE IN NAV =====
+  function addCartBadgeToNav() {
+    const navBook = document.querySelector('a[href="#rezervari"]');
+    if(!navBook) return;
+    const existing = document.getElementById('cartBadge');
+    if(existing) return;
+    const btn = document.createElement('button');
+    btn.id = 'cartBadge';
+    btn.className = 'relative ml-2 w-10 h-10 bg-candy-pink/10 hover:bg-candy-pink/20 rounded-xl flex items-center justify-center transition-colors';
+    btn.onclick = openCart;
+    btn.innerHTML = '<iconify-icon icon="lucide:shopping-bag" width="18" class="text-candy-pink"></iconify-icon><span class="absolute -top-1 -right-1 w-5 h-5 bg-candy-pink text-white text-xs font-bold rounded-full flex items-center justify-center">0</span>';
+    navBook.parentElement.appendChild(btn);
+    updateCartBadge();
   }
 
   init();

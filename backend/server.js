@@ -176,6 +176,43 @@ db.exec(`
     active INTEGER DEFAULT 1,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
   );
+
+  -- NEW: Orders (cart checkout)
+  CREATE TABLE IF NOT EXISTS orders (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    order_number TEXT UNIQUE NOT NULL,
+    first_name TEXT NOT NULL,
+    last_name TEXT NOT NULL,
+    phone TEXT NOT NULL,
+    address TEXT NOT NULL,
+    total DECIMAL(10,2) DEFAULT 0,
+    status TEXT DEFAULT 'pending',
+    notes TEXT DEFAULT '',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  );
+
+  -- NEW: Order Items
+  CREATE TABLE IF NOT EXISTS order_items (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    order_id INTEGER NOT NULL,
+    product_name TEXT NOT NULL,
+    product_id INTEGER,
+    quantity INTEGER DEFAULT 1,
+    price DECIMAL(10,2) DEFAULT 0,
+    FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE
+  );
+
+  -- NEW: Decor Types
+  CREATE TABLE IF NOT EXISTS decor_types (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    description TEXT DEFAULT '',
+    price DECIMAL(10,2) DEFAULT 0,
+    image TEXT DEFAULT '',
+    active INTEGER DEFAULT 1,
+    sort_order INTEGER DEFAULT 0,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  );
 `);
 
 // Create uploads directory
@@ -668,6 +705,74 @@ app.delete('/api/admin/blocked-slots/:id', authMiddleware, (req, res) => {
 });
 app.get('/api/admin/blocked-slots', authMiddleware, (req, res) => {
   res.json(db.prepare('SELECT * FROM blocked_slots ORDER BY date ASC').all());
+});
+
+// ============== ORDERS API ==============
+app.post('/api/orders', (req, res) => {
+  const { first_name, last_name, phone, address, items, total, notes } = req.body;
+  if(!first_name || !last_name || !phone || !address) {
+    return res.status(400).json({ error: 'Completează toate câmpurile obligatorii' });
+  }
+  if(!items || items.length === 0) {
+    return res.status(400).json({ error: 'Coșul este gol' });
+  }
+  const orderNumber = 'SK' + Date.now();
+  try {
+    const result = db.prepare('INSERT INTO orders (order_number, first_name, last_name, phone, address, total, notes) VALUES (?, ?, ?, ?, ?, ?, ?)').run(orderNumber, first_name, last_name, phone, address, total || 0, notes || '');
+    const orderId = result.lastInsertRowid;
+    const insertItem = db.prepare('INSERT INTO order_items (order_id, product_name, product_id, quantity, price) VALUES (?, ?, ?, ?, ?)');
+    for(const item of items) {
+      insertItem.run(orderId, item.name, item.id || null, item.quantity || 1, item.price || 0);
+    }
+    res.json({ success: true, order_number: orderNumber, order_id: orderId });
+  } catch(e) {
+    console.error('Order error:', e);
+    res.status(500).json({ error: 'Eroare la salvarea comenzii' });
+  }
+});
+
+app.get('/api/orders', (req, res) => {
+  const orders = db.prepare('SELECT * FROM orders ORDER BY created_at DESC').all();
+  const ordersWithItems = orders.map(o => {
+    const items = db.prepare('SELECT * FROM order_items WHERE order_id = ?').all(o.id);
+    return { ...o, items };
+  });
+  res.json(ordersWithItems);
+});
+
+app.patch('/api/admin/orders/:id/status', (req, res) => {
+  const { status } = req.body;
+  db.prepare('UPDATE orders SET status = ? WHERE id = ?').run(status, req.params.id);
+  res.json({ success: true });
+});
+
+// ============== DECOR API ==============
+app.get('/api/decor', (req, res) => {
+  const decor = db.prepare('SELECT * FROM decor_types WHERE active = 1 ORDER BY sort_order ASC').all();
+  res.json(decor);
+});
+
+app.post('/api/admin/decor', authMiddleware, (req, res) => {
+  const { name, description, price, image } = req.body;
+  if(!name || !price) return res.status(400).json({ error: 'Nume și preț sunt obligatorii' });
+  const result = db.prepare('INSERT INTO decor_types (name, description, price, image) VALUES (?, ?, ?, ?)').run(name, description || '', price, image || '');
+  res.json({ success: true, id: result.lastInsertRowid });
+});
+
+app.put('/api/admin/decor/:id', authMiddleware, (req, res) => {
+  const { name, description, price, image, active } = req.body;
+  db.prepare('UPDATE decor_types SET name = ?, description = ?, price = ?, image = ?, active = ? WHERE id = ?').run(name, description || '', price, image || '', active !== undefined ? active : 1, req.params.id);
+  res.json({ success: true });
+});
+
+app.delete('/api/admin/decor/:id', authMiddleware, (req, res) => {
+  db.prepare('DELETE FROM decor_types WHERE id = ?').run(req.params.id);
+  res.json({ success: true });
+});
+
+app.get('/api/admin/decor', authMiddleware, (req, res) => {
+  const decor = db.prepare('SELECT * FROM decor_types ORDER BY sort_order ASC').all();
+  res.json(decor);
 });
 
 // ============== SERVE PAGES ==============
