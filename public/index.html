@@ -1988,8 +1988,14 @@
   let cart = JSON.parse(localStorage.getItem('skykids_cart') || '[]');
 
   function updateCartBadge() {
-    const badge = document.getElementById('cartBadge');
-    if(badge) badge.textContent = cart.reduce((s, i) => s + i.quantity, 0);
+    const countEl = document.getElementById('cartBadgeCount');
+    const count = cart.reduce((s, i) => s + i.quantity, 0);
+    if(countEl) {
+      countEl.textContent = count;
+      countEl.style.display = count > 0 ? 'flex' : 'none';
+    }
+    // Also update drawer badge
+    const drawerBadge = document.getElementById('cartBadge');
   }
 
   function addToCart(id, name, price) {
@@ -2205,12 +2211,9 @@
     if(existing) return;
     const btn = document.createElement('button');
     btn.id = 'cartBadge';
-    btn.className = 'relative ml-2 w-10 h-10 bg-candy-pink/10 hover:bg-candy-pink/20 rounded-xl flex items-center justify-center transition-colors';
+    btn.className = 'relative ml-2 w-11 h-11 bg-white/80 hover:bg-white rounded-xl flex items-center justify-center transition-all shadow-sm hover:shadow-md border-2 border-transparent hover:border-candy-pink/30';
     btn.onclick = openCart;
-    btn.innerHTML = '<div class="relative w-10 h-10 rounded-xl bg-gradient-to-br from-candy-pink/15 to-candy-orange/15 hover:from-candy-pink/25 hover:to-candy-orange/25 flex items-center justify-center transition-all shadow-sm hover:shadow-md">' +
-      '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ff6b9d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m2.5 19.5 4-15a1 1 0 0 1 1.47 0l2.88 7.5a1 1 0 0 0 1 1h9.3a1 1 0 0 1 1 1l-.6 3a1 1 0 0 0 1 1.1l4.3 1.8a1 1 0 0 1 1 1.2v.7a1 1 0 0 1-.8 1l-14.5 2.2a1 1 0 0 1-1-.2l-.1-.1a1 1 0 0 1-.2-1.2v-.4a1 1 0 0 0-.4-1.1z"/><circle cx="9" cy="21" r="1"/><circle cx="17" cy="21" r="1"/></svg>' +
-      '<span class="absolute -top-1.5 -right-1.5 w-5 h-5 bg-gradient-to-r from-candy-pink to-candy-orange text-white text-xs font-black rounded-full flex items-center justify-center shadow-md">0</span>' +
-      '</div>';
+    btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ff6b9d" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="relative"><path d="m2.5 19.5 4-15a1 1 0 0 1 1.47 0l2.88 7.5a1 1 0 0 0 1 1h9.3a1 1 0 0 1 1 1l-.6 3a1 1 0 0 0 1 1.1l4.3 1.8a1 1 0 0 1 1 1.2v.7a1 1 0 0 1-.8 1l-14.5 2.2a1 1 0 0 1-1-.2l-.1-.1a1 1 0 0 1-.2-1.2v-.4a1 1 0 0 0-.4-1.1z"/><circle cx="9" cy="21" r="1"/><circle cx="17" cy="21" r="1"/></svg><span id="cartBadgeCount" class="absolute -top-2 -right-2 w-5 h-5 bg-gradient-to-r from-candy-pink to-candy-orange text-white text-xs font-black rounded-full flex items-center justify-center shadow-md border-2 border-white">0</span>';
     navBook.parentElement.appendChild(btn);
     updateCartBadge();
   }
