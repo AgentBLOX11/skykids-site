@@ -123,7 +123,10 @@ db.exec(`
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
   );
 
-
+  // Add description column if missing (migration)
+  try {
+    db.prepare('ALTER TABLE categories ADD COLUMN description TEXT DEFAULT \'\' ').run();
+  } catch (e) { /* already exists */ }
 
   -- NEW: Products
   CREATE TABLE IF NOT EXISTS products (
@@ -205,7 +208,7 @@ const adminExists = db.prepare('SELECT id FROM admin_users WHERE username = ?').
 if (!adminExists) {
   const hash = bcrypt.hashSync('skykids2026', 10);
   db.prepare('INSERT INTO admin_users (username, password_hash) VALUES (?, ?)').run('admin', hash);
-  console.log('✅ Admin creat: admin / skykids2026');
+  console.log('[OK] Admin creat: admin / skykids2026');
 }
 
 // Insert default settings if not exist
@@ -216,7 +219,7 @@ const defaultSettings = {
   'slot_duration': '60',
   'restaurant_name': 'Sky Kids Soroca',
   'phone': '',
-  'address': 'str. Ștefan cel Mare 46, Etajul 2, Soroca',
+  'address': 'str. ?tefan cel Mare 46, Etajul 2, Soroca',
   'facebook': '',
   'instagram': '',
   'map_embed': '',
@@ -230,11 +233,11 @@ for (const [key, value] of Object.entries(defaultSettings)) {
 // Insert default contact_info
 const defaultContact = [
   { key: 'phone', value: '+373 600 00 000', label: 'Telefon' },
-  { key: 'address', value: 'str. Ștefan cel Mare 46, Etajul 2, Soroca', label: 'Adresă' },
+  { key: 'address', value: 'str. ?tefan cel Mare 46, Etajul 2, Soroca', label: 'Adres?' },
   { key: 'facebook', value: 'https://facebook.com/skykids', label: 'Facebook' },
   { key: 'instagram', value: '@_.sky.kids._', label: 'Instagram' },
   { key: 'email', value: 'contact@skykids.md', label: 'Email' },
-  { key: 'map_embed', value: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2695.5!2d28.3037!3d48.1639!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x40ccc1004d1a8f7f:0xbc7ec66eda9faadd!8m2!3d48.1639364!4d28.3036929!16s%2Fg%2F11xzld8d2j!5m2!1sen!2sro!3e0', label: 'Hartă' },
+  { key: 'map_embed', value: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2695.5!2d28.3037!3d48.1639!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x40ccc1004d1a8f7f:0xbc7ec66eda9faadd!8m2!3d48.1639364!4d28.3036929!16s%2Fg%2F11xzld8d2j!5m2!1sen!2sro!3e0', label: 'Hart?' },
 ];
 const insertContact = db.prepare('INSERT OR IGNORE INTO contact_info (key, value, label) VALUES (?, ?, ?)');
 for (const c of defaultContact) {
@@ -245,22 +248,22 @@ for (const c of defaultContact) {
 const packageCount = db.prepare('SELECT COUNT(*) as c FROM packages').get().c;
 if (packageCount === 0) {
   const defaultPackages = [
-    { name: 'Standard', icon: '[balloon]', description: 'Acces la zona de joacă + o băutură', price_per_child: '100', price_per_adult: '', price_group: '', max_children: 15, max_adults: 10, includes: 'Zona de joacă, O băutură', sort_order: 0 },
-    { name: 'Premium', icon: '⭐', description: 'Acces + farfurie + băutură + dulciuri', price_per_child: '180', price_per_adult: '', price_group: '', max_children: 15, max_adults: 10, includes: 'Zona de joacă, Fel principal, Băutură, Desert', sort_order: 1 },
-    { name: 'Zi de Naștere', icon: '🎂', description: 'Pachet complet petrecere copii (max 15 copii)', price_per_child: '', price_per_adult: '', price_group: '1500', max_children: 15, max_adults: 10, includes: 'Zonă privată, Catering complet, Decorare, animator', sort_order: 2 },
+    { name: 'Standard', icon: '[balloon]', description: 'Acces la zona de joac? + o b?utur?', price_per_child: '100', price_per_adult: '', price_group: '', max_children: 15, max_adults: 10, includes: 'Zona de joac?, O b?utur?', sort_order: 0 },
+    { name: 'Premium', icon: '?', description: 'Acces + farfurie + b?utur? + dulciuri', price_per_child: '180', price_per_adult: '', price_group: '', max_children: 15, max_adults: 10, includes: 'Zona de joac?, Fel principal, B?utur?, Desert', sort_order: 1 },
+    { name: 'Zi de Na?tere', icon: '🎂', description: 'Pachet complet petrecere copii (max 15 copii)', price_per_child: '', price_per_adult: '', price_group: '1500', max_children: 15, max_adults: 10, includes: 'Zon? privat?, Catering complet, Decorare, animator', sort_order: 2 },
   ];
   const insertPackage = db.prepare('INSERT INTO packages (name, icon, description, price_per_child, price_per_adult, price_group, max_children, max_adults, includes, sort_order) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
   for (const p of defaultPackages) {
     insertPackage.run(p.name, p.icon, p.description, p.price_per_child, p.price_per_adult, p.price_group, p.max_children, p.max_adults, p.includes, p.sort_order);
   }
-  console.log('✅ Packages inițializate');
+  console.log('[OK] Packages ini?ializate');
 }
 
 // ============== AUTH MIDDLEWARE ==============
 function authMiddleware(req, res, next) {
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return res.status(401).json({ error: 'Token lipsă' });
+    return res.status(401).json({ error: 'Token lips?' });
   }
   try {
     const decoded = jwt.verify(authHeader.split(' ')[1], JWT_SECRET);
@@ -275,11 +278,11 @@ function authMiddleware(req, res, next) {
 app.post('/api/admin/login', (req, res) => {
   const { username, password } = req.body;
   if (!username || !password) {
-    return res.status(400).json({ error: 'Username și parolă necesare' });
+    return res.status(400).json({ error: 'Username ?i parol? necesare' });
   }
   const user = db.prepare('SELECT * FROM admin_users WHERE username = ?').get(username);
   if (!user || !bcrypt.compareSync(password, user.password_hash)) {
-    return res.status(401).json({ error: 'Credențiale invalide' });
+    return res.status(401).json({ error: 'Creden?iale invalide' });
   }
   const token = jwt.sign({ id: user.id, username: user.username }, JWT_SECRET, { expiresIn: '24h' });
   res.json({ token, username: user.username });
@@ -289,17 +292,17 @@ app.post('/api/admin/login', (req, res) => {
 app.post('/api/admin/change-password', authMiddleware, (req, res) => {
   const { currentPassword, newPassword, confirmPassword } = req.body;
   if (!currentPassword || !newPassword || !confirmPassword) {
-    return res.status(400).json({ error: 'Toate câmpurile sunt necesare' });
+    return res.status(400).json({ error: 'Toate c?mpurile sunt necesare' });
   }
   if (newPassword !== confirmPassword) {
     return res.status(400).json({ error: 'Parolele noi nu coincid' });
   }
   if (newPassword.length < 6) {
-    return res.status(400).json({ error: 'Parola nouă trebuie să aibă minim 6 caractere' });
+    return res.status(400).json({ error: 'Parola nou? trebuie s? aib? minim 6 caractere' });
   }
   const user = db.prepare('SELECT * FROM admin_users WHERE id = ?').get(req.admin.id);
   if (!user || !bcrypt.compareSync(currentPassword, user.password_hash)) {
-    return res.status(401).json({ error: 'Parola actuală este incorectă' });
+    return res.status(401).json({ error: 'Parola actual? este incorect?' });
   }
   const hash = bcrypt.hashSync(newPassword, 10);
   db.prepare('UPDATE admin_users SET password_hash = ? WHERE id = ?').run(hash, req.admin.id);
@@ -468,7 +471,7 @@ app.post('/api/admin/gallery', authMiddleware, (req, res) => {
 
 // Upload image file
 app.post('/api/admin/upload', authMiddleware, upload.single('image'), (req, res) => {
-  if (!req.file) return res.status(400).json({ error: 'Nicio imagine primită' });
+  if (!req.file) return res.status(400).json({ error: 'Nicio imagine primit?' });
   const url = '/uploads/' + req.file.filename;
   res.json({ url });
 });
@@ -528,19 +531,19 @@ app.put('/api/admin/settings', authMiddleware, (req, res) => {
 app.post('/api/bookings', (req, res) => {
   const { package: pkg, date, time, kids_count, adults_count, client_name, client_phone, notes } = req.body;
   if (!pkg || !date || !time || !client_name || !client_phone) {
-    return res.status(400).json({ error: 'Toate câmpurile obligatorii trebuie completate' });
+    return res.status(400).json({ error: 'Toate c?mpurile obligatorii trebuie completate' });
   }
   if (kids_count < 1 || kids_count > 30) {
-    return res.status(400).json({ error: 'Număr invalid de copii (1-30)' });
+    return res.status(400).json({ error: 'Num?r invalid de copii (1-30)' });
   }
   // Check package-specific limits
   const packageInfo = db.prepare('SELECT max_children, max_adults FROM packages WHERE name = ? OR name LIKE ? LIMIT 1').get(pkg, `%${pkg}%`);
   if (packageInfo) {
     if (kids_count > packageInfo.max_children) {
-      return res.status(400).json({ error: `Numărul maxim de copii pentru acest pachet este ${packageInfo.max_children}` });
+      return res.status(400).json({ error: `Num?rul maxim de copii pentru acest pachet este ${packageInfo.max_children}` });
     }
     if ((adults_count || 0) > packageInfo.max_adults) {
-      return res.status(400).json({ error: `Numărul maxim de adulți pentru acest pachet este ${packageInfo.max_adults}` });
+      return res.status(400).json({ error: `Num?rul maxim de adul?i pentru acest pachet este ${packageInfo.max_adults}` });
     }
   }
   const blocked = db.prepare('SELECT id FROM blocked_slots WHERE date = ? AND time = ?').get(date, time);
@@ -596,7 +599,7 @@ app.put('/api/admin/bookings/:id', authMiddleware, (req, res) => {
   
   // Get existing booking
   const existing = db.prepare('SELECT * FROM bookings WHERE id = ?').get(id);
-  if (!existing) return res.status(404).json({ error: 'Rezervare negăsită' });
+  if (!existing) return res.status(404).json({ error: 'Rezervare neg?sit?' });
   
   // Validate status if provided
   if (status && !['pending', 'confirmed', 'cancelled', 'completed'].includes(status)) {
@@ -658,7 +661,7 @@ app.get('/api/admin/stats', authMiddleware, (req, res) => {
 // Blocked slots
 app.post('/api/admin/blocked-slots', authMiddleware, (req, res) => {
   const { date, time, reason } = req.body;
-  if (!date || !time) return res.status(400).json({ error: 'Date și time necesare' });
+  if (!date || !time) return res.status(400).json({ error: 'Date ?i time necesare' });
   db.prepare('INSERT INTO blocked_slots (date, time, reason) VALUES (?, ?, ?)').run(date, time, reason || '');
   res.json({ success: true });
 });
@@ -681,10 +684,10 @@ app.get('*', (req, res) => {
 // Start server
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`
-  🎈 Sky Kids Server running!
-  📍 Frontend: http://localhost:${PORT}
-  🔧 Admin:    http://localhost:${PORT}/admin
-  🔑 Login:    admin / skykids2026
-  ✅ New API: categories, products, gallery, contact
+  [balloon] Sky Kids Server running!
+  [loc] Frontend: http://localhost:${PORT}
+  [tool] Admin:    http://localhost:${PORT}/admin
+  [key] Login:    admin / skykids2026
+  [OK] New API: categories, products, gallery, contact
   `);
 });
