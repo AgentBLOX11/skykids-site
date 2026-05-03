@@ -54,6 +54,20 @@ app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
 // Database setup
 const db = new Database(path.join(__dirname, 'skykids.db'));
 
+// ============== CLEANUP DUPLICATES ON STARTUP ==============
+(function cleanupDuplicates() {
+  try {
+    const allPackages = db.prepare('SELECT id FROM packages ORDER BY id ASC').all();
+    if (allPackages.length > 3) {
+      const toDelete = allPackages.slice(3).map(p => p.id);
+      if (toDelete.length > 0) {
+        db.prepare(`DELETE FROM packages WHERE id IN (${toDelete.join(',')})`).run();
+        console.log(`🧹 Cleaned up ${toDelete.length} duplicate packages`);
+      }
+    }
+  } catch (e) { console.log('Cleanup skipped:', e.message); }
+})();
+
 // ============== INIT TABLES ==============
 db.exec(`
   -- Existing tables
