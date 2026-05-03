@@ -2207,7 +2207,7 @@
     btn.id = 'cartBadge';
     btn.className = 'relative ml-2 w-10 h-10 bg-candy-pink/10 hover:bg-candy-pink/20 rounded-xl flex items-center justify-center transition-colors';
     btn.onclick = openCart;
-    btn.innerHTML = '<iconify-icon icon="lucide:shopping-bag" width="18" class="text-candy-pink"></iconify-icon><span class="absolute -top-1 -right-1 w-5 h-5 bg-candy-pink text-white text-xs font-bold rounded-full flex items-center justify-center">0</span>';
+    btn.innerHTML = '<iconify-icon icon="lucide:shopping-cart" width="20" class="text-candy-pink"></iconify-icon><span class="absolute -top-1.5 -right-1.5 w-5 h-5 bg-gradient-to-r from-candy-pink to-candy-orange text-white text-xs font-black rounded-full flex items-center justify-center shadow-md">0</span>';
     navBook.parentElement.appendChild(btn);
     updateCartBadge();
   }
