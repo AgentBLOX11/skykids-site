@@ -1773,36 +1773,77 @@
 
   // ===== BOOKINGS =====
   async function loadBookings() {
-    const data = await (await fetch('/api/admin/bookings', { headers: authHeaders() })).json();
+    const status = document.getElementById('bookingsStatusFilter')?.value || '';
+    let url = '/api/admin/bookings';
+    if (status) url += '?status=' + status;
+    const data = await (await fetch(url, { headers: authHeaders() })).json();
+    allBookings = data.bookings;
     const list = document.getElementById('bookingsList');
-    if (!data.bookings.length) {
+    if (!allBookings.length) {
       list.innerHTML = '<div class="card p-12 text-center text-gray-400">Nicio rezervare momentan.</div>';
       return;
     }
     const statusBadge = { pending: 'badge-pending', confirmed: 'badge-confirmed', cancelled: 'badge-cancelled', completed: 'badge-completed' };
-    list.innerHTML = data.bookings.map(b => `
-      <div class="card p-5 flex flex-wrap items-center justify-between gap-4">
+    list.innerHTML = allBookings.map(b => {
+      const grandTotal = ((parseFloat(b.package_price) || 0) + (parseFloat(b.food_total) || 0)).toFixed(0);
+      return `
+      <div class="card p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 cursor-pointer hover:shadow-lg transition-all" onclick="openBookingEditModal('${b.id}')">
         <div>
           <h4 class="font-bold text-lg">${b.client_name}</h4>
           <p class="text-gray-500">${b.client_phone}</p>
           <p class="text-sm text-gray-400">${b.date} la ${b.time}</p>
+          ${b.notes ? `<p class="text-sm text-gray-400 mt-1">📝 ${b.notes}</p>` : ''}
+          ${b.admin_notes ? `<p class="text-sm text-candy-blue mt-1 font-medium">🔒 ${b.admin_notes}</p>` : ''}
+          ${b.food_items && b.food_items.length > 0 ? `
+            <div class="mt-3 pt-3 border-t border-gray-100">
+              <p class="text-xs font-bold text-gray-500 uppercase mb-2">Produse comandate:</p>
+              <div class="space-y-1 mb-2">
+                ${b.food_items.map(fi => `
+                  <div class="flex justify-between text-sm">
+                    <span class="text-gray-600">${fi.quantity}× ${fi.product_name}</span>
+                    <span class="font-medium">${(fi.price * fi.quantity).toFixed(0)} MDL</span>
+                  </div>
+                `).join('')}
+              </div>
+              ${b.food_total > 0 ? '<div class="flex justify-between text-sm border-t border-gray-100 pt-2"><span class="text-gray-500">Mâncare:</span><span class="font-bold text-candy-blue">' + b.food_total.toFixed(0) + ' MDL</span></div>' : ''}
+            </div>
+          ` : ''}
         </div>
         <div class="text-center">
           <p class="font-bold text-candy-pink">${b.package}</p>
           <p class="text-sm">${b.kids_count} copii</p>
+          <p class="text-sm">${b.adults_count || 0} adulți</p>
+          ${b.package_price > 0 ? `<p class="text-sm font-bold text-candy-pink">${grandTotal} MDL</p>` : ''}
         </div>
         <div class="flex items-center gap-2">
           <span class="px-3 py-1 rounded-full text-xs font-bold ${statusBadge[b.status]}">${b.status}</span>
           ${b.status === 'pending' ? `
-            <button onclick="updateBooking('${b.id}', 'confirmed')" class="px-4 py-2 bg-candy-green text-white rounded-xl text-sm font-bold hover:opacity-90">Confirmă</button>
-            <button onclick="updateBooking('${b.id}', 'cancelled')" class="px-4 py-2 bg-red-500 text-white rounded-xl text-sm font-bold hover:opacity-90">Anulează</button>
+            <button onclick="event.stopPropagation(); updateBookingStatus('${b.id}', 'confirmed')" class="px-4 py-2 bg-candy-green text-white rounded-xl text-sm font-bold hover:opacity-90">Confirmă</button>
+            <button onclick="event.stopPropagation(); updateBookingStatus('${b.id}', 'cancelled')" class="px-4 py-2 bg-red-500 text-white rounded-xl text-sm font-bold hover:opacity-90">Anulează</button>
           ` : ''}
         </div>
       </div>
-    `).join('');
+    `;
+    }).join('');
   }
 
-  async function updateBooking(id, status) {
+  function openBookingEditModal(id) {
+    const b = allBookings.find(b => b.id === id);
+    if (!b) return;
+    document.getElementById('editBookingId').value = b.id;
+    document.getElementById('editClientName').value = b.client_name;
+    document.getElementById('editClientPhone').value = b.client_phone;
+    document.getElementById('editKidsCount').value = b.kids_count;
+    document.getElementById('editAdultsCount').value = b.adults_count || 0;
+    document.getElementById('editNotes').value = b.notes || '';
+    document.getElementById('editAdminNotes').value = b.admin_notes || '';
+    document.getElementById('editStatus').value = b.status;
+    showModal('bookingEditModal');
+  }
+
+  function closeBookingEditModal() { hideModal('bookingEditModal'); }
+
+  async function updateBookingStatus(id, status) {
     await fetch('/api/admin/bookings/' + id, { method: 'PATCH', headers: authHeaders(), body: JSON.stringify({ status }) });
     loadBookings();
   }

@@ -248,7 +248,17 @@ db.exec(`
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
   );
 
-  -- NEW: Customer users (for site login, not admin)
+  -- NEW: Booking food/products
+  CREATE TABLE IF NOT EXISTS booking_products (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    booking_id TEXT NOT NULL,
+    product_id INTEGER,
+    product_name TEXT NOT NULL,
+    quantity INTEGER DEFAULT 1,
+    price DECIMAL(10,2) DEFAULT 0,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (booking_id) REFERENCES bookings(id) ON DELETE CASCADE
+  );
   CREATE TABLE IF NOT EXISTS customer_users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     email TEXT UNIQUE NOT NULL,
@@ -370,6 +380,17 @@ if (packageCount === 0) {
   }
   console.log('✅ Packages inițializate');
 }
+
+// ============== MIGRATIONS ==============
+// Add booking_products table if missing (via raw SQL check since db.exec already ran)
+try {
+  db.exec('SELECT 1 FROM booking_products LIMIT 1');
+} catch(e) {
+  db.exec('CREATE TABLE IF NOT EXISTS booking_products (id INTEGER PRIMARY KEY AUTOINCREMENT, booking_id TEXT NOT NULL, product_id INTEGER, product_name TEXT NOT NULL, quantity INTEGER DEFAULT 1, price DECIMAL(10,2) DEFAULT 0, created_at DATETIME DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (booking_id) REFERENCES bookings(id) ON DELETE CASCADE)');
+}
+// Also add adults_count and package_price columns if missing
+try { db.exec('ALTER TABLE bookings ADD COLUMN adults_count INTEGER DEFAULT 0'); } catch(e) {}
+try { db.exec('ALTER TABLE bookings ADD COLUMN package_price DECIMAL(10,2) DEFAULT 0'); } catch(e) {}
 
 // ============== AUTH MIDDLEWARE ==============
 function authMiddleware(req, res, next) {
@@ -641,7 +662,7 @@ app.put('/api/admin/settings', authMiddleware, (req, res) => {
 
 // ============== BOOKINGS API (existing) ==============
 app.post('/api/bookings', (req, res) => {
-  const { package: pkg, date, time, kids_count, adults_count, client_name, client_phone, notes } = req.body;
+  const { package: pkg, date, time, kids_count, adults_count, client_name, client_phone, notes, food_items, package_price } = req.body;
   if (!pkg || !date || !time || !client_name || !client_phone) {
     return res.status(400).json({ error: 'Toate câmpurile obligatorii trebuie completate' });
   }
@@ -669,7 +690,16 @@ app.post('/api/bookings', (req, res) => {
     return res.status(400).json({ error: 'Nu mai sunt locuri disponibile pentru acest interval' });
   }
   const id = uuidv4();
-  db.prepare(`INSERT INTO bookings (id, package, date, time, kids_count, client_name, client_phone, notes) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`).run(id, pkg, date, time, kids_count, client_name, client_phone, notes || '');
+  db.prepare(`INSERT INTO bookings (id, package, date, time, kids_count, adults_count, client_name, client_phone, notes, package_price) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`).run(id, pkg, date, time, kids_count, adults_count || 0, client_name, client_phone, notes || '', package_price || 0);
+  // Save food items
+  if (food_items && Array.isArray(food_items)) {
+    const insertItem = db.prepare('INSERT INTO booking_products (booking_id, product_id, product_name, quantity, price) VALUES (?, ?, ?, ?, ?)');
+    for (const item of food_items) {
+      if (item.quantity > 0) {
+        insertItem.run(id, item.id || null, item.name, item.quantity, item.price || 0);
+      }
+    }
+  }
   const booking = db.prepare('SELECT * FROM bookings WHERE id = ?').get(id);
   res.status(201).json({ success: true, booking });
 });
@@ -701,8 +731,18 @@ app.get('/api/admin/bookings', authMiddleware, (req, res) => {
   if (date) { conditions.push('date = ?'); params.push(date); }
   if (conditions.length > 0) query += ' WHERE ' + conditions.join(' AND ');
   query += ` ORDER BY ${sort === 'oldest' ? 'created_at ASC' : 'date ASC, time ASC'}`;
-  const bookings = db.prepare(query).all(...params);
-  res.json({ bookings, total: bookings.length });
+  const bookings = status && status !== 'all'
+    ? db.prepare(query).all(...params)
+    : db.prepare(query).all(...params);
+
+  // Add food items to each booking
+  const bookingsWithFood = bookings.map(b => {
+    const foodItems = db.prepare('SELECT * FROM booking_products WHERE booking_id = ?').all(b.id);
+    const foodTotal = foodItems.reduce((sum, fi) => sum + (fi.price * fi.quantity), 0);
+    return { ...b, food_items: foodItems, food_total: foodTotal };
+  });
+
+  res.json({ bookings: bookingsWithFood, total: bookingsWithFood.length });
 });
 
 app.put('/api/admin/bookings/:id', authMiddleware, (req, res) => {
