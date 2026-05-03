@@ -669,6 +669,12 @@
           <button onclick="showSection('bookings')" class="sidebar-item w-full flex items-center gap-2 lg:gap-3 px-3 lg:px-4 py-2 lg:py-3 font-bold text-left text-sm lg:text-base" data-section="bookings">
             <iconify-icon icon="lucide:calendar" width="20"></iconify-icon> Rezervări
           </button>
+          <button onclick="showSection('comenzi')" class="sidebar-item w-full flex items-center gap-2 lg:gap-3 px-3 lg:px-4 py-2 lg:py-3 font-bold text-left text-sm lg:text-base" data-section="comenzi">
+            <iconify-icon icon="lucide:shopping-bag" width="20"></iconify-icon> Comenzi
+          </button>
+          <button onclick="showSection('decor')" class="sidebar-item w-full flex items-center gap-2 lg:gap-3 px-3 lg:px-4 py-2 lg:py-3 font-bold text-left text-sm lg:text-base" data-section="decor">
+            <iconify-icon icon="lucide:sparkles" width="20"></iconify-icon> Decoruri
+          </button>
           <button onclick="showSection('dashboard')" class="sidebar-item w-full flex items-center gap-2 lg:gap-3 px-3 lg:px-4 py-2 lg:py-3 font-bold text-left text-sm lg:text-base" data-section="dashboard">
             <iconify-icon icon="lucide:layout-dashboard" width="20"></iconify-icon> Dashboard
           </button>
@@ -713,6 +719,14 @@
             <button onclick="showSection('bookings'); hideModal('mobileMenuModal')" class="flex flex-col items-center gap-2 p-4 bg-gray-50 hover:bg-candy-pink/10 rounded-2xl transition-colors">
               <iconify-icon icon="lucide:calendar" width="28" class="text-candy-pink"></iconify-icon>
               <span class="text-xs font-bold text-center">Rezervări</span>
+            </button>
+            <button onclick="showSection('comenzi'); hideModal('mobileMenuModal')" class="flex flex-col items-center gap-2 p-4 bg-gray-50 hover:bg-candy-pink/10 rounded-2xl transition-colors">
+              <iconify-icon icon="lucide:shopping-bag" width="28" class="text-candy-pink"></iconify-icon>
+              <span class="text-xs font-bold text-center">Comenzi</span>
+            </button>
+            <button onclick="showSection('decor'); hideModal('mobileMenuModal')" class="flex flex-col items-center gap-2 p-4 bg-gray-50 hover:bg-candy-pink/10 rounded-2xl transition-colors">
+              <iconify-icon icon="lucide:sparkles" width="28" class="text-candy-pink"></iconify-icon>
+              <span class="text-xs font-bold text-center">Decoruri</span>
             </button>
             <button onclick="showSection('dashboard'); hideModal('mobileMenuModal')" class="flex flex-col items-center gap-2 p-4 bg-gray-50 hover:bg-candy-pink/10 rounded-2xl transition-colors">
               <iconify-icon icon="lucide:layout-dashboard" width="28" class="text-candy-blue"></iconify-icon>
@@ -913,6 +927,32 @@
             </select>
           </div>
           <div id="bookingsList" class="space-y-4"></div>
+        </section>
+
+        <!-- ===== COMENZI ===== -->
+        <section id="section-comenzi" class="section hidden">
+          <div class="flex items-center justify-between mb-6">
+            <h2 class="text-2xl font-bold text-dark">Comenzi</h2>
+            <span id="ordersCount" class="bg-candy-pink text-white px-3 py-1 rounded-full text-sm font-bold">0</span>
+          </div>
+          <div class="bg-white rounded-2xl shadow-card p-6">
+            <div id="ordersList" class="space-y-4">
+              <p class="text-gray-400 text-center py-8">Loading...</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===== DECOR ===== -->
+        <section id="section-decor" class="section hidden">
+          <div class="flex items-center justify-between mb-6">
+            <h2 class="text-2xl font-bold text-dark">Decoruri</h2>
+            <button onclick="openDecorModal()" class="bg-gradient-to-r from-candy-pink to-candy-orange text-white px-5 py-2 rounded-xl font-bold text-sm hover:opacity-90 flex items-center gap-2">
+              <iconify-icon icon="lucide:plus" width="18"></iconify-icon> Adaugă decor
+            </button>
+          </div>
+          <div id="decorList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <p class="text-gray-400 text-center py-8 col-span-3">Loading...</p>
+          </div>
         </section>
 
         <!-- ===== SETTINGS ===== -->
@@ -1224,7 +1264,7 @@
   function authHeaders() { return { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' }; }
 
   async function loadAll() {
-    await Promise.all([loadCategories(), loadGallery(), loadContact(), loadSettings(), loadBookings(), loadPackages()]);
+    await Promise.all([loadCategories(), loadGallery(), loadContact(), loadSettings(), loadBookings(), loadPackages(), loadOrders(), loadDecor()]);
     // Load stats for dashboard
     try { await loadStats(); } catch(e) {}
   }
@@ -1926,6 +1966,145 @@
     alert('Pentru a adăuga o rezervare, contactează clientul direct.');
   }
 
+  // ===== ORDERS =====
+  async function loadOrders() {
+    try {
+      const token = localStorage.getItem('skykids_token');
+      const res = await fetch('/api/orders', { headers: { 'Authorization': 'Bearer ' + token } });
+      if(!res.ok) throw new Error('Failed');
+      const orders = await res.json();
+      const container = document.getElementById('ordersList');
+      document.getElementById('ordersCount').textContent = orders.length;
+      if(orders.length === 0) {
+        container.innerHTML = '<p class="text-gray-400 text-center py-8">Nicio comandă încă</p>';
+        return;
+      }
+      container.innerHTML = orders.map(o => `
+        <div class="border border-gray-100 rounded-xl p-5 ${o.status === 'pending' ? 'border-l-4 border-l-yellow-400' : o.status === 'completed' ? 'border-l-4 border-l-candy-green' : ''}">
+          <div class="flex items-start justify-between mb-3">
+            <div>
+              <span class="font-bold text-dark">${o.first_name} ${o.last_name}</span>
+              <span class="ml-2 text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-lg">#${o.order_number}</span>
+              ${o.status === 'pending' ? '<span class="ml-2 text-xs bg-yellow-100 text-yellow-700 px-2 py-1 rounded-lg font-bold">În așteptare</span>' : ''}
+              ${o.status === 'completed' ? '<span class="ml-2 text-xs bg-candy-green/10 text-candy-green px-2 py-1 rounded-lg font-bold">Finalizată</span>' : ''}
+            </div>
+            <span class="text-sm text-gray-400">${new Date(o.created_at).toLocaleDateString('ro-RO')}</span>
+          </div>
+          <div class="text-sm text-gray-600 mb-2">
+            <div>📞 ${o.phone}</div>
+            <div>📍 ${o.address}</div>
+          </div>
+          <div class="text-sm mb-3">
+            ${o.items.map(item => `<span class="inline-block bg-gray-50 text-gray-700 px-2 py-1 rounded-lg mr-1 mb-1">${item.quantity}× ${item.product_name}</span>`).join('')}
+          </div>
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-candy-pink">${parseFloat(o.total).toFixed(2)} MDL</span>
+            <div class="flex gap-2">
+              ${o.status === 'pending' ? `<button onclick="updateOrderStatus(${o.id}, 'completed')" class="bg-candy-green text-white px-4 py-2 rounded-lg text-sm font-bold hover:opacity-90">Finalizează</button>` : ''}
+              <button onclick="updateOrderStatus(${o.id}, 'cancelled')" class="bg-red-100 text-red-600 px-4 py-2 rounded-lg text-sm font-bold hover:opacity-90">Anulează</button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    } catch(e) {
+      document.getElementById('ordersList').innerHTML = '<p class="text-red-400 text-center py-8">Eroare la încărcare</p>';
+    }
+  }
+
+  async function updateOrderStatus(id, status) {
+    try {
+      const token = localStorage.getItem('skykids_token');
+      await fetch('/api/admin/orders/' + id + '/status', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+        body: JSON.stringify({ status })
+      });
+      loadOrders();
+    } catch(e) { console.error(e); }
+  }
+
+  // ===== DECOR MGMT =====
+  async function loadDecor() {
+    try {
+      const token = localStorage.getItem('skykids_token');
+      const res = await fetch('/api/admin/decor', { headers: { 'Authorization': 'Bearer ' + token } });
+      if(!res.ok) throw new Error('Failed');
+      const decor = await res.json();
+      const container = document.getElementById('decorList');
+      if(decor.length === 0) {
+        container.innerHTML = '<p class="text-gray-400 text-center py-8 col-span-3">Niciun decor adăugat</p>';
+        return;
+      }
+      container.innerHTML = decor.map(d => `
+        <div class="bg-white rounded-2xl shadow-card overflow-hidden">
+          <div class="h-40 bg-gray-100 flex items-center justify-center">
+            ${d.image ? `<img src="${d.image}" class="w-full h-full object-cover">` : '<iconify-icon icon="lucide:image" width="48" class="text-gray-300"></iconify-icon>'}
+          </div>
+          <div class="p-4">
+            <h4 class="font-bold text-dark mb-1">${d.name}</h4>
+            <p class="text-sm text-gray-500 mb-2">${d.description || ''}</p>
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-candy-pink">${parseFloat(d.price).toFixed(0)} MDL</span>
+              <div class="flex gap-2">
+                <button onclick='editDecor(${JSON.stringify(d)})' class="p-2 bg-candy-blue/10 text-candy-blue rounded-lg hover:bg-candy-blue/20">
+                  <iconify-icon icon="lucide:pencil" width="16"></iconify-icon>
+                </button>
+                <button onclick="deleteDecor(${d.id})" class="p-2 bg-red-50 text-red-500 rounded-lg hover:bg-red-100">
+                  <iconify-icon icon="lucide:trash" width="16"></iconify-icon>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    } catch(e) {
+      document.getElementById('decorList').innerHTML = '<p class="text-red-400 text-center py-8 col-span-3">Eroare</p>';
+    }
+  }
+
+  function openDecorModal(d) {
+    document.getElementById('decorModal').classList.remove('hidden');
+    document.getElementById('decorModal').style.display = 'flex';
+    document.getElementById('decorId').value = d ? d.id : '';
+    document.getElementById('decorName').value = d ? d.name : '';
+    document.getElementById('decorDesc').value = d ? d.description || '' : '';
+    document.getElementById('decorPrice').value = d ? d.price : '';
+    document.getElementById('decorImage').value = d ? d.image || '' : '';
+    document.getElementById('decorModalTitle').textContent = d ? 'Editează decor' : 'Adaugă decor';
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeDecorModal() {
+    document.getElementById('decorModal').classList.add('hidden');
+    document.getElementById('decorModal').style.display = 'none';
+    document.body.style.overflow = '';
+  }
+
+  function editDecor(d) { openDecorModal(d); }
+
+  async function saveDecor() {
+    const id = document.getElementById('decorId').value;
+    const data = {
+      name: document.getElementById('decorName').value,
+      description: document.getElementById('decorDesc').value,
+      price: parseFloat(document.getElementById('decorPrice').value) || 0,
+      image: document.getElementById('decorImage').value
+    };
+    const token = localStorage.getItem('skykids_token');
+    const url = id ? '/api/admin/decor/' + id : '/api/admin/decor';
+    const method = id ? 'PUT' : 'POST';
+    await fetch(url, { method, headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token }, body: JSON.stringify(data) });
+    closeDecorModal();
+    loadDecor();
+  }
+
+  async function deleteDecor(id) {
+    if(!confirm('Ștergi acest decor?')) return;
+    const token = localStorage.getItem('skykids_token');
+    await fetch('/api/admin/decor/' + id, { method: 'DELETE', headers: { 'Authorization': 'Bearer ' + token } });
+    loadDecor();
+  }
+
 </script>
 
   <!-- Booking Edit Modal -->
@@ -1980,6 +2159,40 @@
           <button type="button" onclick="saveBookingEdit()" class="flex-1 btn-primary text-base sm:text-sm">Salvează</button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <!-- Decor Modal -->
+  <div id="decorModal" class="fixed inset-0 z-[100] hidden items-center justify-center p-4" style="display:none;">
+    <div class="modal-backdrop absolute inset-0" onclick="closeDecorModal()"></div>
+    <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg p-8">
+      <button onclick="closeDecorModal()" class="absolute top-4 right-4 w-10 h-10 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center transition-colors">
+        <iconify-icon icon="lucide:x" width="18"></iconify-icon>
+      </button>
+      <h3 id="decorModalTitle" class="font-bold text-xl text-dark mb-5">Adaugă decor</h3>
+      <input type="hidden" id="decorId">
+      <div class="space-y-4">
+        <div>
+          <label class="text-sm font-semibold text-gray-700 mb-1 block">Nume</label>
+          <input type="text" id="decorName" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-candy-pink" placeholder="Ex: Decor Prințesă">
+        </div>
+        <div>
+          <label class="text-sm font-semibold text-gray-700 mb-1 block">Descriere</label>
+          <textarea id="decorDesc" rows="3" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-candy-pink" placeholder="Descriere decor..."></textarea>
+        </div>
+        <div>
+          <label class="text-sm font-semibold text-gray-700 mb-1 block">Preț (MDL)</label>
+          <input type="number" id="decorPrice" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-candy-pink" placeholder="500">
+        </div>
+        <div>
+          <label class="text-sm font-semibold text-gray-700 mb-1 block">Imagine (URL)</label>
+          <input type="text" id="decorImage" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-candy-pink" placeholder="https://...">
+        </div>
+      </div>
+      <div class="flex gap-3 mt-6">
+        <button onclick="saveDecor()" class="flex-1 bg-gradient-to-r from-candy-pink to-candy-orange text-white py-3 rounded-xl font-bold">Salvează</button>
+        <button onclick="closeDecorModal()" class="px-6 py-3 bg-gray-100 text-gray-700 rounded-xl font-bold hover:bg-gray-200">Anulează</button>
+      </div>
     </div>
   </div>
 </body>

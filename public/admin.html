@@ -1966,6 +1966,149 @@
     alert('Pentru a adăuga o rezervare, contactează clientul direct.');
   }
 
+  // ===== ORDERS =====
+  async function loadOrders() {
+    try {
+      const token = localStorage.getItem('skykids_token');
+      const res = await fetch('/api/orders', { headers: { 'Authorization': 'Bearer ' + token } });
+      if(!res.ok) throw new Error('Failed');
+      const orders = await res.json();
+      const container = document.getElementById('ordersList');
+      document.getElementById('ordersCount').textContent = orders.length;
+      if(orders.length === 0) {
+        container.innerHTML = '<p class="text-gray-400 text-center py-8">Nicio comandă încă</p>';
+        return;
+      }
+      container.innerHTML = orders.map(o => `
+        <div class="border border-gray-100 rounded-xl p-5 ${o.status === 'pending' ? 'border-l-4 border-l-yellow-400' : o.status === 'completed' ? 'border-l-4 border-l-candy-green' : ''}">
+          <div class="flex items-start justify-between mb-3">
+            <div>
+              <span class="font-bold text-dark">${o.first_name} ${o.last_name}</span>
+              <span class="ml-2 text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-lg">#${o.order_number}</span>
+              ${o.order_type === 'delivery' ? '<span class="ml-2 text-xs bg-candy-blue/10 text-candy-blue px-2 py-1 rounded-lg font-bold">🏍️ Livrare</span>' : ''}
+              ${o.order_type === 'advance' ? '<span class="ml-2 text-xs bg-candy-purple/10 text-candy-purple px-2 py-1 rounded-lg font-bold">📅 În avans</span>' : ''}
+              ${o.order_type === 'onsite' ? '<span class="ml-2 text-xs bg-candy-green/10 text-candy-green px-2 py-1 rounded-lg font-bold">🏠 În sală</span>' : ''}
+              ${o.status === 'pending' ? '<span class="ml-2 text-xs bg-yellow-100 text-yellow-700 px-2 py-1 rounded-lg font-bold">În așteptare</span>' : ''}
+              ${o.status === 'completed' ? '<span class="ml-2 text-xs bg-candy-green/10 text-candy-green px-2 py-1 rounded-lg font-bold">Finalizată</span>' : ''}
+            </div>
+            <span class="text-sm text-gray-400">${new Date(o.created_at).toLocaleDateString('ro-RO')}</span>
+          </div>
+          <div class="text-sm text-gray-600 mb-2">
+            <div>📞 ${o.phone}</div>
+            ${o.address ? '<div>📍 ' + o.address + '</div>' : ''}
+            ${o.datetime ? '<div>📅 ' + o.datetime + '</div>' : ''}
+          </div>
+          <div class="text-sm mb-3">
+            ${(o.items || []).map(item => `<span class="inline-block bg-gray-50 text-gray-700 px-2 py-1 rounded-lg mr-1 mb-1">${item.quantity}× ${item.product_name}</span>`).join('')}
+          </div>
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-candy-pink">${parseFloat(o.total).toFixed(2)} MDL</span>
+            <div class="flex gap-2">
+              ${o.status === 'pending' ? `<button onclick="updateOrderStatus(${o.id}, 'completed')" class="bg-candy-green text-white px-4 py-2 rounded-lg text-sm font-bold hover:opacity-90">Finalizează</button>` : ''}
+              <button onclick="updateOrderStatus(${o.id}, 'cancelled')" class="bg-red-100 text-red-600 px-4 py-2 rounded-lg text-sm font-bold hover:opacity-90">Anulează</button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    } catch(e) {
+      document.getElementById('ordersList').innerHTML = '<p class="text-red-400 text-center py-8">Eroare la încărcare</p>';
+    }
+  }
+
+  async function updateOrderStatus(id, status) {
+    try {
+      const token = localStorage.getItem('skykids_token');
+      await fetch('/api/admin/orders/' + id + '/status', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+        body: JSON.stringify({ status })
+      });
+      loadOrders();
+    } catch(e) { console.error(e); }
+  }
+
+  // ===== DECOR MGMT =====
+  async function loadDecor() {
+    try {
+      const token = localStorage.getItem('skykids_token');
+      const res = await fetch('/api/admin/decor', { headers: { 'Authorization': 'Bearer ' + token } });
+      if(!res.ok) throw new Error('Failed');
+      const decor = await res.json();
+      const container = document.getElementById('decorList');
+      if(decor.length === 0) {
+        container.innerHTML = '<p class="text-gray-400 text-center py-8 col-span-3">Niciun decor adăugat</p>';
+        return;
+      }
+      container.innerHTML = decor.map(d => `
+        <div class="bg-white rounded-2xl shadow-card overflow-hidden">
+          <div class="h-40 bg-gray-100 flex items-center justify-center">
+            ${d.image ? `<img src="${d.image}" class="w-full h-full object-cover">` : '<iconify-icon icon="lucide:image" width="48" class="text-gray-300"></iconify-icon>'}
+          </div>
+          <div class="p-4">
+            <h4 class="font-bold text-dark mb-1">${d.name}</h4>
+            <p class="text-sm text-gray-500 mb-2">${d.description || ''}</p>
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-candy-pink">${parseFloat(d.price).toFixed(0)} MDL</span>
+              <div class="flex gap-2">
+                <button onclick='editDecor(${JSON.stringify(d)})' class="p-2 bg-candy-blue/10 text-candy-blue rounded-lg hover:bg-candy-blue/20">
+                  <iconify-icon icon="lucide:pencil" width="16"></iconify-icon>
+                </button>
+                <button onclick="deleteDecor(${d.id})" class="p-2 bg-red-50 text-red-500 rounded-lg hover:bg-red-100">
+                  <iconify-icon icon="lucide:trash" width="16"></iconify-icon>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    } catch(e) {
+      document.getElementById('decorList').innerHTML = '<p class="text-red-400 text-center py-8 col-span-3">Eroare</p>';
+    }
+  }
+
+  function openDecorModal(d) {
+    document.getElementById('decorModal').classList.remove('hidden');
+    document.getElementById('decorModal').style.display = 'flex';
+    document.getElementById('decorId').value = d ? d.id : '';
+    document.getElementById('decorName').value = d ? d.name : '';
+    document.getElementById('decorDesc').value = d ? d.description || '' : '';
+    document.getElementById('decorPrice').value = d ? d.price : '';
+    document.getElementById('decorImage').value = d ? d.image || '' : '';
+    document.getElementById('decorModalTitle').textContent = d ? 'Editează decor' : 'Adaugă decor';
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeDecorModal() {
+    document.getElementById('decorModal').classList.add('hidden');
+    document.getElementById('decorModal').style.display = 'none';
+    document.body.style.overflow = '';
+  }
+
+  function editDecor(d) { openDecorModal(d); }
+
+  async function saveDecor() {
+    const id = document.getElementById('decorId').value;
+    const data = {
+      name: document.getElementById('decorName').value,
+      description: document.getElementById('decorDesc').value,
+      price: parseFloat(document.getElementById('decorPrice').value) || 0,
+      image: document.getElementById('decorImage').value
+    };
+    const token = localStorage.getItem('skykids_token');
+    const url = id ? '/api/admin/decor/' + id : '/api/admin/decor';
+    const method = id ? 'PUT' : 'POST';
+    await fetch(url, { method, headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token }, body: JSON.stringify(data) });
+    closeDecorModal();
+    loadDecor();
+  }
+
+  async function deleteDecor(id) {
+    if(!confirm('Ștergi acest decor?')) return;
+    const token = localStorage.getItem('skykids_token');
+    await fetch('/api/admin/decor/' + id, { method: 'DELETE', headers: { 'Authorization': 'Bearer ' + token } });
+    loadDecor();
+  }
+
 </script>
 
   <!-- Booking Edit Modal -->

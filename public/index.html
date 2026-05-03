@@ -278,6 +278,13 @@
       transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     }
     
+    /* Order type button active state */
+    .order-type-btn.active {
+      border-color: #ff6b9d !important;
+      background: #ff6b9d10 !important;
+    }
+    .order-type-btn { transition: all 0.2s ease; }
+    
     /* Package cards */
     .package-card {
       cursor: pointer;
@@ -679,6 +686,8 @@
         <div class="step-dot" data-step="2">2</div>
         <div class="w-12 h-0.5 bg-gray-200"></div>
         <div class="step-dot" data-step="3">3</div>
+        <div class="w-12 h-0.5 bg-gray-200"></div>
+        <div class="step-dot" data-step="4">4</div>
       </div>
       
       <!-- Booking form card -->
@@ -783,10 +792,48 @@
             </button>
           </div>
           
-          <!-- Step 2: Date & Time -->
+          <!-- Step 2: Add food/snacks to party -->
           <div id="step2" class="booking-step hidden">
             <h3 class="font-bold text-lg sm:text-xl mb-4 sm:mb-6 flex items-center gap-2 sm:gap-3">
               <span class="w-8 h-8 bg-candy-pink text-white rounded-lg flex items-center justify-center text-sm">2</span>
+              <span data-i18n="booking_step2_food_label">Adaugă gustări pentru petrecere</span>
+            </h3>
+            
+            <div id="bookingFoodList" class="space-y-3 mb-6 max-h-80 overflow-y-auto">
+              <p class="text-gray-400 text-center py-8">Se încarcă meniul...</p>
+            </div>
+            
+            <div class="bg-candy-pink/5 border border-candy-pink/20 rounded-xl p-4 mb-6">
+              <div class="flex justify-between items-center mb-2">
+                <span class="text-sm text-gray-600">Pachet:</span>
+                <span id="bookingPkgPrice" class="font-bold text-dark">0 MDL</span>
+              </div>
+              <div class="flex justify-between items-center mb-2">
+                <span class="text-sm text-gray-600">Gustări:</span>
+                <span id="bookingFoodPrice" class="font-bold text-dark">0 MDL</span>
+              </div>
+              <div class="border-t border-candy-pink/20 mt-3 pt-3 flex justify-between items-center">
+                <span class="font-bold text-dark">Total rezervare:</span>
+                <span id="bookingTotalPrice" class="font-black text-xl text-candy-pink">0 MDL</span>
+              </div>
+            </div>
+            
+            <div class="flex gap-4">
+              <button type="button" onclick="goToStep(1)" class="flex-1 bg-gray-100 text-gray-700 py-4 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-gray-200 transition-colors">
+                <iconify-icon icon="lucide:arrow-left" width="20"></iconify-icon>
+                <span data-i18n="booking_back">Înapoi</span>
+              </button>
+              <button type="button" onclick="goToStep(3)" class="flex-1 bg-candy-pink hover:bg-candy-pink/90 text-white py-4 rounded-xl font-bold flex items-center justify-center gap-2 transition-all shadow-lg">
+                <span data-i18n="booking_continue">Continuă</span>
+                <iconify-icon icon="lucide:arrow-right" width="20"></iconify-icon>
+              </button>
+            </div>
+          </div>
+          
+          <!-- Step 3: Date & Time -->
+          <div id="step3" class="booking-step hidden">
+            <h3 class="font-bold text-lg sm:text-xl mb-4 sm:mb-6 flex items-center gap-2 sm:gap-3">
+              <span class="w-8 h-8 bg-candy-pink text-white rounded-lg flex items-center justify-center text-sm">3</span>
               <span data-i18n="booking_step2_label">Alege data și ora</span>
             </h3>
             
@@ -801,21 +848,21 @@
             </div>
             
             <div class="flex gap-4">
-              <button type="button" onclick="goToStep(1)" class="flex-1 bg-gray-100 text-gray-700 py-4 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-gray-200 transition-colors">
+              <button type="button" onclick="goToStep(2)" class="flex-1 bg-gray-100 text-gray-700 py-4 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-gray-200 transition-colors">
                 <iconify-icon icon="lucide:arrow-left" width="20"></iconify-icon>
                 <span data-i18n="booking_back">Înapoi</span>
               </button>
-            <button type="button" onclick="goToStep(3)" id="btnStep2" class="flex-1 bg-candy-pink hover:bg-candy-pink/90 text-white py-4 rounded-xl font-bold flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-lg" disabled>
+            <button type="button" onclick="goToStep(4)" id="btnStep2" class="flex-1 bg-candy-pink hover:bg-candy-pink/90 text-white py-4 rounded-xl font-bold flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-lg" disabled>
                 <span data-i18n="booking_continue">Continuă</span>
                 <iconify-icon icon="lucide:arrow-right" width="20"></iconify-icon>
               </button>
             </div>
           </div>
           
-          <!-- Step 3: Contact info -->
-          <div id="step3" class="booking-step hidden">
+          <!-- Step 4: Contact info -->
+          <div id="step4" class="booking-step hidden">
             <h3 class="font-bold text-lg sm:text-xl mb-4 sm:mb-6 flex items-center gap-2 sm:gap-3">
-              <span class="w-8 h-8 bg-candy-pink text-white rounded-lg flex items-center justify-center text-sm">3</span>
+              <span class="w-8 h-8 bg-candy-pink text-white rounded-lg flex items-center justify-center text-sm">4</span>
               <span data-i18n="booking_step3_label">Datele tale de contact</span>
             </h3>
             
@@ -851,7 +898,7 @@
             </div>
             
             <div class="flex gap-4">
-              <button type="button" onclick="goToStep(2)" class="flex-1 bg-gray-100 text-gray-700 py-4 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-gray-200 transition-colors">
+              <button type="button" onclick="goToStep(3)" class="flex-1 bg-gray-100 text-gray-700 py-4 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-gray-200 transition-colors">
                 <iconify-icon icon="lucide:arrow-left" width="20"></iconify-icon>
                 <span data-i18n="booking_back">Înapoi</span>
               </button>
@@ -894,12 +941,15 @@
     </div>
   </section>
 
-  <!-- Cart Modal -->
+  <!-- Cart Drawer -->
   <div id="cartModal" class="fixed inset-0 z-50 hidden">
     <div class="modal-backdrop absolute inset-0 bg-black/50" onclick="closeCart()"></div>
-    <div class="absolute right-0 top-0 bottom-0 w-full max-w-md bg-white shadow-xl flex flex-col">
-      <div class="p-5 border-b border-gray-100 flex items-center justify-between">
-        <h3 class="font-bold text-xl text-dark">Coș de cumpărături</h3>
+    <div class="absolute right-0 top-0 bottom-0 w-full max-w-md bg-white shadow-2xl flex flex-col transform transition-transform">
+      <div class="p-5 border-b border-gray-100 flex items-center justify-between bg-white rounded-bl-2xl">
+        <div>
+          <h3 class="font-bold text-xl text-dark">Coș de cumpărături</h3>
+          <p id="cartItemCount" class="text-xs text-gray-400 mt-0.5">0 produse</p>
+        </div>
         <button onclick="closeCart()" class="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center hover:bg-gray-200">
           <iconify-icon icon="lucide:x" width="20"></iconify-icon>
         </button>
@@ -907,10 +957,12 @@
       <div id="cartItems" class="flex-1 overflow-y-auto p-5 space-y-3">
         <p class="text-gray-400 text-center py-8">Coșul este gol</p>
       </div>
-      <div class="p-5 border-t border-gray-100">
+      <div class="p-5 border-t border-gray-100 bg-white rounded-tl-2xl">
         <div class="flex justify-between items-center mb-4">
-          <span class="font-bold text-lg text-dark">Total:</span>
-          <span id="cartTotal" class="font-black text-xl text-candy-pink">0 MDL</span>
+          <div>
+            <span class="text-sm text-gray-500">Total:</span>
+            <span id="cartTotal" class="font-black text-2xl text-candy-pink ml-2">0 MDL</span>
+          </div>
         </div>
         <button onclick="openCheckout()" id="checkoutBtn" class="w-full bg-gradient-to-r from-candy-pink to-candy-orange text-white py-4 rounded-xl font-bold hover:shadow-lg transition-all flex items-center justify-center gap-2 disabled:opacity-50" disabled>
           <iconify-icon icon="lucide:shopping-bag" width="18"></iconify-icon>
@@ -930,36 +982,75 @@
           <iconify-icon icon="lucide:x" width="20"></iconify-icon>
         </button>
       </div>
+      
+      <!-- Order type selector -->
+      <div class="p-5 border-b border-gray-100">
+        <p class="text-sm font-bold text-gray-700 mb-3">Tip comandă *</p>
+        <div class="grid grid-cols-3 gap-2">
+          <button type="button" onclick="selectOrderType('delivery')" id="btnDelivery" class="order-type-btn px-3 py-3 rounded-xl border-2 border-gray-200 text-center hover:border-candy-pink transition-colors">
+            <iconify-icon icon="lucide:truck" width="20" class="mx-auto mb-1"></iconify-icon>
+            <span class="text-xs font-bold">Livrare</span>
+          </button>
+          <button type="button" onclick="selectOrderType('advance')" id="btnAdvance" class="order-type-btn px-3 py-3 rounded-xl border-2 border-gray-200 text-center hover:border-candy-pink transition-colors">
+            <iconify-icon icon="lucide:calendar-clock" width="20" class="mx-auto mb-1"></iconify-icon>
+            <span class="text-xs font-bold">În avans</span>
+          </button>
+          <button type="button" onclick="selectOrderType('onsite')" id="btnOnsite" class="order-type-btn px-3 py-3 rounded-xl border-2 border-gray-200 text-center hover:border-candy-pink transition-colors">
+            <iconify-icon icon="lucide:utensils" width="20" class="mx-auto mb-1"></iconify-icon>
+            <span class="text-xs font-bold">În sală</span>
+          </button>
+        </div>
+        <input type="hidden" id="orderType" value="">
+      </div>
+      
       <div class="p-5 space-y-4">
-        <div class="bg-gray-50 rounded-xl p-4 mb-4">
-          <h4 class="font-bold text-dark mb-2">Produse selectate:</h4>
-          <div id="checkoutItems" class="text-sm text-gray-600 space-y-1"></div>
-          <div class="border-t border-gray-200 mt-3 pt-3 flex justify-between">
+        <!-- Dynamic fields based on order type -->
+        <div id="deliveryFields" class="hidden space-y-4">
+          <div>
+            <label class="text-sm font-semibold text-gray-700 mb-1 block">Adresă de livrare *</label>
+            <input type="text" id="coAddress" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-candy-pink" placeholder="Strada, nr., Oraul, MD">
+          </div>
+        </div>
+        <div id="advanceFields" class="hidden space-y-4">
+          <div>
+            <label class="text-sm font-semibold text-gray-700 mb-1 block">Data și ora *</label>
+            <input type="datetime-local" id="coDateTime" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-candy-pink">
+          </div>
+        </div>
+        <!-- Fields shown for all types -->
+        <div id="commonFields" class="space-y-4">
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="text-sm font-semibold text-gray-700 mb-1 block">Nume *</label>
+              <input type="text" id="coFirstName" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-candy-pink" placeholder="Nume">
+            </div>
+            <div>
+              <label class="text-sm font-semibold text-gray-700 mb-1 block">Prenume *</label>
+              <input type="text" id="coLastName" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-candy-pink" placeholder="Prenume">
+            </div>
+          </div>
+          <div>
+            <label class="text-sm font-semibold text-gray-700 mb-1 block">Telefon *</label>
+            <div class="relative">
+              <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-bold">+373</span>
+              <input type="tel" id="coPhone" class="w-full pl-14 pr-4 py-3 rounded-xl border-2 border-gray-200 focus:border-candy-pink" placeholder="60 123 456">
+            </div>
+          </div>
+        </div>
+        
+        <!-- Products summary -->
+        <div class="bg-gray-50 rounded-xl p-4">
+          <h4 class="font-bold text-dark mb-2">Produse:</h4>
+          <div id="checkoutItems" class="text-sm text-gray-600 space-y-1 mb-3"></div>
+          <div class="border-t border-gray-200 pt-3 flex justify-between">
             <span class="font-bold text-dark">Total:</span>
             <span id="checkoutTotal" class="font-black text-candy-pink">0 MDL</span>
           </div>
         </div>
-        <div class="grid grid-cols-2 gap-3">
-          <div>
-            <label class="text-sm font-semibold text-gray-700 mb-1 block">Nume *</label>
-            <input type="text" id="coFirstName" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-candy-pink" placeholder="Nume">
-          </div>
-          <div>
-            <label class="text-sm font-semibold text-gray-700 mb-1 block">Prenume *</label>
-            <input type="text" id="coLastName" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-candy-pink" placeholder="Prenume">
-          </div>
-        </div>
-        <div>
-          <label class="text-sm font-semibold text-gray-700 mb-1 block">Telefon *</label>
-          <input type="tel" id="coPhone" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-candy-pink" placeholder="060 123 456">
-        </div>
-        <div>
-          <label class="text-sm font-semibold text-gray-700 mb-1 block">Adresă de livrare *</label>
-          <input type="text" id="coAddress" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-candy-pink" placeholder="Strada, nr., Orau, MD">
-        </div>
+        
         <div>
           <label class="text-sm font-semibold text-gray-700 mb-1 block">Observații</label>
-          <textarea id="coNotes" rows="2" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-candy-pink" placeholder="Note opționale..."></textarea>
+          <textarea id="coNotes" rows="2" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-candy-pink" placeholder="Note opționale..."></textarea>
         </div>
         <p id="coError" class="text-red-500 text-sm hidden"></p>
         <button onclick="submitOrder()" class="w-full bg-gradient-to-r from-candy-pink to-candy-orange text-white py-4 rounded-xl font-bold hover:shadow-lg transition-all flex items-center justify-center gap-2">
@@ -967,6 +1058,7 @@
           Trimite comanda
         </button>
       </div>
+      
       <div id="checkoutSuccess" class="hidden text-center py-10 px-5">
         <div class="w-20 h-20 bg-candy-green/20 rounded-full flex items-center justify-center mx-auto mb-5">
           <iconify-icon icon="lucide:check-circle" width="40" class="text-candy-green"></iconify-icon>
@@ -1059,6 +1151,11 @@
   let currentMaxAdults = 10;
   let selectedTime = null;
   let currentStep = 1;
+  let selectedPackagePrice = 0;
+  let selectedPackageName = '';
+  let bookingFoodItems = []; // { id, name, price, quantity }
+  let bookingCategories = [];
+  let bookingAllProducts = [];
   let currentLang = localStorage.getItem('skykids_lang') || 'ro';
 
   // ===== Translations =====
@@ -1117,6 +1214,7 @@
       booking_continue: 'Continuă',
       booking_back: 'Înapoi',
       booking_step2_label: 'Alege data și ora',
+      booking_step2_food_label: 'Adaugă gustări pentru petrecere',
       booking_date_label: 'Data *',
       booking_time_label: 'Ora *',
       booking_step3_label: 'Datele tale de contact',
@@ -1208,6 +1306,7 @@
       booking_continue: 'Продолжить',
       booking_back: 'Назад',
       booking_step2_label: 'Выберите дату и время',
+      booking_step2_food_label: 'Добавьте закуски для вечеринки',
       booking_date_label: 'Дата *',
       booking_time_label: 'Время *',
       booking_step3_label: 'Ваши контактные данные',
@@ -1289,6 +1388,88 @@
     menu.classList.remove('flex');
   }
 
+  // ===== BOOKING FOOD STEP =====
+  async function loadBookingFood() {
+    try {
+      const [catsRes, prodsRes] = await Promise.all([
+        fetch('/api/categories?lang=' + currentLang + '&t=' + Date.now()),
+        fetch('/api/products?lang=' + currentLang + '&t=' + Date.now())
+      ]);
+      bookingCategories = await catsRes.json();
+      bookingAllProducts = await prodsRes.json();
+      renderBookingFoodCategories();
+      updateBookingPrices();
+    } catch(e) {
+      document.getElementById('bookingFoodList').innerHTML = '<p class="text-red-400 text-center py-8">Eroare la încărcare</p>';
+    }
+  }
+
+  function renderBookingFoodCategories() {
+    const container = document.getElementById('bookingFoodList');
+    if(bookingCategories.length === 0) {
+      container.innerHTML = '<p class="text-gray-400 text-center py-8">Nu există produse disponibile</p>';
+      return;
+    }
+    
+    let html = '';
+    for(const cat of bookingCategories) {
+      const prods = bookingAllProducts.filter(p => p.category_id === cat.id);
+      if(prods.length === 0) continue;
+      
+      html += '<div class="mb-5">';
+      html += '<h4 class="font-bold text-dark text-sm mb-2 flex items-center gap-2">' + (cat.icon || '🍽️') + ' ' + cat.name + '</h4>';
+      
+      for(const p of prods) {
+        const cartItem = bookingFoodItems.find(i => i.id === p.id);
+        const qty = cartItem ? cartItem.quantity : 0;
+        
+        html += '<div class="flex items-center justify-between bg-white rounded-xl p-3 mb-2 border border-gray-100 hover:border-candy-pink/30 transition-colors">';
+        html += '<div class="flex-1 min-w-0">';
+        html += '<div class="font-bold text-dark text-sm truncate">' + p.name + '</div>';
+        html += '<div class="text-xs text-gray-500">' + p.price + ' MDL' + (p.weight ? ' · ' + p.weight : '') + '</div>';
+        html += '</div>';
+        html += '<div class="flex items-center gap-2 ml-3">';
+        if(qty > 0) {
+          html += '<button onclick="changeBookingFood(' + p.id + ', -1, "' + p.name.replace(/"/g, '\\"') + '", ' + p.price + ')" class="w-8 h-8 bg-gray-100 hover:bg-gray-200 rounded-lg flex items-center justify-center text-sm font-bold">−</button>';
+          html += '<span class="font-bold text-dark w-6 text-center text-sm">' + qty + '</span>';
+          html += '<button onclick="changeBookingFood(' + p.id + ', 1, "' + p.name.replace(/"/g, '\\"') + '", ' + p.price + ')" class="w-8 h-8 bg-candy-pink hover:bg-candy-pink/90 text-white rounded-lg flex items-center justify-center text-sm font-bold">+</button>';
+        } else {
+          html += '<button onclick="changeBookingFood(' + p.id + ', 1, "' + p.name.replace(/"/g, '\\"') + '", ' + p.price + ')" class="bg-candy-pink/10 hover:bg-candy-pink/20 text-candy-pink px-3 py-1.5 rounded-lg text-xs font-bold">+ Adaugă</button>';
+        }
+        html += '</div></div>';
+      }
+      html += '</div>';
+    }
+    container.innerHTML = html;
+  }
+
+  function changeBookingFood(id, delta, name, price) {
+    const existing = bookingFoodItems.find(i => i.id === id);
+    if(existing) {
+      existing.quantity += delta;
+      if(existing.quantity <= 0) bookingFoodItems = bookingFoodItems.filter(i => i.id !== id);
+    } else if(delta > 0) {
+      bookingFoodItems.push({ id, name, price, quantity: 1 });
+    }
+    renderBookingFoodCategories();
+    updateBookingPrices();
+  }
+
+  function updateBookingPrices() {
+    const pkgMap = { 'standard': 100, 'premium': 180, 'zi-de-nastere': 1500 };
+    selectedPackagePrice = pkgMap[selectedPackage] || 0;
+    
+    const foodTotal = bookingFoodItems.reduce((sum, i) => sum + i.price * i.quantity, 0);
+    const total = selectedPackagePrice + foodTotal;
+    
+    const pkgCount = (parseInt(document.getElementById('kids_count')?.value) || 1) + (parseInt(document.getElementById('adults_count')?.value) || 0);
+    
+    document.getElementById('bookingPkgPrice').textContent = (selectedPackagePrice * pkgCount).toFixed(0) + ' MDL';
+    document.getElementById('bookingFoodPrice').textContent = foodTotal.toFixed(0) + ' MDL';
+    document.getElementById('bookingTotalPrice').textContent = total.toFixed(0) + ' MDL';
+  }
+
+  
   // ===== Init =====
   // ===== Check if restaurant is currently open (10:00 - 22:00) =====
   function updateOpenStatus() {
@@ -1408,6 +1589,7 @@
     }
     document.getElementById('btnStep1').disabled = false;
     updateSummary();
+    updateBookingPrices();
   }
 
   function changeKids(delta) {
@@ -1432,7 +1614,7 @@
     // Validate current step before going forward
     if (step > currentStep) {
       if (currentStep === 1 && !selectedPackage) return;
-      if (currentStep === 2 && (!document.getElementById('date').value || !selectedTime)) return;
+      if (currentStep === 3 && (!document.getElementById('date').value || !selectedTime)) return;
     }
     
     // Hide current step
@@ -1449,7 +1631,8 @@
     document.getElementById(`step${step}`).classList.remove('hidden');
     currentStep = step;
     
-    if (step === 3) updateSummary();
+    if (step === 2) { loadBookingFood(); updateBookingPrices(); }
+    if (step === 4) updateSummary();
   }
 
   async function loadSlots() {
@@ -1489,24 +1672,31 @@
 
   function updateSummary() {
     const summary = document.getElementById('bookingSummary');
-    const pkgNames = { standard: 'Standard (100 lei/copil)', premium: 'Premium (180 lei/copil)', birthday: 'Zi de Naștere (1500 lei/grup)' };
+    const pkgNames = { standard: 'Standard (100 lei/copil)', premium: 'Premium (180 lei/copil)', 'zi-de-nastere': 'Zi de Naștere (1500 lei/grup)' };
     const kids = document.getElementById('kids_count').value || 1;
     const date = document.getElementById('date').value || '';
     const time = selectedTime || '';
     
     let price = '';
-    if (selectedPackage === 'birthday') price = '1500 lei';
+    if (selectedPackage === 'zi-de-nastere') price = '1500 lei';
     else if (selectedPackage === 'premium') price = `${180 * kids} lei`;
     else if (selectedPackage === 'standard') price = `${100 * kids} lei`;
     
-    summary.innerHTML = `
+    const foodTotal = bookingFoodItems.reduce((sum, i) => sum + i.price * i.quantity, 0);
+    
+    let html = `
       <div class="flex justify-between"><span class="text-gray-500">Pachet:</span><span class="font-bold">${pkgNames[selectedPackage] || '—'}</span></div>
       <div class="flex justify-between"><span class="text-gray-500">Copii:</span><span class="font-bold">${kids}</span></div>
       <div class="flex justify-between"><span class="text-gray-500">Adulți:</span><span class="font-bold">${document.getElementById('adults_count').value || 0}</span></div>
       <div class="flex justify-between"><span class="text-gray-500">Data:</span><span class="font-bold">${date || '—'}</span></div>
       <div class="flex justify-between"><span class="text-gray-500">Ora:</span><span class="font-bold">${time || '—'}</span></div>
-      <div class="flex justify-between border-t pt-2 mt-2"><span class="text-gray-500">Total:</span><span class="font-black text-candy-pink">${price || '—'}</span></div>
     `;
+    if(bookingFoodItems.length > 0) {
+      html += `<div class="flex justify-between"><span class="text-gray-500">Gustări:</span><span class="font-bold">${foodTotal} MDL</span></div>`;
+      html += bookingFoodItems.map(i => `<div class="flex justify-between pl-4 text-xs"><span class="text-gray-400">${i.name} ×${i.quantity}</span><span class="text-gray-400">${i.price * i.quantity} MDL</span></div>`).join('');
+    }
+    html += `<div class="flex justify-between border-t pt-2 mt-2"><span class="text-gray-500">Total:</span><span class="font-black text-candy-pink">${price || '—'}${bookingFoodItems.length > 0 ? ' + ' + foodTotal + ' MDL gustări' : ''}</span></div>`;
+    summary.innerHTML = html;
   }
 
   function resetBooking() {
@@ -1514,6 +1704,7 @@
     selectedPackageId = null;
     selectedTime = null;
     currentStep = 1;
+    bookingFoodItems = [];
     document.getElementById('bookingForm').reset();
     document.querySelectorAll('.package-card').forEach(c => {
       c.classList.remove('selected');
@@ -1527,6 +1718,7 @@
     document.getElementById('step1').classList.remove('hidden');
     document.getElementById('step2').classList.add('hidden');
     document.getElementById('step3').classList.add('hidden');
+    document.getElementById('step4').classList.add('hidden');
     document.getElementById('bookingSuccess').classList.add('hidden');
     document.getElementById('bookingForm').classList.remove('hidden');
     document.getElementById('btnStep1').disabled = true;
@@ -1547,7 +1739,8 @@
       kids_count: parseInt(document.getElementById('kids_count').value),
       client_name: document.getElementById('client_name').value,
       client_phone: document.getElementById('client_phone').value,
-      notes: document.getElementById('notes').value
+      notes: document.getElementById('notes').value,
+      food_items: bookingFoodItems.map(i => ({ id: i.id, name: i.name, price: i.price, quantity: i.quantity }))
     };
     
     try {
@@ -1828,18 +2021,19 @@
   function openCart() {
     renderCart();
     document.getElementById('cartModal').classList.remove('hidden');
-    document.body.style.overflow = 'hidden';
   }
 
   function closeCart() {
     document.getElementById('cartModal').classList.add('hidden');
-    document.body.style.overflow = '';
   }
 
   function renderCart() {
     const container = document.getElementById('cartItems');
     const total = getCartTotal();
     document.getElementById('cartTotal').textContent = total.toFixed(0) + ' MDL';
+    const count = cart.reduce((s, i) => s + i.quantity, 0);
+    const countEl = document.getElementById('cartItemCount');
+    if(countEl) countEl.textContent = count + ' produse' + (count !== 1 ? 'e' : '');
     const checkoutBtn = document.getElementById('checkoutBtn');
     if(cart.length === 0) {
       container.innerHTML = '<p class="text-gray-400 text-center py-8">Coșul este gol</p>';
@@ -1866,13 +2060,25 @@
     `).join('');
   }
 
+  let selectedOrderType = '';
+
+  function selectOrderType(type) {
+    selectedOrderType = type;
+    document.getElementById('orderType').value = type;
+    document.querySelectorAll('.order-type-btn').forEach(btn => btn.classList.remove('active'));
+    document.getElementById('btn' + type.charAt(0).toUpperCase() + type.slice(1)).classList.add('active');
+    document.getElementById('deliveryFields').classList.toggle('hidden', type !== 'delivery');
+    document.getElementById('advanceFields').classList.toggle('hidden', type !== 'advance');
+    document.getElementById('commonFields').classList.remove('hidden');
+  }
+
   function openCheckout() {
     if(cart.length === 0) return;
     closeCart();
     document.getElementById('checkoutModal').classList.remove('hidden');
     document.body.style.overflow = 'hidden';
     document.getElementById('checkoutSuccess').classList.add('hidden');
-    document.querySelector('#checkoutModal .p-5.space-y-4').classList.remove('hidden');
+    document.querySelector('#checkoutModal > div:nth-child(2) > div:nth-child(4)').classList.remove('hidden');
     const itemsEl = document.getElementById('checkoutItems');
     itemsEl.innerHTML = cart.map(i => `<div class="flex justify-between"><span>${i.quantity}× ${i.name}</span><span>${(i.price * i.quantity).toFixed(0)} MDL</span></div>`).join('');
     document.getElementById('checkoutTotal').textContent = getCartTotal().toFixed(0) + ' MDL';
@@ -1880,8 +2086,15 @@
     document.getElementById('coLastName').value = '';
     document.getElementById('coPhone').value = '';
     document.getElementById('coAddress').value = '';
+    document.getElementById('coDateTime').value = '';
     document.getElementById('coNotes').value = '';
     document.getElementById('coError').classList.add('hidden');
+    // Reset order type
+    selectedOrderType = '';
+    document.getElementById('orderType').value = '';
+    document.querySelectorAll('.order-type-btn').forEach(btn => btn.classList.remove('active'));
+    document.getElementById('deliveryFields').classList.add('hidden');
+    document.getElementById('advanceFields').classList.add('hidden');
   }
 
   function closeCheckout() {
@@ -1901,16 +2114,35 @@
     const last_name = document.getElementById('coLastName').value.trim();
     const phone = document.getElementById('coPhone').value.trim();
     const address = document.getElementById('coAddress').value.trim();
+    const datetime = document.getElementById('coDateTime').value.trim();
+    const order_type = document.getElementById('orderType').value;
     const notes = document.getElementById('coNotes').value.trim();
     const errorEl = document.getElementById('coError');
 
-    if(!first_name || !last_name || !phone || !address) {
+    if(!first_name || !last_name || !phone) {
       errorEl.textContent = 'Completează toate câmpurile marcate cu *';
       errorEl.classList.remove('hidden');
       return;
     }
-    if(!/^\d{8,15}$/.test(phone.replace(/\s/g, ''))) {
-      errorEl.textContent = 'Număr de telefon invalid';
+    if(!order_type) {
+      errorEl.textContent = 'Selectează tipul comenzii (Livrare, În avans sau În sală)';
+      errorEl.classList.remove('hidden');
+      return;
+    }
+    if(order_type === 'delivery' && !address) {
+      errorEl.textContent = 'Completează adresa de livrare';
+      errorEl.classList.remove('hidden');
+      return;
+    }
+    if(order_type === 'advance' && !datetime) {
+      errorEl.textContent = 'Completează data și ora pentru comanda în avans';
+      errorEl.classList.remove('hidden');
+      return;
+    }
+    // Phone validation: +373 followed by 8-9 digits
+    const phoneRegex = /^\+?373[\s\-]?[0-9]{8,9}$/;
+    if(!phoneRegex.test('+373' + phone.replace(/\s/g, ''))) {
+      errorEl.textContent = 'Număr de telefon invalid. Format: +373 60 123 456';
       errorEl.classList.remove('hidden');
       return;
     }
@@ -1919,12 +2151,12 @@
       const res = await fetch('/api/orders', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ first_name, last_name, phone, address, items: cart, total: getCartTotal(), notes })
+        body: JSON.stringify({ first_name, last_name, phone: '+373 ' + phone, address, datetime, order_type, items: cart, total: getCartTotal(), notes })
       });
       const data = await res.json();
       if(!res.ok) throw new Error(data.error || 'Order failed');
 
-      document.querySelector('#checkoutModal .p-5.space-y-4').classList.add('hidden');
+      document.querySelector('#checkoutModal > div:nth-child(2) > div:nth-child(4)').classList.add('hidden');
       document.getElementById('checkoutSuccess').classList.remove('hidden');
       document.getElementById('orderNumber').textContent = 'Nr. comandă: ' + data.order_number;
     } catch(e) {

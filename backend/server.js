@@ -184,7 +184,9 @@ db.exec(`
     first_name TEXT NOT NULL,
     last_name TEXT NOT NULL,
     phone TEXT NOT NULL,
-    address TEXT NOT NULL,
+    address TEXT DEFAULT '',
+    order_type TEXT DEFAULT 'delivery',
+    datetime TEXT DEFAULT '',
     total DECIMAL(10,2) DEFAULT 0,
     status TEXT DEFAULT 'pending',
     notes TEXT DEFAULT '',
@@ -709,8 +711,8 @@ app.get('/api/admin/blocked-slots', authMiddleware, (req, res) => {
 
 // ============== ORDERS API ==============
 app.post('/api/orders', (req, res) => {
-  const { first_name, last_name, phone, address, items, total, notes } = req.body;
-  if(!first_name || !last_name || !phone || !address) {
+  const { first_name, last_name, phone, address, order_type, datetime, items, total, notes } = req.body;
+  if(!first_name || !last_name || !phone) {
     return res.status(400).json({ error: 'Completează toate câmpurile obligatorii' });
   }
   if(!items || items.length === 0) {
@@ -718,7 +720,7 @@ app.post('/api/orders', (req, res) => {
   }
   const orderNumber = 'SK' + Date.now();
   try {
-    const result = db.prepare('INSERT INTO orders (order_number, first_name, last_name, phone, address, total, notes) VALUES (?, ?, ?, ?, ?, ?, ?)').run(orderNumber, first_name, last_name, phone, address, total || 0, notes || '');
+    const result = db.prepare('INSERT INTO orders (order_number, first_name, last_name, phone, address, order_type, datetime, total, notes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)').run(orderNumber, first_name, last_name, phone, address || '', order_type || 'delivery', datetime || '', total || 0, notes || '');
     const orderId = result.lastInsertRowid;
     const insertItem = db.prepare('INSERT INTO order_items (order_id, product_name, product_id, quantity, price) VALUES (?, ?, ?, ?, ?)');
     for(const item of items) {
