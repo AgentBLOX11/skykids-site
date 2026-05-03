@@ -116,11 +116,17 @@ db.exec(`
   CREATE TABLE IF NOT EXISTS categories (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
+    description TEXT DEFAULT '',
     icon TEXT DEFAULT '🍽️',
     sort_order INTEGER DEFAULT 0,
     active INTEGER DEFAULT 1,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
   );
+
+  // Add description column if missing (migration)
+  try {
+    db.prepare('ALTER TABLE categories ADD COLUMN description TEXT DEFAULT \'\' ').run();
+  } catch (e) { /* already exists */ }
 
   -- NEW: Products
   CREATE TABLE IF NOT EXISTS products (
