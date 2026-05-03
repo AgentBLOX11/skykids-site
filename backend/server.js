@@ -8,6 +8,36 @@ const { v4: uuidv4 } = require('uuid');
 const path = require('path');
 const cors = require('cors');
 const fs = require('fs');
+const https = require('https');
+
+// ============== TRANSLATION HELPER ==============
+function translate(text, targetLang = 'ru') {
+  return new Promise((resolve) => {
+    if (!text || targetLang !== 'ru') return resolve(text);
+    const encoded = encodeURIComponent(text);
+    const url = `https://api.mymemory.translated.net/get?q=${encoded}&langpair=ro|ru`;
+    https.get(url, (res) => {
+      let data = '';
+      res.on('data', chunk => data += chunk);
+      res.on('end', () => {
+        try {
+          const json = JSON.parse(data);
+          resolve(json.responseData?.translatedText || text);
+        } catch (e) {
+          resolve(text);
+        }
+      });
+    }).on('error', () => resolve(text));
+  });
+}
+
+async function translateObject(obj, fields) {
+  const result = { ...obj };
+  await Promise.all(fields.map(async (f) => {
+    if (result[f]) result[f] = await translate(result[f], 'ru');
+  }));
+  return result;
+}
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -251,8 +281,13 @@ app.post('/api/admin/change-password', authMiddleware, (req, res) => {
 });
 
 // ============== CATEGORIES API ==============
-app.get('/api/categories', (req, res) => {
-  const cats = db.prepare('SELECT * FROM categories WHERE active = 1 ORDER BY sort_order ASC').all();
+app.get('/api/categories', async (req, res) => {
+  const lang = req.query.lang || 'ro';
+  const cats = db.prepare('SELECT id, name, icon, sort_order, active, description FROM categories WHERE active = 1 ORDER BY sort_order ASC').all();
+  if (lang === 'ru') {
+    const translated = await Promise.all(cats.map(c => translateObject(c, ['name', 'description'])));
+    return res.json(translated);
+  }
   res.json(cats);
 });
 
@@ -262,17 +297,17 @@ app.get('/api/admin/categories', authMiddleware, (req, res) => {
 });
 
 app.post('/api/admin/categories', authMiddleware, (req, res) => {
-  const { name, icon, sort_order } = req.body;
+  const { name, icon, sort_order, name_ru, description_ru } = req.body;
   if (!name) return res.status(400).json({ error: 'Numele este obligatoriu' });
-  const result = db.prepare('INSERT INTO categories (name, icon, sort_order) VALUES (?, ?, ?)').run(name, icon || '🍽️', sort_order || 0);
+  const result = db.prepare('INSERT INTO categories (name, icon, sort_order, name_ru, description_ru) VALUES (?, ?, ?, ?, ?)').run(name, icon || '🍽️', sort_order || 0, name_ru || '', description_ru || '');
   const cat = db.prepare('SELECT * FROM categories WHERE id = ?').get(result.lastInsertRowid);
   res.status(201).json(cat);
 });
 
 app.put('/api/admin/categories/:id', authMiddleware, (req, res) => {
   const { id } = req.params;
-  const { name, icon, sort_order, active } = req.body;
-  db.prepare('UPDATE categories SET name = ?, icon = ?, sort_order = ?, active = ? WHERE id = ?').run(name, icon, sort_order, active !== undefined ? active : 1, id);
+  const { name, icon, sort_order, active, name_ru, description_ru } = req.body;
+  db.prepare('UPDATE categories SET name = ?, icon = ?, sort_order = ?, active = ?, name_ru = ?, description_ru = ? WHERE id = ?').run(name, icon, sort_order, active !== undefined ? active : 1, name_ru || '', description_ru || '', id);
   const cat = db.prepare('SELECT * FROM categories WHERE id = ?').get(id);
   res.json(cat);
 });
@@ -284,9 +319,10 @@ app.delete('/api/admin/categories/:id', authMiddleware, (req, res) => {
 });
 
 // ============== PRODUCTS API ==============
-app.get('/api/products', (req, res) => {
+app.get('/api/products', async (req, res) => {
   const { category_id } = req.query;
-  let query = 'SELECT p.*, c.name as category_name FROM products p LEFT JOIN categories c ON p.category_id = c.id WHERE p.active = 1';
+  const lang = req.query.lang || 'ro';
+  let query = `SELECT p.id, p.name, p.description, p.price, p.weight, p.image, p.badge, p.category_id, p.sort_order, c.name as category_name FROM products p LEFT JOIN categories c ON p.category_id = c.id WHERE p.active = 1`;
   const params = [];
   if (category_id) {
     query += ' AND p.category_id = ?';
@@ -294,6 +330,10 @@ app.get('/api/products', (req, res) => {
   }
   query += ' ORDER BY p.sort_order ASC';
   const products = db.prepare(query).all(...params);
+  if (lang === 'ru') {
+    const translated = await Promise.all(products.map(p => translateObject(p, ['name', 'description', 'category_name'])));
+    return res.json(translated);
+  }
   res.json(products);
 });
 
@@ -311,17 +351,17 @@ app.get('/api/admin/products', authMiddleware, (req, res) => {
 });
 
 app.post('/api/admin/products', authMiddleware, (req, res) => {
-  const { category_id, name, description, price, weight, image, badge, sort_order } = req.body;
+  const { category_id, name, description, price, weight, image, badge, sort_order, name_ru, description_ru } = req.body;
   if (!name) return res.status(400).json({ error: 'Numele este obligatoriu' });
-  const result = db.prepare('INSERT INTO products (category_id, name, description, price, weight, image, badge, sort_order) VALUES (?, ?, ?, ?, ?, ?, ?, ?)').run(category_id || null, name, description || '', price || '', weight || '', image || '', badge || '', sort_order || 0);
+  const result = db.prepare('INSERT INTO products (category_id, name, description, price, weight, image, badge, sort_order, name_ru, description_ru) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)').run(category_id || null, name, description || '', price || '', weight || '', image || '', badge || '', sort_order || 0, name_ru || '', description_ru || '');
   const product = db.prepare('SELECT p.*, c.name as category_name FROM products p LEFT JOIN categories c ON p.category_id = c.id WHERE p.id = ?').get(result.lastInsertRowid);
   res.status(201).json(product);
 });
 
 app.put('/api/admin/products/:id', authMiddleware, (req, res) => {
   const { id } = req.params;
-  const { category_id, name, description, price, weight, image, badge, sort_order, active } = req.body;
-  db.prepare('UPDATE products SET category_id = ?, name = ?, description = ?, price = ?, weight = ?, image = ?, badge = ?, sort_order = ?, active = ? WHERE id = ?').run(category_id || null, name, description || '', price || '', weight || '', image || '', badge || '', sort_order || 0, active !== undefined ? active : 1, id);
+  const { category_id, name, description, price, weight, image, badge, sort_order, active, name_ru, description_ru } = req.body;
+  db.prepare('UPDATE products SET category_id = ?, name = ?, description = ?, price = ?, weight = ?, image = ?, badge = ?, sort_order = ?, active = ?, name_ru = ?, description_ru = ? WHERE id = ?').run(category_id || null, name, description || '', price || '', weight || '', image || '', badge || '', sort_order || 0, active !== undefined ? active : 1, name_ru || '', description_ru || '', id);
   const product = db.prepare('SELECT p.*, c.name as category_name FROM products p LEFT JOIN categories c ON p.category_id = c.id WHERE p.id = ?').get(id);
   res.json(product);
 });
@@ -333,8 +373,13 @@ app.delete('/api/admin/products/:id', authMiddleware, (req, res) => {
 });
 
 // ============== PACKAGES API ==============
-app.get('/api/packages', (req, res) => {
-  const packages = db.prepare('SELECT * FROM packages WHERE active = 1 ORDER BY sort_order ASC').all();
+app.get('/api/packages', async (req, res) => {
+  const lang = req.query.lang || 'ro';
+  const packages = db.prepare('SELECT id, name, icon, description, price_per_child, price_per_adult, price_group, max_children, max_adults, includes, sort_order, active FROM packages WHERE active = 1 ORDER BY sort_order ASC').all();
+  if (lang === 'ru') {
+    const translated = await Promise.all(packages.map(p => translateObject(p, ['name', 'description', 'includes'])));
+    return res.json(translated);
+  }
   res.json(packages);
 });
 
@@ -344,17 +389,17 @@ app.get('/api/admin/packages', authMiddleware, (req, res) => {
 });
 
 app.post('/api/admin/packages', authMiddleware, (req, res) => {
-  const { name, icon, description, price_per_child, price_per_adult, price_group, max_children, max_adults, includes, sort_order } = req.body;
+  const { name, icon, description, price_per_child, price_per_adult, price_group, max_children, max_adults, includes, sort_order, name_ru, description_ru, includes_ru } = req.body;
   if (!name) return res.status(400).json({ error: 'Numele este obligatoriu' });
-  const result = db.prepare('INSERT INTO packages (name, icon, description, price_per_child, price_per_adult, price_group, max_children, max_adults, includes, sort_order) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)').run(name, icon || '🎁', description || '', price_per_child || '', price_per_adult || '', price_group || '', max_children || 15, max_adults || 10, includes || '', sort_order || 0);
+  const result = db.prepare('INSERT INTO packages (name, icon, description, price_per_child, price_per_adult, price_group, max_children, max_adults, includes, sort_order, name_ru, description_ru, includes_ru) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)').run(name, icon || '🎁', description || '', price_per_child || '', price_per_adult || '', price_group || '', max_children || 15, max_adults || 10, includes || '', sort_order || 0, name_ru || '', description_ru || '', includes_ru || '');
   const pkg = db.prepare('SELECT * FROM packages WHERE id = ?').get(result.lastInsertRowid);
   res.status(201).json(pkg);
 });
 
 app.put('/api/admin/packages/:id', authMiddleware, (req, res) => {
   const { id } = req.params;
-  const { name, icon, description, price_per_child, price_per_adult, price_group, max_children, max_adults, includes, sort_order, active } = req.body;
-  db.prepare('UPDATE packages SET name = ?, icon = ?, description = ?, price_per_child = ?, price_per_adult = ?, price_group = ?, max_children = ?, max_adults = ?, includes = ?, sort_order = ?, active = ? WHERE id = ?').run(name, icon, description || '', price_per_child || '', price_per_adult || '', price_group || '', max_children || 15, max_adults || 10, includes || '', sort_order || 0, active !== undefined ? active : 1, id);
+  const { name, icon, description, price_per_child, price_per_adult, price_group, max_children, max_adults, includes, sort_order, active, name_ru, description_ru, includes_ru } = req.body;
+  db.prepare('UPDATE packages SET name = ?, icon = ?, description = ?, price_per_child = ?, price_per_adult = ?, price_group = ?, max_children = ?, max_adults = ?, includes = ?, sort_order = ?, active = ?, name_ru = ?, description_ru = ?, includes_ru = ? WHERE id = ?').run(name, icon, description || '', price_per_child || '', price_per_adult || '', price_group || '', max_children || 15, max_adults || 10, includes || '', sort_order || 0, active !== undefined ? active : 1, name_ru || '', description_ru || '', includes_ru || '', id);
   const pkg = db.prepare('SELECT * FROM packages WHERE id = ?').get(id);
   res.json(pkg);
 });
@@ -365,8 +410,13 @@ app.delete('/api/admin/packages/:id', authMiddleware, (req, res) => {
 });
 
 // ============== GALLERY API ==============
-app.get('/api/gallery', (req, res) => {
-  const gallery = db.prepare('SELECT * FROM gallery WHERE active = 1 ORDER BY sort_order ASC').all();
+app.get('/api/gallery', async (req, res) => {
+  const lang = req.query.lang || 'ro';
+  const gallery = db.prepare('SELECT id, image_url, caption, sort_order, active FROM gallery WHERE active = 1 ORDER BY sort_order ASC').all();
+  if (lang === 'ru') {
+    const translated = await Promise.all(gallery.map(g => translateObject(g, ['caption'])));
+    return res.json(translated);
+  }
   res.json(gallery);
 });
 
