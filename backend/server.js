@@ -269,10 +269,11 @@ db.exec(`
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
   );
 
-  -- NEW: OTP codes for email verification
+  -- NEW: OTP codes for email/phone verification
   CREATE TABLE IF NOT EXISTS otp_codes (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    email TEXT NOT NULL,
+    email TEXT,
+    phone TEXT,
     code TEXT NOT NULL,
     expires_at DATETIME NOT NULL,
     used INTEGER DEFAULT 0,
@@ -392,6 +393,28 @@ try {
 // Also add adults_count and package_price columns if missing
 try { db.exec('ALTER TABLE bookings ADD COLUMN adults_count INTEGER DEFAULT 0'); } catch(e) {}
 try { db.exec('ALTER TABLE bookings ADD COLUMN package_price DECIMAL(10,2) DEFAULT 0'); } catch(e) {}
+
+// SSE clients array
+let sseClients = [];
+
+// SSE endpoint for real-time events
+app.get('/api/events', (req, res) => {
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.flushHeaders();
+  sseClients.push(res);
+  req.on('close', () => {
+    sseClients = sseClients.filter(c => c !== res);
+  });
+});
+
+// Broadcast event to all SSE clients
+function broadcastEvent(type, data) {
+  const payload = `event: ${type}\ndata: ${JSON.stringify(data)}\n\n`;
+  sseClients.forEach(c => c.write(payload));
+}
 
 // ============== AUTH MIDDLEWARE ==============
 function authMiddleware(req, res, next) {
@@ -663,6 +686,10 @@ app.put('/api/admin/settings', authMiddleware, (req, res) => {
 
 // ============== BOOKINGS API (existing) ==============
 app.post('/api/bookings', (req, res) => {
+  const eventCheck = isEventBlocked(req);
+  if(eventCheck) {
+    return res.status(403).json({ error: `Restaurantul are un ${eventCheck.reason} și nu poate prelua rezervări în acest moment. Vă rugăm reveniți mai târziu sau contactați-ne la telefon.` });
+  }
   const { package: pkg, date, time, kids_count, adults_count, client_name, client_phone, notes, food_items, package_price } = req.body;
   if (!pkg || !date || !time || !client_name || !client_phone) {
     return res.status(400).json({ error: 'Toate câmpurile obligatorii trebuie completate' });
@@ -703,6 +730,7 @@ app.post('/api/bookings', (req, res) => {
   }
   const booking = db.prepare('SELECT * FROM bookings WHERE id = ?').get(id);
   res.status(201).json({ success: true, booking });
+  broadcastEvent('new_booking', { booking, at: new Date().toISOString() });
 });
 
 app.get('/api/slots/:date', (req, res) => {
@@ -826,8 +854,51 @@ app.get('/api/admin/blocked-slots', authMiddleware, (req, res) => {
   res.json(db.prepare('SELECT * FROM blocked_slots ORDER BY date ASC').all());
 });
 
+// Helper: check if event mode is active and datetime falls within event window
+function isEventBlocked(req) {
+  const active = db.prepare("SELECT value FROM settings WHERE key = 'event_active'").get();
+  if(!active || (active.value !== 'true' && active.value !== true)) return false;
+  
+  const dateRow = db.prepare("SELECT value FROM settings WHERE key = 'event_date'").get();
+  const startRow = db.prepare("SELECT value FROM settings WHERE key = 'event_start'").get();
+  const endRow = db.prepare("SELECT value FROM settings WHERE key = 'event_end'").get();
+  const reasonRow = db.prepare("SELECT value FROM settings WHERE key = 'event_reason'").get();
+  
+  const eventDate = dateRow?.value;
+  const eventStart = startRow?.value; // e.g. "14:00"
+  const eventEnd = endRow?.value;     // e.g. "22:00"
+  const reason = reasonRow?.value || 'eveniment';
+  
+  // Check order/booking date
+  const reqDate = req.body.date || req.body.datetime;
+  if(!reqDate) {
+    // For orders, check current date vs event date
+    const today = new Date().toISOString().split('T')[0];
+    if(eventDate && today === eventDate) return { blocked: true, reason };
+    return false;
+  }
+  
+  // Extract date part (YYYY-MM-DD)
+  const checkDate = reqDate.split(' ')[0].split('T')[0];
+  if(eventDate && checkDate === eventDate) {
+    // Check time window if applicable
+    if(eventStart && eventEnd) {
+      const reqTime = reqDate.split(' ')[1];
+      if(reqTime && reqTime >= eventStart && reqTime <= eventEnd) {
+        return { blocked: true, reason };
+      }
+    }
+    return { blocked: true, reason };
+  }
+  return false;
+}
+
 // ============== ORDERS API ==============
 app.post('/api/orders', (req, res) => {
+  const eventCheck = isEventBlocked(req);
+  if(eventCheck) {
+    return res.status(403).json({ error: `Restaurantul are un ${eventCheck.reason} și nu poate prelua comenzi în acest moment. Vă rugăm reveniți mai târziu sau contactați-ne la telefon.` });
+  }
   const { first_name, last_name, phone, address, order_type, datetime, items, total, notes } = req.body;
   if(!first_name || !last_name || !phone) {
     return res.status(400).json({ error: 'Completează toate câmpurile obligatorii' });
@@ -844,6 +915,7 @@ app.post('/api/orders', (req, res) => {
       insertItem.run(orderId, item.name, item.id || null, item.quantity || 1, item.price || 0);
     }
     res.json({ success: true, order_number: orderNumber, order_id: orderId });
+    broadcastEvent('new_order', { order: { order_number: orderNumber, id: orderId, first_name, last_name, phone, total, status: 'pending', created_at: new Date().toISOString() }, at: new Date().toISOString() });
   } catch(e) {
     console.error('Order error:', e);
     res.status(500).json({ error: 'Eroare la salvarea comenzii' });
@@ -953,15 +1025,59 @@ app.get('/api/settings/business', authMiddleware, (req, res) => {
   res.json(data);
 });
 
+// Event mode settings API
+app.post('/api/settings/event', authMiddleware, (req, res) => {
+  const { event_active, event_date, event_reason, event_start, event_end } = req.body;
+  const keys = { event_active, event_date, event_reason, event_start, event_end };
+  for(const [key, value] of Object.entries(keys)) {
+    if(value !== undefined) db.prepare('INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)').run(key, value);
+  }
+  res.json({ success: true });
+});
+app.get('/api/settings/event', authMiddleware, (req, res) => {
+  const rows = db.prepare("SELECT key, value FROM settings WHERE key IN ('event_active','event_date','event_reason','event_start','event_end')").all();
+  const data = {};
+  for(const row of rows) data[row.key] = row.value;
+  res.json(data);
+});
+
+// Public: check if event is active
+app.get('/api/event-status', (req, res) => {
+  const row = db.prepare("SELECT value FROM settings WHERE key = 'event_active'").get();
+  if(row && (row.value === 'true' || row.value === true)) {
+    const date = db.prepare("SELECT value FROM settings WHERE key = 'event_date'").get();
+    const reason = db.prepare("SELECT value FROM settings WHERE key = 'event_reason'").get();
+    const start = db.prepare("SELECT value FROM settings WHERE key = 'event_start'").get();
+    const end = db.prepare("SELECT value FROM settings WHERE key = 'event_end'").get();
+    res.json({ active: true, date: date?.value, reason: reason?.value, start: start?.value, end: end?.value });
+  } else {
+    res.json({ active: false });
+  }
+});
+
 
 
 // ===== OTP AUTH API =====
 
-// Send OTP code to email
+// Send OTP code to email OR phone
 app.post('/api/auth/send-otp', async (req, res) => {
-  const { email } = req.body;
-  if(!email || !email.includes('@')) {
-    return res.status(400).json({ error: 'Adresă de email invalidă' });
+  const { email, phone } = req.body;
+  
+  // Detect if email or phone
+  const isEmail = email && email.includes('@');
+  const isPhone = phone && (phone.startsWith('+373') || phone.startsWith('373') || phone.startsWith('060') || phone.startsWith('069') || phone.startsWith('079'));
+  
+  if(!isEmail && !isPhone) {
+    return res.status(400).json({ error: 'Trebuie să specifici un email valid SAU un număr de telefon (cu +373 sau 060/069/079).' });
+  }
+  
+  // Normalize phone
+  let normalizedPhone = null;
+  if(isPhone) {
+    normalizedPhone = phone.replace(/^0/, '+373');
+    if(!/^\+373[0-9]{8}$/.test(normalizedPhone)) {
+      return res.status(400).json({ error: 'Număr de telefon invalid. Format: +373XXXXXXXX' });
+    }
   }
   
   // Generate 6-digit code
@@ -969,56 +1085,79 @@ app.post('/api/auth/send-otp', async (req, res) => {
   const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes
   
   try {
-    // Mark old unused codes for this email as used
-    db.prepare('UPDATE otp_codes SET used = 1 WHERE email = ? AND used = 0').run(email);
-    
-    // Insert new code
-    db.prepare('INSERT INTO otp_codes (email, code, expires_at) VALUES (?, ?, ?)').run(email, code, expiresAt.toISOString());
-    
-    // Send email
-    try {
-      await emailTransporter.sendMail({
-        from: '"Sky Kids Soroca" <skykids.soroca@gmail.com>',
-        to: email,
-        subject: 'Cod de acces Sky Kids - ' + code,
-        html: `
-          <div style="font-family: Arial, sans-serif; max-width: 400px; margin: 0 auto; padding: 20px;">
-            <div style="background: linear-gradient(135deg, #ff6b9d, #ff9f43); padding: 20px; border-radius: 12px 12px 0 0; text-align: center;">
-              <h2 style="color: white; margin: 0;">Sky Kids Soroca</h2>
-            </div>
-            <div style="background: #f9f9f9; padding: 30px; border-radius: 0 0 12px 12px;">
-              <p style="color: #333; font-size: 16px;">Bună!</p>
-              <p style="color: #333; font-size: 16px;">Codul tău de acces:</p>
-              <div style="background: white; padding: 20px; text-align: center; border-radius: 8px; margin: 20px 0; border: 2px solid #ff6b9d20;">
-                <span style="font-size: 36px; font-weight: bold; letter-spacing: 8px; color: #ff6b9d;">${code}</span>
+    if(isEmail) {
+      // Mark old unused codes for this email as used
+      db.prepare('UPDATE otp_codes SET used = 1 WHERE email = ? AND used = 0').run(email);
+      // Insert new code
+      db.prepare('INSERT INTO otp_codes (email, code, expires_at) VALUES (?, ?, ?)').run(email, code, expiresAt.toISOString());
+      // Send email
+      try {
+        await emailTransporter.sendMail({
+          from: '"Sky Kids Soroca" <skykids.soroca@gmail.com>',
+          to: email,
+          subject: 'Cod de acces Sky Kids - ' + code,
+          html: `
+            <div style="font-family: Arial, sans-serif; max-width: 400px; margin: 0 auto; padding: 20px;">
+              <div style="background: linear-gradient(135deg, #ff6b9d, #ff9f43); padding: 20px; border-radius: 12px 12px 0 0; text-align: center;">
+                <h2 style="color: white; margin: 0;">Sky Kids Soroca</h2>
               </div>
-              <p style="color: #666; font-size: 14px;">Codul expiră în 5 minute.</p>
-              <p style="color: #666; font-size: 14px;">Dacă nu ai solicitat acest cod, ignoră acest email.</p>
+              <div style="background: #f9f9f9; padding: 30px; border-radius: 0 0 12px 12px;">
+                <p style="color: #333; font-size: 16px;">Bună!</p>
+                <p style="color: #333; font-size: 16px;">Codul tău de acces:</p>
+                <div style="background: white; padding: 20px; text-align: center; border-radius: 8px; margin: 20px 0; border: 2px solid #ff6b9d20;">
+                  <span style="font-size: 36px; font-weight: bold; letter-spacing: 8px; color: #ff6b9d;">${code}</span>
+                </div>
+                <p style="color: #666; font-size: 14px;">Codul expiră în 5 minute.</p>
+                <p style="color: #666; font-size: 14px;">Dacă nu ai solicitat acest cod, ignoră acest email.</p>
+              </div>
             </div>
-          </div>
-        `
-      });
-    } catch(emailErr) {
-      console.log('Email send failed (SMTP not configured):', emailErr.message);
-      // In dev mode, log the code to console so we can test
-      console.log('DEV OTP CODE for', email, ':', code);
+          `
+        });
+      } catch(emailErr) {
+        console.log('Email send failed (SMTP not configured):', emailErr.message);
+        console.log('DEV OTP CODE for', email, ':', code);
+      }
+      res.json({ success: true, message: 'Cod trimis pe email' + (process.env.NODE_ENV !== 'production' ? ' (DEV: check console)' : '') });
+    } else {
+      // Phone OTP - mark old codes as used
+      db.prepare('UPDATE otp_codes SET used = 1 WHERE phone = ? AND used = 0').run(normalizedPhone);
+      // Insert new code
+      db.prepare('INSERT INTO otp_codes (phone, code, expires_at) VALUES (?, ?, ?)').run(normalizedPhone, code, expiresAt.toISOString());
+      // SIMULATED SMS - log to console (no Twilio yet)
+      console.log('\n========================================');
+      console.log('📱 SIMULATED SMS to', normalizedPhone);
+      console.log('   Sky Kids - Cod de acces:', code);
+      console.log('   (Acest mesaj ar fi trimis prin SMS în producție)');
+      console.log('========================================\n');
+      res.json({ success: true, message: 'Cod trimis prin SMS (simulat - vezi consolă)' });
     }
-    
-    res.json({ success: true, message: 'Cod trimis pe email' + (process.env.NODE_ENV !== 'production' ? ' (DEV: check console)' : '') });
   } catch(e) {
     console.error('OTP error:', e);
     res.status(500).json({ error: 'Eroare la trimitere' });
   }
 });
 
-// Verify OTP and login
+// Verify OTP and login (email OR phone)
 app.post('/api/auth/verify-otp', (req, res) => {
-  const { email, code } = req.body;
-  if(!email || !code) {
-    return res.status(400).json({ error: 'Completează toate câmpurile' });
+  const { email, phone, code } = req.body;
+  
+  if(!code) {
+    return res.status(400).json({ error: 'Completează codul de verificare' });
   }
   
-  const record = db.prepare('SELECT * FROM otp_codes WHERE email = ? AND code = ? AND used = 0 AND expires_at > datetime("now") ORDER BY id DESC LIMIT 1').get(email, code);
+  let record = null;
+  let loginIdentifier = null;
+  
+  if(email) {
+    record = db.prepare('SELECT * FROM otp_codes WHERE email = ? AND code = ? AND used = 0 AND expires_at > ? ORDER BY id DESC LIMIT 1').get(email, code, new Date().toISOString());
+    loginIdentifier = email;
+  }
+  
+  if(!record && phone) {
+    const normalizedPhone = phone.replace(/^0/, '+373');
+    record = db.prepare('SELECT * FROM otp_codes WHERE phone = ? AND code = ? AND used = 0 AND expires_at > ? ORDER BY id DESC LIMIT 1').get(normalizedPhone, code, new Date().toISOString());
+    loginIdentifier = normalizedPhone;
+  }
   
   if(!record) {
     return res.status(401).json({ error: 'Cod invalid sau expirat' });
@@ -1028,22 +1167,36 @@ app.post('/api/auth/verify-otp', (req, res) => {
   db.prepare('UPDATE otp_codes SET used = 1 WHERE id = ?').run(record.id);
   
   // Get or create customer
-  let customer = db.prepare('SELECT * FROM customer_users WHERE email = ?').get(email);
-  if(!customer) {
-    const result = db.prepare('INSERT INTO customer_users (email) VALUES (?)').run(email);
-    customer = db.prepare('SELECT * FROM customer_users WHERE id = ?').get(result.lastInsertRowid);
+  let customer = null;
+  if(email) {
+    customer = db.prepare('SELECT * FROM customer_users WHERE email = ?').get(email);
+    if(!customer) {
+      const result = db.prepare('INSERT INTO customer_users (email) VALUES (?)').run(email);
+      customer = db.prepare('SELECT * FROM customer_users WHERE id = ?').get(result.lastInsertRowid);
+    }
+  } else if(phone) {
+    const normalizedPhone = phone.replace(/^0/, '+373');
+    customer = db.prepare('SELECT * FROM customer_users WHERE phone = ?').get(normalizedPhone);
+    if(!customer) {
+      const result = db.prepare('INSERT INTO customer_users (phone) VALUES (?)').run(normalizedPhone);
+      customer = db.prepare('SELECT * FROM customer_users WHERE id = ?').get(result.lastInsertRowid);
+    }
   }
   
-  // Generate session token (simple random string)
+  if(!customer) {
+    return res.status(500).json({ error: 'Eroare la crearea contului' });
+  }
+  
+  // Generate session token
   const sessionToken = crypto.randomBytes(32).toString('hex');
   const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
   
-  db.prepare('INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)').run('session_' + sessionToken, JSON.stringify({ customer_id: customer.id, email: customer.email, expires: expiresAt.toISOString() }));
+  db.prepare('INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)').run('session_' + sessionToken, JSON.stringify({ customer_id: customer.id, email: customer.email, phone: customer.phone, expires: expiresAt.toISOString() }));
   
   res.json({ 
     success: true, 
     token: sessionToken,
-    customer: { id: customer.id, email: customer.email, first_name: customer.first_name, last_name: customer.last_name, phone: customer.phone }
+    customer: { id: customer.id, email: customer.email, phone: customer.phone, first_name: customer.first_name, last_name: customer.last_name }
   });
 });
 

@@ -64,9 +64,7 @@
     const totalKids = bookings.reduce((sum, b) => sum + (b.kids_count || 0), 0);
     const totalAdults = bookings.reduce((sum, b) => sum + (b.adults_count || 0), 0);
     
-    // Calculate revenue from bookings
-    let bookingsRevenue = 0;
-    let ordersRevenue = 0;
+    // Calculate revenue using actual package prices from API
     try {
       const pkgRes = await fetch('/api/admin/packages', { headers: authHeaders() });
       const packages = await pkgRes.json();
@@ -75,20 +73,19 @@
         pkgPriceMap[p.name.toLowerCase().replace(/\s+/g, '-')] = p;
       });
       
+      let totalRevenue = 0;
       bookings.forEach(b => {
         const pkg = pkgPriceMap[b.package];
         if (pkg) {
-          if (pkg.price_group) bookingsRevenue += parseFloat(pkg.price_group);
+          if (pkg.price_group) totalRevenue += parseFloat(pkg.price_group);
           else {
-            bookingsRevenue += (pkg.price_per_child || 0) * (b.kids_count || 0);
-            bookingsRevenue += (pkg.price_per_adult || 0) * (b.adults_count || 0);
+            totalRevenue += (pkg.price_per_child || 0) * (b.kids_count || 0);
+            totalRevenue += (pkg.price_per_adult || 0) * (b.adults_count || 0);
           }
         }
       });
-      // Orders revenue
-      orders.forEach(o => { ordersRevenue += parseFloat(o.total || 0); });
-      
-      const totalRevenue = bookingsRevenue + ordersRevenue;
+      // Add orders revenue
+      orders.forEach(o => { totalRevenue += parseFloat(o.total || 0); });
       document.getElementById('statRevenue').textContent = Math.round(totalRevenue) + ' lei';
     } catch(e) {
       document.getElementById('statRevenue').textContent = '— lei';
@@ -99,7 +96,7 @@
     document.getElementById('statAdults').textContent = totalAdults;
     document.getElementById('statOrders').textContent = orders.length;
     
-    // Render combined activity list
+    // Render combined list
     const list = document.getElementById('statsBookingsList');
     const allItems = [
       ...bookings.map(b => ({ type: 'booking', ...b })),
@@ -107,17 +104,16 @@
     ].sort((a, b) => new Date(b.date || b.created_at) - new Date(a.date || a.created_at));
     
     if (!allItems.length) {
-      list.innerHTML = '<p class="text-gray-400 text-center py-8">Nicio activitate în această perioadă.</p>';
+      list.innerHTML = '<p class="text-gray-400 text-center py-8">Nicio rezervare sau comandă în această perioadă.</p>';
       return;
     }
     list.innerHTML = allItems.slice(0, 20).map(item => {
       if(item.type === 'order') {
-        const tc = { delivery: { border: '#3b82f6', label: '🏍️ Livrare' }, advance: { border: '#a855f7', label: '📅 În avans' }, onsite: { border: '#26de81', label: '🏠 În sală' } }[item.order_type] || { border: '#6b7280', label: '?' };
-        return `<div class="flex items-center justify-between p-4 bg-purple-50 rounded-xl border-l-4" style="border-left-color: ${tc.border}">
+        return `<div class="flex items-center justify-between p-4 bg-purple-50 rounded-xl border border-purple-100">
         <div>
-          <p class="font-bold">📦 #${item.order_number}</p>
+          <p class="font-bold">📦 Comandă #${item.order_number}</p>
           <p class="text-sm text-gray-500">${new Date(item.created_at).toLocaleDateString('ro-RO')} · ${item.first_name} ${item.last_name}</p>
-          <p class="text-xs text-purple-600 mt-1">${tc.label}</p>
+          <p class="text-xs text-purple-600 mt-1">${item.order_type === 'delivery' ? '🏍️ Livrare' : item.order_type === 'advance' ? '📅 În avans' : '🏠 În sală'}</p>
         </div>
         <div class="text-right">
           <p class="font-bold text-purple-600">${parseFloat(item.total || 0).toFixed(2)} lei</p>
@@ -138,7 +134,7 @@
     }).join('');
   }
 
-  // ===== BOOKINGS =====  // ===== BOOKINGS =====  // ===== BOOKINGS =====
+  // ===== BOOKINGS =====  // ===== BOOKINGS =====
   async function loadBookings() {
     const status = document.getElementById('bookingsStatusFilter')?.value || '';
     let url = '/api/admin/bookings';
@@ -649,7 +645,7 @@
           <label class="block text-sm font-bold text-gray-700 mb-2">Parolă</label>
           <input type="password" id="loginPassword" required class="w-full px-4 sm:px-5 py-3 sm:py-4 rounded-xl border-2 border-gray-100 text-base sm:text-lg" placeholder="••••••">
         </div>
-        <button type="button" onclick="document.getElementById('loginForm').requestSubmit()" class="btn-primary w-full flex items-center justify-center gap-2">
+        <button type="submit" class="btn-primary w-full flex items-center justify-center gap-2">
           <iconify-icon icon="lucide:log-in" width="18"></iconify-icon>
           Intră în admin
         </button>
@@ -705,9 +701,8 @@
           <button onclick="showSection('bookings')" class="sidebar-item w-full flex items-center gap-2 lg:gap-3 px-3 lg:px-4 py-2 lg:py-3 font-bold text-left text-sm lg:text-base" data-section="bookings">
             <iconify-icon icon="lucide:calendar" width="20"></iconify-icon> Rezervări
           </button>
-          <button onclick="showSection('comenzi')" class="sidebar-item w-full flex items-center justify-between gap-2 lg:gap-3 px-3 lg:px-4 py-2 lg:py-3 font-bold text-left text-sm lg:text-base" data-section="comenzi">
-            <span class="flex items-center gap-2 lg:gap-3"><iconify-icon icon="lucide:shopping-bag" width="20"></iconify-icon> Comenzi</span>
-            <span id="sidebarOrdersBadge" class="bg-candy-pink text-white text-xs px-2 py-0.5 rounded-full font-bold hidden">0</span>
+          <button onclick="showSection('comenzi')" class="sidebar-item w-full flex items-center gap-2 lg:gap-3 px-3 lg:px-4 py-2 lg:py-3 font-bold text-left text-sm lg:text-base" data-section="comenzi">
+            <iconify-icon icon="lucide:shopping-bag" width="20"></iconify-icon> Comenzi
           </button>
           <button onclick="showSection('decor')" class="sidebar-item w-full flex items-center gap-2 lg:gap-3 px-3 lg:px-4 py-2 lg:py-3 font-bold text-left text-sm lg:text-base" data-section="decor">
             <iconify-icon icon="lucide:sparkles" width="20"></iconify-icon> Decoruri
@@ -949,13 +944,9 @@
             </div>
           </div>
           
-          <!-- Activity list -->
+          <!-- Recent bookings -->
           <div class="card p-4 sm:p-6 sm:p-8">
-            <h3 class="font-bold text-lg sm:text-xl mb-2">Activitate în perioada selectată</h3>
-            <div class="flex gap-4 mb-4">
-              <span class="text-xs font-bold px-2 py-1 rounded-full bg-gray-100 text-gray-600">● Rezervări</span>
-              <span class="text-xs font-bold px-2 py-1 rounded-full bg-purple-100 text-purple-600">● Comenzi</span>
-            </div>
+            <h3 class="font-bold text-lg sm:text-xl mb-4">Rezervări în perioada selectată</h3>
             <div id="statsBookingsList" class="space-y-3"></div>
           </div>
         </section>
@@ -982,16 +973,9 @@
 
         <!-- ===== COMENZI ===== -->
         <section id="section-comenzi" class="section hidden">
-          <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center justify-between mb-6">
             <h2 class="text-2xl font-bold text-dark">Comenzi</h2>
             <span id="ordersCount" class="bg-candy-pink text-white px-3 py-1 rounded-full text-sm font-bold">0</span>
-          </div>
-          <!-- Filter tabs -->
-          <div class="flex gap-2 mb-6">
-            <button onclick="filterOrders('all')" id="filterOrdersAll" class="px-4 py-2 rounded-xl text-sm font-bold bg-candy-pink text-white">Toate</button>
-            <button onclick="filterOrders('delivery')" id="filterOrdersDelivery" class="px-4 py-2 rounded-xl text-sm font-bold bg-gray-100 text-gray-600 hover:bg-candy-blue/10">🏍️ Livrare</button>
-            <button onclick="filterOrders('advance')" id="filterOrdersAdvance" class="px-4 py-2 rounded-xl text-sm font-bold bg-gray-100 text-gray-600 hover:bg-candy-blue/10">📅 În avans</button>
-            <button onclick="filterOrders('onsite')" id="filterOrdersOnsite" class="px-4 py-2 rounded-xl text-sm font-bold bg-gray-100 text-gray-600 hover:bg-candy-blue/10">🏠 În sală</button>
           </div>
           <div class="bg-white rounded-2xl shadow-card p-6">
             <div id="ordersList" class="space-y-4">
@@ -1103,37 +1087,6 @@
                   <textarea id="bizLegalAddress" rows="3" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-candy-pink" placeholder="Strada, nr., oras, MD-XXXX"></textarea>
                 </div>
                 <button type="button" onclick="saveBusinessInfo()" class="w-full bg-gradient-to-r from-candy-pink to-candy-orange text-white py-3 rounded-xl font-bold hover:opacity-90">Salvează</button>
-              </div>
-            </div>
-          </div>
-            <!-- Event Mode Card -->
-            <div class="bg-white rounded-2xl shadow-card p-6 md:col-span-2">
-              <div class="flex items-center justify-between mb-4">
-                <h3 class="font-bold text-dark">🚫 Mod Eveniment (Restaurant Închis)</h3>
-                <span id="eventStatusBadge" class="text-xs font-bold px-3 py-1 rounded-full bg-gray-100 text-gray-600">INACTIV</span>
-              </div>
-              <p class="text-sm text-gray-500 mb-4">Când este activ, clienții nu pot plasa comenzi sau rezervări în perioada selectată.</p>
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                <div>
-                  <label class="text-sm font-semibold text-gray-700 mb-1 block">Data evenimentului</label>
-                  <input type="date" id="eventDate" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-candy-pink">
-                </div>
-                <div>
-                  <label class="text-sm font-semibold text-gray-700 mb-1 block">Motiv eveniment</label>
-                  <input type="text" id="eventReason" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-candy-pink" placeholder="Ex: Petrecere privată">
-                </div>
-                <div>
-                  <label class="text-sm font-semibold text-gray-700 mb-1 block">Ora început</label>
-                  <input type="time" id="eventStart" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-candy-pink">
-                </div>
-                <div>
-                  <label class="text-sm font-semibold text-gray-700 mb-1 block">Ora sfârșit</label>
-                  <input type="time" id="eventEnd" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-candy-pink">
-                </div>
-              </div>
-              <div class="flex gap-3">
-                <button type="button" onclick="saveEventMode()" class="flex-1 bg-gradient-to-r from-candy-pink to-candy-orange text-white py-3 rounded-xl font-bold hover:opacity-90">Activează Evenimentul</button>
-                <button type="button" onclick="clearEventMode()" class="px-6 py-3 bg-gray-100 text-gray-600 rounded-xl font-bold hover:bg-gray-200">Dezactivează</button>
               </div>
             </div>
           </div>
@@ -2140,83 +2093,52 @@
   }
 
   // ===== ORDERS =====
-  let allOrders = [];
-  
   async function loadOrders() {
     try {
       const token = localStorage.getItem('skykids_token');
       const res = await fetch('/api/orders', { headers: { 'Authorization': 'Bearer ' + token } });
       if(!res.ok) throw new Error('Failed');
-      allOrders = await res.json();
+      const orders = await res.json();
       const container = document.getElementById('ordersList');
-      document.getElementById('ordersCount').textContent = allOrders.length;
-      // Update sidebar badge
-      const badge = document.getElementById('sidebarOrdersBadge');
-      if(allOrders.length > 0) {
-        badge.textContent = allOrders.length;
-        badge.classList.remove('hidden');
-      } else {
-        badge.classList.add('hidden');
+      document.getElementById('ordersCount').textContent = orders.length;
+      if(orders.length === 0) {
+        container.innerHTML = '<p class="text-gray-400 text-center py-8">Nicio comandă încă</p>';
+        return;
       }
-      renderOrders(allOrders);
+      container.innerHTML = orders.map(o => `
+        <div class="border border-gray-100 rounded-xl p-5 ${o.status === 'pending' ? 'border-l-4 border-l-yellow-400' : o.status === 'completed' ? 'border-l-4 border-l-candy-green' : ''}">
+          <div class="flex items-start justify-between mb-3">
+            <div>
+              <span class="font-bold text-dark">${o.first_name} ${o.last_name}</span>
+              <span class="ml-2 text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-lg">#${o.order_number}</span>
+              ${o.order_type === 'delivery' ? '<span class="ml-2 text-xs bg-candy-blue/10 text-candy-blue px-2 py-1 rounded-lg font-bold">🏍️ Livrare</span>' : ''}
+              ${o.order_type === 'advance' ? '<span class="ml-2 text-xs bg-candy-purple/10 text-candy-purple px-2 py-1 rounded-lg font-bold">📅 În avans</span>' : ''}
+              ${o.order_type === 'onsite' ? '<span class="ml-2 text-xs bg-candy-green/10 text-candy-green px-2 py-1 rounded-lg font-bold">🏠 În sală</span>' : ''}
+              ${o.status === 'pending' ? '<span class="ml-2 text-xs bg-yellow-100 text-yellow-700 px-2 py-1 rounded-lg font-bold">În așteptare</span>' : ''}
+              ${o.status === 'completed' ? '<span class="ml-2 text-xs bg-candy-green/10 text-candy-green px-2 py-1 rounded-lg font-bold">Finalizată</span>' : ''}
+            </div>
+            <span class="text-sm text-gray-400">${new Date(o.created_at).toLocaleDateString('ro-RO')}</span>
+          </div>
+          <div class="text-sm text-gray-600 mb-2">
+            <div>📞 ${o.phone}</div>
+            ${o.address ? '<div>📍 ' + o.address + '</div>' : ''}
+            ${o.datetime ? '<div>📅 ' + o.datetime + '</div>' : ''}
+          </div>
+          <div class="text-sm mb-3">
+            ${(o.items || []).map(item => `<span class="inline-block bg-gray-50 text-gray-700 px-2 py-1 rounded-lg mr-1 mb-1">${item.quantity}× ${item.product_name}</span>`).join('')}
+          </div>
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-candy-pink">${parseFloat(o.total).toFixed(2)} MDL</span>
+            <div class="flex gap-2">
+              ${o.status === 'pending' ? `<button onclick="updateOrderStatus(${o.id}, 'completed')" class="bg-candy-green text-white px-4 py-2 rounded-lg text-sm font-bold hover:opacity-90">Finalizează</button>` : ''}
+              <button onclick="updateOrderStatus(${o.id}, 'cancelled')" class="bg-red-100 text-red-600 px-4 py-2 rounded-lg text-sm font-bold hover:opacity-90">Anulează</button>
+            </div>
+          </div>
+        </div>
+      `).join('');
     } catch(e) {
       document.getElementById('ordersList').innerHTML = '<p class="text-red-400 text-center py-8">Eroare la încărcare</p>';
     }
-  }
-  
-  function filterOrders(type) {
-    // Update button styles
-    ['all','delivery','advance','onsite'].forEach(t => {
-      const btn = document.getElementById('filterOrders' + t.charAt(0).toUpperCase() + t.slice(1));
-      if(t === type) {
-        btn.className = 'px-4 py-2 rounded-xl text-sm font-bold bg-candy-pink text-white';
-      } else {
-        btn.className = 'px-4 py-2 rounded-xl text-sm font-bold bg-gray-100 text-gray-600 hover:bg-candy-blue/10';
-      }
-    });
-    // Filter and render
-    const filtered = type === 'all' ? allOrders : allOrders.filter(o => o.order_type === type);
-    renderOrders(filtered);
-  }
-  
-  function renderOrders(orders) {
-    const container = document.getElementById('ordersList');
-    if(orders.length === 0) {
-      container.innerHTML = '<p class="text-gray-400 text-center py-8">Nicio comandă în această categorie</p>';
-      return;
-    }
-    container.innerHTML = orders.map(o => {
-      const typeColors = { delivery: { border: '#3b82f6', bg: 'bg-blue-100', text: 'text-blue-600' }, advance: { border: '#a855f7', bg: 'bg-purple-100', text: 'text-purple-600' }, onsite: { border: '#26de81', bg: 'bg-green-100', text: 'text-green-600' } };
-      const tc = typeColors[o.order_type] || typeColors.onsite;
-      const statusBorder = o.status === 'pending' ? 'border-l-yellow-400' : o.status === 'completed' ? 'border-l-candy-green' : '';
-      return `<div class="border border-gray-100 rounded-xl p-5 border-l-4 ${statusBorder}" style="border-left-color: ${tc.border} !important">
-        <div class="flex items-start justify-between mb-3">
-          <div>
-            <span class="font-bold text-dark">${o.first_name} ${o.last_name}</span>
-            <span class="ml-2 text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-lg">#${o.order_number}</span>
-            <span class="ml-2 text-xs ${tc.bg} ${tc.text} px-2 py-1 rounded-lg font-bold">${o.order_type === 'delivery' ? '🏍️ Livrare' : o.order_type === 'advance' ? '📅 În avans' : '🏠 În sală'}</span>
-            ${o.status === 'pending' ? '<span class="ml-2 text-xs bg-yellow-100 text-yellow-700 px-2 py-1 rounded-lg font-bold">În așteptare</span>' : ''}
-            ${o.status === 'completed' ? '<span class="ml-2 text-xs bg-candy-green/10 text-candy-green px-2 py-1 rounded-lg font-bold">Finalizată</span>' : ''}
-          </div>
-          <span class="text-sm text-gray-400">${new Date(o.created_at).toLocaleDateString('ro-RO')}</span>
-        </div>
-        <div class="text-sm text-gray-600 mb-2">
-          <div>📞 ${o.phone}</div>
-          ${o.address ? '<div>📍 ' + o.address + '</div>' : ''}
-          ${o.datetime ? '<div>📅 ' + o.datetime + '</div>' : ''}
-        </div>
-        <div class="text-sm mb-3">
-          ${(o.items || []).map(item => `<span class="inline-block bg-gray-50 text-gray-700 px-2 py-1 rounded-lg mr-1 mb-1">${item.quantity}× ${item.product_name}</span>`).join('')}
-        </div>
-        <div class="flex items-center justify-between">
-          <span class="font-bold text-candy-pink">${parseFloat(o.total || 0).toFixed(2)} MDL</span>
-          <div class="flex gap-2">
-            ${o.status === 'pending' ? `<button onclick="updateOrderStatus(${o.id}, 'completed')" class="bg-candy-green text-white px-4 py-2 rounded-lg text-sm font-bold hover:opacity-90">Finalizează</button>` : ''}
-            <button onclick="updateOrderStatus(${o.id}, 'cancelled')" class="bg-red-100 text-red-600 px-4 py-2 rounded-lg text-sm font-bold hover:opacity-90">Anulează</button>
-          </div>
-        </div>
-      </div>
-    `).join('');
   }
 
   async function updateOrderStatus(id, status) {
@@ -2283,72 +2205,7 @@
       document.getElementById('bizCompanyEmail').value = data.company_email || '';
       document.getElementById('bizFiscalCode').value = data.fiscal_code || '';
       document.getElementById('bizLegalAddress').value = data.legal_address || '';
-      // Load event mode
-      loadEventMode();
     } catch(e) { console.error('Load business info failed:', e); }
-  }
-
-  async function loadEventMode() {
-    try {
-      const token = localStorage.getItem('skykids_token');
-      const res = await fetch('/api/settings/event', { headers: { 'Authorization': 'Bearer ' + token } });
-      if(!res.ok) return;
-      const data = await res.json();
-      if(data.event_active === 'true' || data.event_active === true) {
-        document.getElementById('eventDate').value = data.event_date || '';
-        document.getElementById('eventReason').value = data.event_reason || '';
-        document.getElementById('eventStart').value = data.event_start || '';
-        document.getElementById('eventEnd').value = data.event_end || '';
-        document.getElementById('eventStatusBadge').textContent = 'ACTIV';
-        document.getElementById('eventStatusBadge').className = 'text-xs font-bold px-3 py-1 rounded-full bg-red-100 text-red-600';
-      } else {
-        document.getElementById('eventStatusBadge').textContent = 'INACTIV';
-        document.getElementById('eventStatusBadge').className = 'text-xs font-bold px-3 py-1 rounded-full bg-gray-100 text-gray-600';
-      }
-    } catch(e) {}
-  }
-
-  async function saveEventMode() {
-    const token = localStorage.getItem('skykids_token');
-    const data = {
-      event_active: 'true',
-      event_date: document.getElementById('eventDate').value,
-      event_reason: document.getElementById('eventReason').value,
-      event_start: document.getElementById('eventStart').value,
-      event_end: document.getElementById('eventEnd').value
-    };
-    if(!data.event_date || !data.event_reason || !data.event_start || !data.event_end) {
-      alert('Completează toate câmpurile pentru a activa evenimentul.');
-      return;
-    }
-    try {
-      await fetch('/api/settings/event', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
-        body: JSON.stringify(data)
-      });
-      document.getElementById('eventStatusBadge').textContent = 'ACTIV';
-      document.getElementById('eventStatusBadge').className = 'text-xs font-bold px-3 py-1 rounded-full bg-red-100 text-red-600';
-      alert('Eveniment activat! Clienții nu pot comanda în această perioadă.');
-    } catch(e) { alert('Eroare'); }
-  }
-
-  async function clearEventMode() {
-    const token = localStorage.getItem('skykids_token');
-    try {
-      await fetch('/api/settings/event', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
-        body: JSON.stringify({ event_active: 'false', event_date: '', event_reason: '', event_start: '', event_end: '' })
-      });
-      document.getElementById('eventDate').value = '';
-      document.getElementById('eventReason').value = '';
-      document.getElementById('eventStart').value = '';
-      document.getElementById('eventEnd').value = '';
-      document.getElementById('eventStatusBadge').textContent = 'INACTIV';
-      document.getElementById('eventStatusBadge').className = 'text-xs font-bold px-3 py-1 rounded-full bg-gray-100 text-gray-600';
-      alert('Eveniment dezactivat.');
-    } catch(e) { alert('Eroare'); }
   }
 
   async function saveBusinessInfo() {
