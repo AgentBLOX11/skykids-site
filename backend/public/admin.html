@@ -4,569 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sky Kids Admin 🎈</title>
-  <script src="https://cdn.tailwindcss.com">
-  // ===== STATS / DASHBOARD =====
-  async function loadStats() {
-    const period = document.getElementById('statsPeriod').value;
-    const dateFrom = document.getElementById('statsDateFrom').value;
-    const dateTo = document.getElementById('statsDateTo').value;
-    
-    let url = '/api/admin/bookings?all=1';
-    const res = await fetch(url, { headers: authHeaders() });
-    let bookings = (await res.json()).bookings;
-    
-    // Filter by period
-    const now = new Date();
-    let from = new Date();
-    let to = new Date();
-    
-    if (dateFrom && dateTo) {
-      from = new Date(dateFrom);
-      to = new Date(dateTo);
-    } else if (period === 'today') {
-      from = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-      to = new Date();
-    } else if (period === 'yesterday') {
-      from = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
-      to = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
-    } else if (period === 'week') {
-      from = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-      to = new Date();
-    } else if (period === 'month') {
-      from = new Date(now.getFullYear(), now.getMonth(), 1);
-      to = new Date();
-    } else if (period === 'year') {
-      from = new Date(now.getFullYear(), 0, 1);
-      to = new Date();
-    } else if (period === 'all') {
-      from = new Date(2020, 0, 1);
-      to = new Date(2030, 0, 1);
-    }
-    
-    bookings = bookings.filter(b => {
-      const d = new Date(b.date);
-      return d >= from && d <= to && b.status !== 'cancelled';
-    });
-    
-    // Calculate stats
-    const totalKids = bookings.reduce((sum, b) => sum + (b.kids_count || 0), 0);
-    const totalAdults = bookings.reduce((sum, b) => sum + (b.adults_count || 0), 0);
-    
-    // Calculate revenue using actual package prices from API
-    try {
-      const pkgRes = await fetch('/api/admin/packages', { headers: authHeaders() });
-      const packages = await pkgRes.json();
-      const pkgPriceMap = {};
-      packages.forEach(p => {
-        pkgPriceMap[p.name.toLowerCase().replace(/\s+/g, '-')] = p;
-      });
-      
-      let totalRevenue = 0;
-      bookings.forEach(b => {
-        const pkg = pkgPriceMap[b.package];
-        if (pkg) {
-          if (pkg.price_group) totalRevenue += parseFloat(pkg.price_group);
-          else {
-            totalRevenue += (pkg.price_per_child || 0) * (b.kids_count || 0);
-            totalRevenue += (pkg.price_per_adult || 0) * (b.adults_count || 0);
-          }
-        }
-      });
-      document.getElementById('statRevenue').textContent = Math.round(totalRevenue) + ' lei';
-    } catch(e) {
-      document.getElementById('statRevenue').textContent = '— lei';
-    }
-    
-    document.getElementById('statBookings').textContent = bookings.length;
-    document.getElementById('statKids').textContent = totalKids;
-    document.getElementById('statAdults').textContent = totalAdults;
-    
-    // Render stats bookings list
-    const list = document.getElementById('statsBookingsList');
-    if (!bookings.length) {
-      list.innerHTML = '<p class="text-gray-400 text-center py-8">Nicio rezervare în această perioadă.</p>';
-      return;
-    }
-    list.innerHTML = bookings.map(b => `
-      <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
-        <div>
-          <p class="font-bold">${b.client_name}</p>
-          <p class="text-sm text-gray-500">${b.date} la ${b.time}</p>
-        </div>
-        <div class="text-right">
-          <p class="font-bold text-candy-pink">${b.package}</p>
-          <p class="text-sm text-gray-500">${b.kids_count} copii, ${b.adults_count || 0} adulți</p>
-        </div>
-        <span class="text-xs font-bold px-3 py-1 rounded-full badge-${b.status}">${b.status}</span>
-      </div>
-    `).join('');
-  }
-
-  // ===== BOOKINGS =====
-  async function loadBookings() {
-    const status = document.getElementById('bookingsStatusFilter')?.value || '';
-    let url = '/api/admin/bookings';
-    if (status) url += '?status=' + status;
-    const data = await (await fetch(url, { headers: authHeaders() })).json();
-    allBookings = data.bookings;
-    renderBookings();
-  }
-
-  function renderBookings() {
-    const list = document.getElementById('bookingsList');
-    if (!allBookings.length) {
-      list.innerHTML = '<div class="card p-12 text-center text-gray-400">Nicio rezervare momentan.</div>';
-      return;
-    }
-    const statusBadge = { pending: 'badge-pending', confirmed: 'badge-confirmed', cancelled: 'badge-cancelled', completed: 'badge-completed' };
-    list.innerHTML = allBookings.map(b => `
-      <div class="card p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 cursor-pointer hover:shadow-lg transition-all" onclick="openBookingEditModal('${b.id}')">
-        <div>
-          <h4 class="font-bold text-lg">${b.client_name}</h4>
-          <p class="text-gray-500">${b.client_phone}</p>
-          <p class="text-sm text-gray-400">${b.date} la ${b.time}</p>
-          ${b.notes ? `<p class="text-sm text-gray-400 mt-1">📝 ${b.notes}</p>` : ''}
-          ${b.admin_notes ? `<p class="text-sm text-candy-blue mt-1 font-medium">🔒 ${b.admin_notes}</p>` : ''}
-        </div>
-        <div class="text-center">
-          <p class="font-bold text-candy-pink">${b.package}</p>
-          <p class="text-sm">${b.kids_count} copii</p>
-          <p class="text-sm">${b.adults_count || 0} adulți</p>
-        </div>
-        <div class="flex items-center gap-2">
-          <span class="px-3 py-1 rounded-full text-xs font-bold ${statusBadge[b.status]}">${b.status}</span>
-          ${b.status === 'pending' ? `
-            <button onclick="event.stopPropagation(); updateBookingStatus('${b.id}', 'confirmed')" class="px-4 py-2 bg-candy-green text-white rounded-xl text-sm font-bold hover:opacity-90">Confirmă</button>
-            <button onclick="event.stopPropagation(); updateBookingStatus('${b.id}', 'cancelled')" class="px-4 py-2 bg-red-500 text-white rounded-xl text-sm font-bold hover:opacity-90">Anulează</button>
-          ` : ''}
-        </div>
-      </div>
-    `).join('');
-  }
-
-  function openBookingEditModal(id) {
-    const b = allBookings.find(b => b.id === id);
-    if (!b) return;
-    document.getElementById('editBookingId').value = b.id;
-    document.getElementById('editClientName').value = b.client_name;
-    document.getElementById('editClientPhone').value = b.client_phone;
-    document.getElementById('editKidsCount').value = b.kids_count;
-    document.getElementById('editAdultsCount').value = b.adults_count || 0;
-    document.getElementById('editNotes').value = b.notes || '';
-    document.getElementById('editAdminNotes').value = b.admin_notes || '';
-    document.getElementById('editStatus').value = b.status;
-    const foodDiv = document.getElementById('editBookingFood');
-    if (b.food_items && b.food_items.length > 0) {
-      foodDiv.innerHTML = b.food_items.map(fi => `<div class="flex justify-between text-sm py-1"><span>${fi.quantity}× ${fi.product_name}</span><span class="font-bold">${(fi.price * fi.quantity).toFixed(2)} MDL</span></div>`).join('');
-      foodDiv.classList.remove('hidden');
-      document.getElementById('editBookingFoodTotal').classList.remove('hidden');
-      const pkgPrice = parseFloat(b.package_price || 0);
-      const foodTotal = parseFloat(b.food_total || 0);
-      const grandTotal = pkgPrice + foodTotal;
-      document.getElementById('editBookingFoodTotal').innerHTML = '<div class="flex justify-between text-sm py-1"><span>Pachet</span><span class="font-bold">' + pkgPrice.toFixed(2) + ' MDL</span></div><div class="flex justify-between text-sm py-1"><span>Produse</span><span class="font-bold">' + foodTotal.toFixed(2) + ' MDL</span></div><div class="flex justify-between text-sm py-1 border-t border-gray-200 mt-1 pt-1"><span class="font-bold text-candy-pink">Total</span><span class="font-bold text-candy-pink">' + grandTotal.toFixed(2) + ' MDL</span></div>';
-    } else {
-      foodDiv.innerHTML = '<p class="text-sm text-gray-400">Nu sunt produse adăugate</p>';
-      foodDiv.classList.remove('hidden');
-      document.getElementById('editBookingFoodTotal').classList.add('hidden');
-    }
-    showModal('bookingEditModal');
-  }
-
-  function closeBookingEditModal() { hideModal('bookingEditModal'); }
-
-  async function updateBookingStatus(id, status) {
-    await fetch('/api/admin/bookings/' + id, { method: 'PATCH', headers: authHeaders(), body: JSON.stringify({ status }) });
-    loadBookings();
-  }
-
-
-
-  function showBookingModal() {
-    // For now just show alert - could implement full modal
-    alert('Pentru a adăuga o rezervare, contactează clientul direct.');
-  }
-
-</script>
-  <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js">
-  // ===== STATS / DASHBOARD =====
-  async function loadStats() {
-    const period = document.getElementById('statsPeriod').value;
-    const dateFrom = document.getElementById('statsDateFrom').value;
-    const dateTo = document.getElementById('statsDateTo').value;
-    
-    let url = '/api/admin/bookings?all=1';
-    const res = await fetch(url, { headers: authHeaders() });
-    let bookings = (await res.json()).bookings;
-    
-    // Filter by period
-    const now = new Date();
-    let from = new Date();
-    let to = new Date();
-    
-    if (dateFrom && dateTo) {
-      from = new Date(dateFrom);
-      to = new Date(dateTo);
-    } else if (period === 'today') {
-      from = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-      to = new Date();
-    } else if (period === 'yesterday') {
-      from = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
-      to = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
-    } else if (period === 'week') {
-      from = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-      to = new Date();
-    } else if (period === 'month') {
-      from = new Date(now.getFullYear(), now.getMonth(), 1);
-      to = new Date();
-    } else if (period === 'year') {
-      from = new Date(now.getFullYear(), 0, 1);
-      to = new Date();
-    } else if (period === 'all') {
-      from = new Date(2020, 0, 1);
-      to = new Date(2030, 0, 1);
-    }
-    
-    bookings = bookings.filter(b => {
-      const d = new Date(b.date);
-      return d >= from && d <= to && b.status !== 'cancelled';
-    });
-    
-    // Calculate stats
-    const totalKids = bookings.reduce((sum, b) => sum + (b.kids_count || 0), 0);
-    const totalAdults = bookings.reduce((sum, b) => sum + (b.adults_count || 0), 0);
-    
-    // Calculate revenue using actual package prices from API
-    try {
-      const pkgRes = await fetch('/api/admin/packages', { headers: authHeaders() });
-      const packages = await pkgRes.json();
-      const pkgPriceMap = {};
-      packages.forEach(p => {
-        pkgPriceMap[p.name.toLowerCase().replace(/\s+/g, '-')] = p;
-      });
-      
-      let totalRevenue = 0;
-      bookings.forEach(b => {
-        const pkg = pkgPriceMap[b.package];
-        if (pkg) {
-          if (pkg.price_group) totalRevenue += parseFloat(pkg.price_group);
-          else {
-            totalRevenue += (pkg.price_per_child || 0) * (b.kids_count || 0);
-            totalRevenue += (pkg.price_per_adult || 0) * (b.adults_count || 0);
-          }
-        }
-      });
-      document.getElementById('statRevenue').textContent = Math.round(totalRevenue) + ' lei';
-    } catch(e) {
-      document.getElementById('statRevenue').textContent = '— lei';
-    }
-    
-    document.getElementById('statBookings').textContent = bookings.length;
-    document.getElementById('statKids').textContent = totalKids;
-    document.getElementById('statAdults').textContent = totalAdults;
-    
-    // Render stats bookings list
-    const list = document.getElementById('statsBookingsList');
-    if (!bookings.length) {
-      list.innerHTML = '<p class="text-gray-400 text-center py-8">Nicio rezervare în această perioadă.</p>';
-      return;
-    }
-    list.innerHTML = bookings.map(b => `
-      <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
-        <div>
-          <p class="font-bold">${b.client_name}</p>
-          <p class="text-sm text-gray-500">${b.date} la ${b.time}</p>
-        </div>
-        <div class="text-right">
-          <p class="font-bold text-candy-pink">${b.package}</p>
-          <p class="text-sm text-gray-500">${b.kids_count} copii, ${b.adults_count || 0} adulți</p>
-        </div>
-        <span class="text-xs font-bold px-3 py-1 rounded-full badge-${b.status}">${b.status}</span>
-      </div>
-    `).join('');
-  }
-
-  // ===== BOOKINGS =====
-  async function loadBookings() {
-    const status = document.getElementById('bookingsStatusFilter')?.value || '';
-    let url = '/api/admin/bookings';
-    if (status) url += '?status=' + status;
-    const data = await (await fetch(url, { headers: authHeaders() })).json();
-    allBookings = data.bookings;
-    renderBookings();
-  }
-
-  function renderBookings() {
-    const list = document.getElementById('bookingsList');
-    if (!allBookings.length) {
-      list.innerHTML = '<div class="card p-12 text-center text-gray-400">Nicio rezervare momentan.</div>';
-      return;
-    }
-    const statusBadge = { pending: 'badge-pending', confirmed: 'badge-confirmed', cancelled: 'badge-cancelled', completed: 'badge-completed' };
-    list.innerHTML = allBookings.map(b => `
-      <div class="card p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 cursor-pointer hover:shadow-lg transition-all" onclick="openBookingEditModal('${b.id}')">
-        <div>
-          <h4 class="font-bold text-lg">${b.client_name}</h4>
-          <p class="text-gray-500">${b.client_phone}</p>
-          <p class="text-sm text-gray-400">${b.date} la ${b.time}</p>
-          ${b.notes ? `<p class="text-sm text-gray-400 mt-1">📝 ${b.notes}</p>` : ''}
-          ${b.admin_notes ? `<p class="text-sm text-candy-blue mt-1 font-medium">🔒 ${b.admin_notes}</p>` : ''}
-        </div>
-        <div class="text-center">
-          <p class="font-bold text-candy-pink">${b.package}</p>
-          <p class="text-sm">${b.kids_count} copii</p>
-          <p class="text-sm">${b.adults_count || 0} adulți</p>
-        </div>
-        <div class="flex items-center gap-2">
-          <span class="px-3 py-1 rounded-full text-xs font-bold ${statusBadge[b.status]}">${b.status}</span>
-          ${b.status === 'pending' ? `
-            <button onclick="event.stopPropagation(); updateBookingStatus('${b.id}', 'confirmed')" class="px-4 py-2 bg-candy-green text-white rounded-xl text-sm font-bold hover:opacity-90">Confirmă</button>
-            <button onclick="event.stopPropagation(); updateBookingStatus('${b.id}', 'cancelled')" class="px-4 py-2 bg-red-500 text-white rounded-xl text-sm font-bold hover:opacity-90">Anulează</button>
-          ` : ''}
-        </div>
-      </div>
-    `).join('');
-  }
-
-  function openBookingEditModal(id) {
-    const b = allBookings.find(b => b.id === id);
-    if (!b) return;
-    document.getElementById('editBookingId').value = b.id;
-    document.getElementById('editClientName').value = b.client_name;
-    document.getElementById('editClientPhone').value = b.client_phone;
-    document.getElementById('editKidsCount').value = b.kids_count;
-    document.getElementById('editAdultsCount').value = b.adults_count || 0;
-    document.getElementById('editNotes').value = b.notes || '';
-    document.getElementById('editAdminNotes').value = b.admin_notes || '';
-    document.getElementById('editStatus').value = b.status;
-    const foodDiv = document.getElementById('editBookingFood');
-    if (b.food_items && b.food_items.length > 0) {
-      foodDiv.innerHTML = b.food_items.map(fi => `<div class="flex justify-between text-sm py-1"><span>${fi.quantity}× ${fi.product_name}</span><span class="font-bold">${(fi.price * fi.quantity).toFixed(2)} MDL</span></div>`).join('');
-      foodDiv.classList.remove('hidden');
-      document.getElementById('editBookingFoodTotal').classList.remove('hidden');
-      const pkgPrice = parseFloat(b.package_price || 0);
-      const foodTotal = parseFloat(b.food_total || 0);
-      const grandTotal = pkgPrice + foodTotal;
-      document.getElementById('editBookingFoodTotal').innerHTML = '<div class="flex justify-between text-sm py-1"><span>Pachet</span><span class="font-bold">' + pkgPrice.toFixed(2) + ' MDL</span></div><div class="flex justify-between text-sm py-1"><span>Produse</span><span class="font-bold">' + foodTotal.toFixed(2) + ' MDL</span></div><div class="flex justify-between text-sm py-1 border-t border-gray-200 mt-1 pt-1"><span class="font-bold text-candy-pink">Total</span><span class="font-bold text-candy-pink">' + grandTotal.toFixed(2) + ' MDL</span></div>';
-    } else {
-      foodDiv.innerHTML = '<p class="text-sm text-gray-400">Nu sunt produse adăugate</p>';
-      foodDiv.classList.remove('hidden');
-      document.getElementById('editBookingFoodTotal').classList.add('hidden');
-    }
-    showModal('bookingEditModal');
-  }
-
-  function closeBookingEditModal() { hideModal('bookingEditModal'); }
-
-  async function updateBookingStatus(id, status) {
-    await fetch('/api/admin/bookings/' + id, { method: 'PATCH', headers: authHeaders(), body: JSON.stringify({ status }) });
-    loadBookings();
-  }
-
-
-
-  function showBookingModal() {
-    // For now just show alert - could implement full modal
-    alert('Pentru a adăuga o rezervare, contactează clientul direct.');
-  }
-
-</script>
+  <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            sky: { 50:'#f0f9ff',100:'#e0f2fe',200:'#bae6fd',300:'#7dd3fc',400:'#38bdf8',500:'#0ea5e9',600:'#0284c7',700:'#0369a1',800:'#075985',900:'#0c4a6e' },
-            candy: { pink:'#ff6b9d', yellow:'#ffd93d', green:'#6bcb77', orange:'#ff8c42', blue:'#4d96ff', purple:'#9b59b6' },
-            dark: '#1a1a2e',
-          },
-          fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] }
-        }
-      }
-    }
-  
-  // ===== STATS / DASHBOARD =====
-  async function loadStats() {
-    const period = document.getElementById('statsPeriod').value;
-    const dateFrom = document.getElementById('statsDateFrom').value;
-    const dateTo = document.getElementById('statsDateTo').value;
-    
-    let url = '/api/admin/bookings?all=1';
-    const res = await fetch(url, { headers: authHeaders() });
-    let bookings = (await res.json()).bookings;
-    
-    // Filter by period
-    const now = new Date();
-    let from = new Date();
-    let to = new Date();
-    
-    if (dateFrom && dateTo) {
-      from = new Date(dateFrom);
-      to = new Date(dateTo);
-    } else if (period === 'today') {
-      from = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-      to = new Date();
-    } else if (period === 'yesterday') {
-      from = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
-      to = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
-    } else if (period === 'week') {
-      from = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-      to = new Date();
-    } else if (period === 'month') {
-      from = new Date(now.getFullYear(), now.getMonth(), 1);
-      to = new Date();
-    } else if (period === 'year') {
-      from = new Date(now.getFullYear(), 0, 1);
-      to = new Date();
-    } else if (period === 'all') {
-      from = new Date(2020, 0, 1);
-      to = new Date(2030, 0, 1);
-    }
-    
-    bookings = bookings.filter(b => {
-      const d = new Date(b.date);
-      return d >= from && d <= to && b.status !== 'cancelled';
-    });
-    
-    // Calculate stats
-    const totalKids = bookings.reduce((sum, b) => sum + (b.kids_count || 0), 0);
-    const totalAdults = bookings.reduce((sum, b) => sum + (b.adults_count || 0), 0);
-    
-    // Calculate revenue using actual package prices from API
-    try {
-      const pkgRes = await fetch('/api/admin/packages', { headers: authHeaders() });
-      const packages = await pkgRes.json();
-      const pkgPriceMap = {};
-      packages.forEach(p => {
-        pkgPriceMap[p.name.toLowerCase().replace(/\s+/g, '-')] = p;
-      });
-      
-      let totalRevenue = 0;
-      bookings.forEach(b => {
-        const pkg = pkgPriceMap[b.package];
-        if (pkg) {
-          if (pkg.price_group) totalRevenue += parseFloat(pkg.price_group);
-          else {
-            totalRevenue += (pkg.price_per_child || 0) * (b.kids_count || 0);
-            totalRevenue += (pkg.price_per_adult || 0) * (b.adults_count || 0);
-          }
-        }
-      });
-      document.getElementById('statRevenue').textContent = Math.round(totalRevenue) + ' lei';
-    } catch(e) {
-      document.getElementById('statRevenue').textContent = '— lei';
-    }
-    
-    document.getElementById('statBookings').textContent = bookings.length;
-    document.getElementById('statKids').textContent = totalKids;
-    document.getElementById('statAdults').textContent = totalAdults;
-    
-    // Render stats bookings list
-    const list = document.getElementById('statsBookingsList');
-    if (!bookings.length) {
-      list.innerHTML = '<p class="text-gray-400 text-center py-8">Nicio rezervare în această perioadă.</p>';
-      return;
-    }
-    list.innerHTML = bookings.map(b => `
-      <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
-        <div>
-          <p class="font-bold">${b.client_name}</p>
-          <p class="text-sm text-gray-500">${b.date} la ${b.time}</p>
-        </div>
-        <div class="text-right">
-          <p class="font-bold text-candy-pink">${b.package}</p>
-          <p class="text-sm text-gray-500">${b.kids_count} copii, ${b.adults_count || 0} adulți</p>
-        </div>
-        <span class="text-xs font-bold px-3 py-1 rounded-full badge-${b.status}">${b.status}</span>
-      </div>
-    `).join('');
-  }
-
-  // ===== BOOKINGS =====
-  async function loadBookings() {
-    const status = document.getElementById('bookingsStatusFilter')?.value || '';
-    let url = '/api/admin/bookings';
-    if (status) url += '?status=' + status;
-    const data = await (await fetch(url, { headers: authHeaders() })).json();
-    allBookings = data.bookings;
-    renderBookings();
-  }
-
-  function renderBookings() {
-    const list = document.getElementById('bookingsList');
-    if (!allBookings.length) {
-      list.innerHTML = '<div class="card p-12 text-center text-gray-400">Nicio rezervare momentan.</div>';
-      return;
-    }
-    const statusBadge = { pending: 'badge-pending', confirmed: 'badge-confirmed', cancelled: 'badge-cancelled', completed: 'badge-completed' };
-    list.innerHTML = allBookings.map(b => `
-      <div class="card p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 cursor-pointer hover:shadow-lg transition-all" onclick="openBookingEditModal('${b.id}')">
-        <div>
-          <h4 class="font-bold text-lg">${b.client_name}</h4>
-          <p class="text-gray-500">${b.client_phone}</p>
-          <p class="text-sm text-gray-400">${b.date} la ${b.time}</p>
-          ${b.notes ? `<p class="text-sm text-gray-400 mt-1">📝 ${b.notes}</p>` : ''}
-          ${b.admin_notes ? `<p class="text-sm text-candy-blue mt-1 font-medium">🔒 ${b.admin_notes}</p>` : ''}
-        </div>
-        <div class="text-center">
-          <p class="font-bold text-candy-pink">${b.package}</p>
-          <p class="text-sm">${b.kids_count} copii</p>
-          <p class="text-sm">${b.adults_count || 0} adulți</p>
-        </div>
-        <div class="flex items-center gap-2">
-          <span class="px-3 py-1 rounded-full text-xs font-bold ${statusBadge[b.status]}">${b.status}</span>
-          ${b.status === 'pending' ? `
-            <button onclick="event.stopPropagation(); updateBookingStatus('${b.id}', 'confirmed')" class="px-4 py-2 bg-candy-green text-white rounded-xl text-sm font-bold hover:opacity-90">Confirmă</button>
-            <button onclick="event.stopPropagation(); updateBookingStatus('${b.id}', 'cancelled')" class="px-4 py-2 bg-red-500 text-white rounded-xl text-sm font-bold hover:opacity-90">Anulează</button>
-          ` : ''}
-        </div>
-      </div>
-    `).join('');
-  }
-
-  function openBookingEditModal(id) {
-    const b = allBookings.find(b => b.id === id);
-    if (!b) return;
-    document.getElementById('editBookingId').value = b.id;
-    document.getElementById('editClientName').value = b.client_name;
-    document.getElementById('editClientPhone').value = b.client_phone;
-    document.getElementById('editKidsCount').value = b.kids_count;
-    document.getElementById('editAdultsCount').value = b.adults_count || 0;
-    document.getElementById('editNotes').value = b.notes || '';
-    document.getElementById('editAdminNotes').value = b.admin_notes || '';
-    document.getElementById('editStatus').value = b.status;
-    const foodDiv = document.getElementById('editBookingFood');
-    if (b.food_items && b.food_items.length > 0) {
-      foodDiv.innerHTML = b.food_items.map(fi => `<div class="flex justify-between text-sm py-1"><span>${fi.quantity}× ${fi.product_name}</span><span class="font-bold">${(fi.price * fi.quantity).toFixed(2)} MDL</span></div>`).join('');
-      foodDiv.classList.remove('hidden');
-      document.getElementById('editBookingFoodTotal').classList.remove('hidden');
-      const pkgPrice = parseFloat(b.package_price || 0);
-      const foodTotal = parseFloat(b.food_total || 0);
-      const grandTotal = pkgPrice + foodTotal;
-      document.getElementById('editBookingFoodTotal').innerHTML = '<div class="flex justify-between text-sm py-1"><span>Pachet</span><span class="font-bold">' + pkgPrice.toFixed(2) + ' MDL</span></div><div class="flex justify-between text-sm py-1"><span>Produse</span><span class="font-bold">' + foodTotal.toFixed(2) + ' MDL</span></div><div class="flex justify-between text-sm py-1 border-t border-gray-200 mt-1 pt-1"><span class="font-bold text-candy-pink">Total</span><span class="font-bold text-candy-pink">' + grandTotal.toFixed(2) + ' MDL</span></div>';
-    } else {
-      foodDiv.innerHTML = '<p class="text-sm text-gray-400">Nu sunt produse adăugate</p>';
-      foodDiv.classList.remove('hidden');
-      document.getElementById('editBookingFoodTotal').classList.add('hidden');
-    }
-    showModal('bookingEditModal');
-  }
-
-  function closeBookingEditModal() { hideModal('bookingEditModal'); }
-
-  async function updateBookingStatus(id, status) {
-    await fetch('/api/admin/bookings/' + id, { method: 'PATCH', headers: authHeaders(), body: JSON.stringify({ status }) });
-    loadBookings();
-  }
-
-
-
-  function showBookingModal() {
-    // For now just show alert - could implement full modal
-    alert('Pentru a adăuga o rezervare, contactează clientul direct.');
-  }
-
-</script>
+  <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
   <style>
     * { font-family: 'Inter', system-ui, sans-serif; }
     body { background: #f8f9fc; }
@@ -948,7 +388,7 @@
           </div>
           
           <!-- Recent bookings -->
-          <div class="card p-4 sm:p-6 sm:p-8">
+          <div class="card p-4 sm:p-6 md:p-8">
             <h3 class="font-bold text-lg sm:text-xl mb-4">Rezervări în perioada selectată</h3>
             <div id="statsBookingsList" class="space-y-3"></div>
           </div>
@@ -1904,6 +1344,65 @@
     loadBookings();
   }
 
+  function renderBookings() {
+    const list = document.getElementById('bookingsList');
+    if (!allBookings.length) {
+      list.innerHTML = '<div class="card p-12 text-center text-gray-400">Nicio rezervare momentan.</div>';
+      return;
+    }
+    const statusBadge = { pending: 'badge-pending', confirmed: 'badge-confirmed', cancelled: 'badge-cancelled', completed: 'badge-completed' };
+    list.innerHTML = allBookings.map(b => `
+      <div class="card p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 cursor-pointer hover:shadow-lg transition-all" onclick="openBookingEditModal('${b.id}')">
+        <div>
+          <h4 class="font-bold text-lg">${b.client_name}</h4>
+          <p class="text-gray-500">${b.client_phone}</p>
+          <p class="text-sm text-gray-400">${b.date} la ${b.time}</p>
+          ${b.notes ? `<p class="text-sm text-gray-400 mt-1">📝 ${b.notes}</p>` : ''}
+          ${b.admin_notes ? `<p class="text-sm text-candy-blue mt-1 font-medium">🔒 ${b.admin_notes}</p>` : ''}
+        </div>
+        <div class="text-center">
+          <p class="font-bold text-candy-pink">${b.package}</p>
+          <p class="text-sm">${b.kids_count} copii</p>
+          <p class="text-sm">${b.adults_count || 0} adulți</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="px-3 py-1 rounded-full text-xs font-bold ${statusBadge[b.status]}">${b.status}</span>
+          ${b.status === 'pending' ? `
+            <button onclick="event.stopPropagation(); updateBookingStatus('${b.id}', 'confirmed')" class="px-4 py-2 bg-candy-green text-white rounded-xl text-sm font-bold hover:opacity-90">Confirmă</button>
+            <button onclick="event.stopPropagation(); updateBookingStatus('${b.id}', 'cancelled')" class="px-4 py-2 bg-red-500 text-white rounded-xl text-sm font-bold hover:opacity-90">Anulează</button>
+          ` : ''}
+        </div>
+      </div>
+    `).join('');
+  }
+
+  async function saveBookingEdit() {
+    const id = document.getElementById('editBookingId').value;
+    const data = {
+      client_name: document.getElementById('editClientName').value,
+      client_phone: document.getElementById('editClientPhone').value,
+      kids_count: parseInt(document.getElementById('editKidsCount').value),
+      adults_count: parseInt(document.getElementById('editAdultsCount').value),
+      notes: document.getElementById('editNotes').value,
+      admin_notes: document.getElementById('editAdminNotes').value,
+      status: document.getElementById('editStatus').value
+    };
+    await fetch('/api/admin/bookings/' + id, { method: 'PUT', headers: authHeaders(), body: JSON.stringify(data) });
+    closeBookingEditModal();
+    loadBookings();
+  }
+
+  async function deleteBooking(id) {
+    if (!confirm('Ștergi această rezervare?')) return;
+    await fetch('/api/admin/bookings/' + id, { method: 'DELETE', headers: authHeaders() });
+    closeBookingEditModal();
+    loadBookings();
+  }
+
+  function showBookingModal() {
+    alert('Pentru a adăuga o rezervare, contactează clientul direct.');
+  }
+
   // ===== Modal helpers =====
   function showModal(id) {
     const m = document.getElementById(id);
@@ -2016,217 +1515,6 @@
     `).join('');
   }
 
-  // ===== BOOKINGS =====
-  async function loadBookings() {
-    const status = document.getElementById('bookingsStatusFilter')?.value || '';
-    let url = '/api/admin/bookings';
-    if (status) url += '?status=' + status;
-    const data = await (await fetch(url, { headers: authHeaders() })).json();
-    allBookings = data.bookings;
-    renderBookings();
-  }
-
-  function renderBookings() {
-    const list = document.getElementById('bookingsList');
-    if (!allBookings.length) {
-      list.innerHTML = '<div class="card p-12 text-center text-gray-400">Nicio rezervare momentan.</div>';
-      return;
-    }
-    const statusBadge = { pending: 'badge-pending', confirmed: 'badge-confirmed', cancelled: 'badge-cancelled', completed: 'badge-completed' };
-    list.innerHTML = allBookings.map(b => `
-      <div class="card p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 cursor-pointer hover:shadow-lg transition-all" onclick="openBookingEditModal('${b.id}')">
-        <div>
-          <h4 class="font-bold text-lg">${b.client_name}</h4>
-          <p class="text-gray-500">${b.client_phone}</p>
-          <p class="text-sm text-gray-400">${b.date} la ${b.time}</p>
-          ${b.notes ? `<p class="text-sm text-gray-400 mt-1">📝 ${b.notes}</p>` : ''}
-          ${b.admin_notes ? `<p class="text-sm text-candy-blue mt-1 font-medium">🔒 ${b.admin_notes}</p>` : ''}
-        </div>
-        <div class="text-center">
-          <p class="font-bold text-candy-pink">${b.package}</p>
-          <p class="text-sm">${b.kids_count} copii</p>
-          <p class="text-sm">${b.adults_count || 0} adulți</p>
-        </div>
-        <div class="flex items-center gap-2">
-          <span class="px-3 py-1 rounded-full text-xs font-bold ${statusBadge[b.status]}">${b.status}</span>
-          ${b.status === 'pending' ? `
-            <button onclick="event.stopPropagation(); updateBookingStatus('${b.id}', 'confirmed')" class="px-4 py-2 bg-candy-green text-white rounded-xl text-sm font-bold hover:opacity-90">Confirmă</button>
-            <button onclick="event.stopPropagation(); updateBookingStatus('${b.id}', 'cancelled')" class="px-4 py-2 bg-red-500 text-white rounded-xl text-sm font-bold hover:opacity-90">Anulează</button>
-          ` : ''}
-        </div>
-      </div>
-    `).join('');
-  }
-
-  function openBookingEditModal(id) {
-    const b = allBookings.find(b => b.id === id);
-    if (!b) return;
-    document.getElementById('editBookingId').value = b.id;
-    document.getElementById('editClientName').value = b.client_name;
-    document.getElementById('editClientPhone').value = b.client_phone;
-    document.getElementById('editKidsCount').value = b.kids_count;
-    document.getElementById('editAdultsCount').value = b.adults_count || 0;
-    document.getElementById('editNotes').value = b.notes || '';
-    document.getElementById('editAdminNotes').value = b.admin_notes || '';
-    document.getElementById('editStatus').value = b.status;
-    const foodDiv = document.getElementById('editBookingFood');
-    if (b.food_items && b.food_items.length > 0) {
-      foodDiv.innerHTML = b.food_items.map(fi => `<div class="flex justify-between text-sm py-1"><span>${fi.quantity}× ${fi.product_name}</span><span class="font-bold">${(fi.price * fi.quantity).toFixed(2)} MDL</span></div>`).join('');
-      foodDiv.classList.remove('hidden');
-      document.getElementById('editBookingFoodTotal').classList.remove('hidden');
-      const pkgPrice = parseFloat(b.package_price || 0);
-      const foodTotal = parseFloat(b.food_total || 0);
-      const grandTotal = pkgPrice + foodTotal;
-      document.getElementById('editBookingFoodTotal').innerHTML = '<div class="flex justify-between text-sm py-1"><span>Pachet</span><span class="font-bold">' + pkgPrice.toFixed(2) + ' MDL</span></div><div class="flex justify-between text-sm py-1"><span>Produse</span><span class="font-bold">' + foodTotal.toFixed(2) + ' MDL</span></div><div class="flex justify-between text-sm py-1 border-t border-gray-200 mt-1 pt-1"><span class="font-bold text-candy-pink">Total</span><span class="font-bold text-candy-pink">' + grandTotal.toFixed(2) + ' MDL</span></div>';
-    } else {
-      foodDiv.innerHTML = '<p class="text-sm text-gray-400">Nu sunt produse adăugate</p>';
-      foodDiv.classList.remove('hidden');
-      document.getElementById('editBookingFoodTotal').classList.add('hidden');
-    }
-    showModal('bookingEditModal');
-  }
-
-  function closeBookingEditModal() { hideModal('bookingEditModal'); }
-
-  async function updateBookingStatus(id, status) {
-    await fetch('/api/admin/bookings/' + id, { method: 'PATCH', headers: authHeaders(), body: JSON.stringify({ status }) });
-    loadBookings();
-  }
-
-
-
-  async function saveBookingEdit() {
-    const id = document.getElementById('editBookingId').value;
-    const data = {
-      client_name: document.getElementById('editClientName').value,
-      client_phone: document.getElementById('editClientPhone').value,
-      kids_count: parseInt(document.getElementById('editKidsCount').value),
-      adults_count: parseInt(document.getElementById('editAdultsCount').value),
-      notes: document.getElementById('editNotes').value,
-      admin_notes: document.getElementById('editAdminNotes').value,
-      status: document.getElementById('editStatus').value
-    };
-    await fetch('/api/admin/bookings/' + id, { method: 'PUT', headers: authHeaders(), body: JSON.stringify(data) });
-    closeBookingEditModal();
-    loadBookings();
-  }
-
-  async function deleteBooking(id) {
-    if (!confirm('Ștergi această rezervare?')) return;
-    await fetch('/api/admin/bookings/' + id, { method: 'DELETE', headers: authHeaders() });
-    closeBookingEditModal();
-    loadBookings();
-  }
-
-  function showBookingModal() {
-    // For now just show alert - could implement full modal
-    alert('Pentru a adăuga o rezervare, contactează clientul direct.');
-  }
-
-  // ===== ORDERS =====
-  async function loadOrders() {
-    try {
-      const token = localStorage.getItem('skykids_token');
-      const res = await fetch('/api/orders', { headers: { 'Authorization': 'Bearer ' + token } });
-      if(!res.ok) throw new Error('Failed');
-      const orders = await res.json();
-      const container = document.getElementById('ordersList');
-      document.getElementById('ordersCount').textContent = orders.length;
-      if(orders.length === 0) {
-        container.innerHTML = '<p class="text-gray-400 text-center py-8">Nicio comandă încă</p>';
-        return;
-      }
-      container.innerHTML = orders.map(o => `
-        <div class="border border-gray-100 rounded-xl p-5 ${o.status === 'pending' ? 'border-l-4 border-l-yellow-400' : o.status === 'completed' ? 'border-l-4 border-l-candy-green' : ''}">
-          <div class="flex items-start justify-between mb-3">
-            <div>
-              <span class="font-bold text-dark">${o.first_name} ${o.last_name}</span>
-              <span class="ml-2 text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-lg">#${o.order_number}</span>
-              ${o.order_type === 'delivery' ? '<span class="ml-2 text-xs bg-candy-blue/10 text-candy-blue px-2 py-1 rounded-lg font-bold">🏍️ Livrare</span>' : ''}
-              ${o.order_type === 'advance' ? '<span class="ml-2 text-xs bg-candy-purple/10 text-candy-purple px-2 py-1 rounded-lg font-bold">📅 În avans</span>' : ''}
-              ${o.order_type === 'onsite' ? '<span class="ml-2 text-xs bg-candy-green/10 text-candy-green px-2 py-1 rounded-lg font-bold">🏠 În sală</span>' : ''}
-              ${o.status === 'pending' ? '<span class="ml-2 text-xs bg-yellow-100 text-yellow-700 px-2 py-1 rounded-lg font-bold">În așteptare</span>' : ''}
-              ${o.status === 'completed' ? '<span class="ml-2 text-xs bg-candy-green/10 text-candy-green px-2 py-1 rounded-lg font-bold">Finalizată</span>' : ''}
-            </div>
-            <span class="text-sm text-gray-400">${new Date(o.created_at).toLocaleDateString('ro-RO')}</span>
-          </div>
-          <div class="text-sm text-gray-600 mb-2">
-            <div>📞 ${o.phone}</div>
-            ${o.address ? '<div>📍 ' + o.address + '</div>' : ''}
-            ${o.datetime ? '<div>📅 ' + o.datetime + '</div>' : ''}
-          </div>
-          <div class="text-sm mb-3">
-            ${(o.items || []).map(item => `<span class="inline-block bg-gray-50 text-gray-700 px-2 py-1 rounded-lg mr-1 mb-1">${item.quantity}× ${item.product_name}</span>`).join('')}
-          </div>
-          <div class="flex items-center justify-between">
-            <span class="font-bold text-candy-pink">${parseFloat(o.total).toFixed(2)} MDL</span>
-            <div class="flex gap-2">
-              ${o.status === 'pending' ? `<button onclick="updateOrderStatus(${o.id}, 'completed')" class="bg-candy-green text-white px-4 py-2 rounded-lg text-sm font-bold hover:opacity-90">Finalizează</button>` : ''}
-              <button onclick="updateOrderStatus(${o.id}, 'cancelled')" class="bg-red-100 text-red-600 px-4 py-2 rounded-lg text-sm font-bold hover:opacity-90">Anulează</button>
-            </div>
-          </div>
-        </div>
-      `).join('');
-    } catch(e) {
-      document.getElementById('ordersList').innerHTML = '<p class="text-red-400 text-center py-8">Eroare la încărcare</p>';
-    }
-  }
-
-  async function updateOrderStatus(id, status) {
-    try {
-      const token = localStorage.getItem('skykids_token');
-      await fetch('/api/admin/orders/' + id + '/status', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
-        body: JSON.stringify({ status })
-      });
-      loadOrders();
-    } catch(e) { console.error(e); }
-  }
-
-  // ===== DECOR MGMT =====
-  async function loadDecor() {
-    try {
-      const token = localStorage.getItem('skykids_token');
-      const res = await fetch('/api/admin/decor', { headers: { 'Authorization': 'Bearer ' + token } });
-      if(!res.ok) throw new Error('Failed');
-      const decor = await res.json();
-      const container = document.getElementById('decorList');
-      if(decor.length === 0) {
-        container.innerHTML = '<p class="text-gray-400 text-center py-8 col-span-3">Niciun decor adăugat</p>';
-        return;
-      }
-      container.innerHTML = decor.map(d => `
-        <div class="bg-white rounded-2xl shadow-card overflow-hidden">
-          <div class="h-40 bg-gray-100 flex items-center justify-center">
-            ${d.image ? `<img src="${d.image}" class="w-full h-full object-cover">` : '<iconify-icon icon="lucide:image" width="48" class="text-gray-300"></iconify-icon>'}
-          </div>
-          <div class="p-4">
-            <h4 class="font-bold text-dark mb-1">${d.name}</h4>
-            <p class="text-sm text-gray-500 mb-2">${d.description || ''}</p>
-            <div class="flex items-center justify-between">
-              <span class="font-bold text-candy-pink">${parseFloat(d.price).toFixed(0)} MDL</span>
-              <div class="flex gap-2">
-                <button onclick='editDecor(${JSON.stringify(d)})' class="p-2 bg-candy-blue/10 text-candy-blue rounded-lg hover:bg-candy-blue/20">
-                  <iconify-icon icon="lucide:pencil" width="16"></iconify-icon>
-                </button>
-                <button onclick="deleteDecor(${d.id})" class="p-2 bg-red-50 text-red-500 rounded-lg hover:bg-red-100">
-                  <iconify-icon icon="lucide:trash" width="16"></iconify-icon>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      `).join('');
-    } catch(e) {
-      document.getElementById('decorList').innerHTML = '<p class="text-red-400 text-center py-8 col-span-3">Eroare</p>';
-    }
-  }
-
-  // ===== BUSINESS INFO =====
-  async function loadBusinessInfo() {
-    try {
-      const token = localStorage.getItem('skykids_token');
       const res = await fetch('/api/settings/business', { headers: { 'Authorization': 'Bearer ' + token } });
       if(!res.ok) return;
       const data = await res.json();
