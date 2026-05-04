@@ -500,25 +500,21 @@
             S
           </div>
           <div>
-            <span class="font-black text-2xl gradient-text">Sky Kids</span>
+            <span class="font-black text-2xl gradient-text" data-i18n="hero_sky_kids">Sky Kids</span>
             <p class="text-xs text-gray-400 -mt-1">Soroca 🎈</p>
           </div>
         </a>
         <div class="hidden lg:flex items-center gap-8">
-          <a href="#meniu" class="font-semibold text-gray-600 hover:text-candy-pink transition-colors" data-i18n="nav_menu">Meniu</a>
-          <a href="#galerie" class="font-semibold text-gray-600 hover:text-candy-pink transition-colors" data-i18n="nav_gallery">Galerie</a>
-          <a href="#decoruri" class="font-semibold text-gray-600 hover:text-candy-pink transition-colors" data-i18n="nav_decor">Decoruri</a>
-          <a href="#despre" class="font-semibold text-gray-600 hover:text-candy-pink transition-colors" data-i18n="nav_about">Despre</a>
+          <a href="#meniu" data-i18n="nav_menu">Meniu</a>
+          <a href="#galerie" data-i18n="nav_gallery">Galerie</a>
+          <a href="#decoruri" data-i18n="nav_decor">Decoruri</a>
+          <a href="#despre" data-i18n="nav_about">Despre</a>
           <div class="flex items-center gap-1 border-2 border-gray-200 rounded-xl p-1">
             <button onclick="setLang('ro')" id="btnRo" class="px-3 py-1.5 rounded-lg font-bold text-sm transition-all">🇷🇴 RO</button>
             <button onclick="setLang('ru')" id="btnRu" class="px-3 py-1.5 rounded-lg font-bold text-sm transition-all">🇷🇺 RU</button>
-          </div>
-          <button id="customerBadgeDesktop" onclick="openLoginModal()" class="w-10 h-10 bg-candy-green/10 hover:bg-candy-green/20 rounded-xl flex items-center justify-center transition-colors" title="Autentificare">
-            <iconify-icon icon="lucide:user" width="18" class="text-candy-green"></iconify-icon>
-          </button>
-          <a href="#rezervari" class="btn-primary-hov bg-gradient-to-r from-candy-pink to-candy-orange text-white px-6 py-3 rounded-xl font-bold inline-flex items-center gap-2">
+          </div>          <a href="#rezervari" class="btn-primary-hov bg-gradient-to-r from-candy-pink to-candy-orange text-white px-6 py-3 rounded-xl font-bold inline-flex items-center gap-2">
             <iconify-icon icon="lucide:calendar" width="18"></iconify-icon>
-            <span data-i18n="nav_book">Rezervă Acum</span>
+            <span data-i18n="nav_book" data-i18n="btn_book">Rezervă Acum</span>
           </a>
         </div>
         <button id="mobileToggle" class="lg:hidden w-10 h-10 flex items-center justify-center rounded-xl bg-gray-100 hover:bg-gray-200 transition-colors">
@@ -537,18 +533,17 @@
     <button id="mobileClose" class="absolute top-6 right-6 w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center hover:bg-gray-200 transition-colors">
       <iconify-icon icon="lucide:x" width="22"></iconify-icon>
     </button>
-    <a href="#despre" onclick="closeMobile()" class="text-xl sm:text-2xl font-bold text-dark hover:text-candy-pink transition-colors" data-i18n="mobile_about">Despre</a>
-    <a href="#meniu" onclick="closeMobile()" class="text-2xl font-bold text-dark hover:text-candy-pink transition-colors" data-i18n="mobile_menu">Meniu</a>
-    <a href="#galerie" onclick="closeMobile()" class="text-2xl font-bold text-dark hover:text-candy-pink transition-colors" data-i18n="mobile_gallery">Galerie</a>
-    <a href="#contact" onclick="closeMobile()" class="text-2xl font-bold text-dark hover:text-candy-pink transition-colors" data-i18n="mobile_contact">Contact</a>
-    <a href="#decoruri" onclick="closeMobile()" class="text-2xl font-bold text-dark hover:text-candy-pink transition-colors" data-i18n="mobile_decor">Decoruri</a>
+    <div class="flex items-center gap-1 border-2 border-gray-200 rounded-xl p-1 mb-2">
+      <button onclick="setLang('ro'); closeMobile();" id="mobileBtnRo" class="px-4 py-2 rounded-lg font-bold text-sm transition-all">🇷🇴 RO</button>
+      <button onclick="setLang('ru'); closeMobile();" id="mobileBtnRu" class="px-4 py-2 rounded-lg font-bold text-sm transition-all">🇷🇺 RU</button>
+    </div>
+    <a href="#despre" data-i18n="nav_about">Despre</a>
+    <a href="#meniu" data-i18n="nav_menu">Meniu</a>
+    <a href="#galerie" data-i18n="nav_gallery">Galerie</a>
+    <a href="#contact" data-i18n="nav_contact" data-i18n="contact_badge">Contact</a>
+    <a href="#decoruri" data-i18n="nav_decor">Decoruri</a>
     <a href="/terms" onclick="closeMobile()" class="text-lg font-bold text-gray-500 hover:text-candy-pink transition-colors">Termeni și Condiții</a>
-    <a href="/privacy" onclick="closeMobile()" class="text-lg font-bold text-gray-500 hover:text-candy-pink transition-colors">Confidențialitate</a>
-    <button onclick="openLoginModal(); closeMobile();" class="text-2xl font-bold text-dark hover:text-candy-pink transition-colors flex items-center gap-2">
-      <iconify-icon icon="lucide:log-in" width="20"></iconify-icon>
-      <span data-i18n="mobile_login">Autentificare</span>
-    </button>
-    <a href="#rezervari" onclick="closeMobile()" class="bg-gradient-to-r from-candy-pink to-candy-orange text-white px-8 py-4 rounded-xl font-bold" data-i18n="mobile_book">Rezervă un loc</a>
+    <a href="/privacy" onclick="closeMobile()" class="text-lg font-bold text-gray-500 hover:text-candy-pink transition-colors">Confidențialitate</a>    <a href="#rezervari" onclick="closeMobile()" class="bg-gradient-to-r from-candy-pink to-candy-orange text-white px-8 py-4 rounded-xl font-bold" data-i18n="mobile_book" data-i18n="btn_book">Rezervă un loc</a>
   </div>
 
   <!-- Mobile Sticky CTA -->
@@ -580,7 +575,7 @@
         <!-- Badge with live open/closed status -->
         <div class="inline-flex items-center gap-2 bg-white rounded-full px-5 py-2 shadow-md mb-8 hero-badge">
           <iconify-icon icon="lucide:map-pin" width="16" class="text-candy-pink"></iconify-icon>
-          <span class="text-sm font-bold text-gray-600" data-i18n="hero_badge">Soroca, Moldova</span>
+          <span class="text-sm font-bold text-gray-600" data-i18n="hero_badge"data-i18n="hero_badge">Soroca, Moldova</span>
           <span class="w-2 h-2 bg-candy-green rounded-full animate-pulse"></span>
           <span id="openStatusBadge" class="text-sm font-bold text-candy-green" data-i18n="hero_checking">Se verifică...</span>
         </div>
@@ -740,7 +735,7 @@
   <section id="contact" class="py-24 bg-white">
     <div class="max-w-6xl mx-auto px-6">
       <div class="text-center mb-12 fade-up">
-        <span class="inline-block bg-candy-purple/10 text-candy-purple text-sm font-bold tracking-widest uppercase px-4 py-2 rounded-full mb-4">Contact</span>
+        <span class="inline-block bg-candy-purple/10 text-candy-purple text-sm font-bold tracking-widest uppercase px-4 py-2 rounded-full mb-4" data-i18n="contact_badge">Contact</span>
         <h2 class="font-black text-4xl md:text-5xl text-dark" data-i18n="contact_title">Găsește-ne</h2>
       </div>
       
@@ -802,8 +797,8 @@
               <div class="package-card bg-white rounded-2xl p-4 sm:p-6 border-2 border-gray-100 hover:border-candy-pink active:scale-95 transition-all cursor-pointer" onclick="selectPackage('standard', 10, 15, 10)" data-max-kids="15" data-max-adults="10">
                 <div class="flex items-center gap-3 sm:gap-4 mb-3 sm:mb-4">
                   <div class="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-candy-pink/10 to-candy-orange/10 rounded-2xl flex items-center justify-center text-2xl sm:text-3xl shrink-0">🎈</div>
-                  <div class="flex-1 min-w-0">
-                    <h4 class="font-bold text-base sm:text-lg text-dark truncate" data-i18n="pkg_standard_name">Standard</h4>
+                  <div class="flex-1">
+                    <h4 class="font-bold text-base sm:text-lg text-dark" data-i18n="pkg_standard_name">Standard</h4>
                     <p class="text-xs sm:text-sm text-gray-500 line-clamp-2" data-i18n="pkg_standard_desc">Acces la zona de joacă + o băutură</p>
                   </div>
                 </div>
@@ -813,7 +808,7 @@
                     <p class="text-xs text-gray-400 mt-1" data-i18n="pkg_per_child">per copil</p>
                   </div>
                   <div class="flex flex-wrap gap-x-3 gap-y-1 text-xs text-gray-500 mt-3 sm:mt-4">
-                    <span class="flex items-center gap-1"><iconify-icon icon="lucide:check-circle" width="12" class="text-candy-green"></iconify-icon><span data-i18n="pkg_zone">Zona de joacă</span></span>
+                    <span class="flex items-center gap-1"><iconify-icon icon="lucide:check-circle" width="12" class="text-candy-green"></iconify-icon><span data-i18n="pkg_zone" data-i18n="playground">Zona de joacă</span></span>
                     <span class="flex items-center gap-1"><iconify-icon icon="lucide:check-circle" width="12" class="text-candy-green"></iconify-icon><span data-i18n="pkg_drink">O băutură</span></span>
                   </div>
                 </div>
@@ -822,8 +817,8 @@
               <div class="package-card bg-white rounded-2xl p-4 sm:p-6 border-2 border-gray-100 hover:border-candy-pink active:scale-95 transition-all cursor-pointer" onclick="selectPackage('premium', 11, 15, 10)" data-max-kids="15" data-max-adults="10">
                 <div class="flex items-center gap-3 sm:gap-4 mb-3 sm:mb-4">
                   <div class="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-candy-pink/10 to-candy-orange/10 rounded-2xl flex items-center justify-center text-2xl sm:text-3xl shrink-0">⭐</div>
-                  <div class="flex-1 min-w-0">
-                    <h4 class="font-bold text-base sm:text-lg text-dark truncate" data-i18n="pkg_premium_name">Premium</h4>
+                  <div class="flex-1">
+                    <h4 class="font-bold text-base sm:text-lg text-dark" data-i18n="pkg_premium_name">Premium</h4>
                     <p class="text-xs sm:text-sm text-gray-500 line-clamp-2" data-i18n="pkg_premium_desc">Acces + farfurie + băutură + dulciuri</p>
                   </div>
                 </div>
@@ -833,7 +828,7 @@
                     <p class="text-xs text-gray-400 mt-1" data-i18n="pkg_per_child">per copil</p>
                   </div>
                   <div class="flex flex-wrap gap-x-3 gap-y-1 text-xs text-gray-500 mt-3 sm:mt-4">
-                    <span class="flex items-center gap-1"><iconify-icon icon="lucide:check-circle" width="12" class="text-candy-green"></iconify-icon><span data-i18n="pkg_zone">Zona de joacă</span></span>
+                    <span class="flex items-center gap-1"><iconify-icon icon="lucide:check-circle" width="12" class="text-candy-green"></iconify-icon><span data-i18n="pkg_zone" data-i18n="playground">Zona de joacă</span></span>
                     <span class="flex items-center gap-1"><iconify-icon icon="lucide:check-circle" width="12" class="text-candy-green"></iconify-icon><span data-i18n="pkg_main">Fel principal</span></span>
                     <span class="flex items-center gap-1"><iconify-icon icon="lucide:check-circle" width="12" class="text-candy-green"></iconify-icon><span data-i18n="pkg_drink">Băutură</span></span>
                     <span class="flex items-center gap-1"><iconify-icon icon="lucide:check-circle" width="12" class="text-candy-green"></iconify-icon><span data-i18n="pkg_dessert">Desert</span></span>
@@ -844,8 +839,8 @@
               <div class="package-card bg-white rounded-2xl p-4 sm:p-6 border-2 border-gray-100 hover:border-candy-pink active:scale-95 transition-all cursor-pointer" onclick="selectPackage('zi-de-nastere', 12, 15, 10)" data-max-kids="15" data-max-adults="10">
                 <div class="flex items-center gap-3 sm:gap-4 mb-3 sm:mb-4">
                   <div class="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-candy-pink/10 to-candy-orange/10 rounded-2xl flex items-center justify-center text-2xl sm:text-3xl shrink-0">🎂</div>
-                  <div class="flex-1 min-w-0">
-                    <h4 class="font-bold text-base sm:text-lg text-dark truncate" data-i18n="pkg_birthday_name">Zi de Naștere</h4>
+                  <div class="flex-1">
+                    <h4 class="font-bold text-base sm:text-lg text-dark" data-i18n="pkg_birthday_name">Zi de Naștere</h4>
                     <p class="text-xs sm:text-sm text-gray-500 line-clamp-2" data-i18n="pkg_birthday_desc">Pachet complet petrecere copii (max 15 copii)</p>
                   </div>
                 </div>
@@ -885,7 +880,7 @@
             </div>
             
             <button type="button" onclick="goToStep(2)" id="btnStep1" class="w-full bg-candy-pink hover:bg-candy-pink/90 text-white py-4 rounded-xl font-bold text-lg disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all shadow-lg hover:shadow-xl" disabled>
-              <span data-i18n="booking_continue">Continuă</span>
+              <span data-i18n="booking_continue" data-i18n="btn_continue">Continuă</span>
               <iconify-icon icon="lucide:arrow-right" width="20"></iconify-icon>
             </button>
           </div>
@@ -922,7 +917,7 @@
                 <span data-i18n="booking_back">Înapoi</span>
               </button>
               <button type="button" onclick="goToStep(3)" class="flex-1 bg-candy-pink hover:bg-candy-pink/90 text-white py-4 rounded-xl font-bold flex items-center justify-center gap-2 transition-all shadow-lg">
-                <span data-i18n="booking_continue">Continuă</span>
+                <span data-i18n="booking_continue" data-i18n="btn_continue">Continuă</span>
                 <iconify-icon icon="lucide:arrow-right" width="20"></iconify-icon>
               </button>
             </div>
@@ -953,7 +948,7 @@
                 <span data-i18n="booking_back">Înapoi</span>
               </button>
             <button type="button" onclick="goToStep(4)" id="btnStep2" class="flex-1 bg-candy-pink hover:bg-candy-pink/90 text-white py-4 rounded-xl font-bold flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-lg" disabled>
-                <span data-i18n="booking_continue">Continuă</span>
+                <span data-i18n="booking_continue" data-i18n="btn_continue">Continuă</span>
                 <iconify-icon icon="lucide:arrow-right" width="20"></iconify-icon>
               </button>
             </div>
@@ -1060,7 +1055,7 @@
       <div class="p-5 border-t border-gray-100 bg-white rounded-tl-2xl">
         <div class="flex justify-between items-center mb-4">
           <div>
-            <span class="text-sm text-gray-500">Total:</span>
+            <span class="text-sm text-gray-500" data-i18n="cart_total">Total:</span>
             <span id="cartTotal" class="font-black text-2xl text-candy-pink ml-2">0 MDL</span>
           </div>
         </div>
@@ -1080,7 +1075,7 @@
         <button onclick="closeCheckoutAll()" class="md:hidden w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center hover:bg-gray-200">
           <iconify-icon icon="lucide:arrow-left" width="20"></iconify-icon>
         </button>
-        <h3 class="font-bold text-xl text-dark">Finalizează comanda</h3>
+        <h3 class="font-bold text-xl text-dark" data-i18n="btn_checkout">Finalizează comanda</h3>
         <button onclick="closeCheckoutAll()" class="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center hover:bg-gray-200">
           <iconify-icon icon="lucide:x" width="20"></iconify-icon>
         </button>
@@ -1092,15 +1087,15 @@
         <div class="grid grid-cols-3 gap-2">
           <button type="button" onclick="selectOrderType('delivery')" id="btnDelivery" class="order-type-btn px-3 py-3 rounded-xl border-2 border-gray-200 text-center hover:border-candy-pink transition-colors">
             <iconify-icon icon="lucide:truck" width="20" class="mx-auto mb-1"></iconify-icon>
-            <span class="text-xs font-bold">Livrare</span>
+            <span class="text-xs font-bold" data-i18n="delivery">Livrare</span>
           </button>
           <button type="button" onclick="selectOrderType('advance')" id="btnAdvance" class="order-type-btn px-3 py-3 rounded-xl border-2 border-gray-200 text-center hover:border-candy-pink transition-colors">
             <iconify-icon icon="lucide:calendar-clock" width="20" class="mx-auto mb-1"></iconify-icon>
-            <span class="text-xs font-bold">În avans</span>
+            <span class="text-xs font-bold" data-i18n="advance">În avans</span>
           </button>
           <button type="button" onclick="selectOrderType('onsite')" id="btnOnsite" class="order-type-btn px-3 py-3 rounded-xl border-2 border-gray-200 text-center hover:border-candy-pink transition-colors">
             <iconify-icon icon="lucide:utensils" width="20" class="mx-auto mb-1"></iconify-icon>
-            <span class="text-xs font-bold">În sală</span>
+            <span class="text-xs font-bold" data-i18n="onsite">În sală</span>
           </button>
         </div>
         <input type="hidden" id="orderType" value="">
@@ -1146,7 +1141,7 @@
           <h4 class="font-bold text-dark mb-2">Produse:</h4>
           <div id="checkoutItems" class="text-sm text-gray-600 space-y-1 mb-3"></div>
           <div class="border-t border-gray-200 pt-3 flex justify-between">
-            <span class="font-bold text-dark">Total:</span>
+            <span class="font-bold text-dark" data-i18n="cart_total">Total:</span>
             <span id="checkoutTotal" class="font-black text-candy-pink">0 MDL</span>
           </div>
         </div>
@@ -1166,79 +1161,10 @@
         <div class="w-20 h-20 bg-candy-green/20 rounded-full flex items-center justify-center mx-auto mb-5">
           <iconify-icon icon="lucide:check-circle" width="40" class="text-candy-green"></iconify-icon>
         </div>
-        <h3 class="font-bold text-2xl text-candy-green mb-3">Comandă trimisă!</h3>
+        <h3 class="font-bold text-2xl text-candy-green mb-3" data-i18n="order_sent">Comandă trimisă!</h3>
         <p class="text-gray-500 mb-2">Vei fi contactat pentru confirmare.</p>
         <p id="orderNumber" class="font-bold text-dark mb-5"></p>
-        <button onclick="closeCheckoutAll()" class="bg-gray-100 text-gray-700 px-6 py-3 rounded-xl font-bold hover:bg-gray-200">Închide</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- OTP Login Modal -->
-  <div id="loginModal" class="fixed inset-0 z-[200] hidden">
-    <div class="modal-backdrop absolute inset-0 bg-black/50" onclick="closeLoginModal()"></div>
-    <div class="absolute inset-4 sm:inset-auto sm:top-1/2 sm:left-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 sm:w-full sm:max-w-md bg-white rounded-2xl shadow-xl flex flex-col overflow-hidden">
-      <div class="p-5 border-b border-gray-100 flex items-center justify-between">
-        <div>
-          <h3 id="loginModalTitle" class="font-bold text-xl text-dark">Autentificare</h3>
-          <p id="loginModalSubtitle" class="text-xs text-gray-400 mt-0.5">Introdu adresa de email pentru a continua</p>
-        </div>
-        <button onclick="closeLoginModal()" class="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center hover:bg-gray-200">
-          <iconify-icon icon="lucide:x" width="20"></iconify-icon>
-        </button>
-      </div>
-      
-      <!-- Step 1: Email sau Telefon input -->
-      <div id="loginStep1" class="p-5 space-y-4">
-        <div>
-          <label class="text-sm font-semibold text-gray-700 mb-1 block">Email sau Telefon</label>
-          <input type="text" id="loginIdentifier" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-candy-pink" placeholder="exemplu@email.com sau +373XXXXXXXX">
-          <p id="loginIdentifierError" class="text-red-500 text-xs mt-1 hidden"></p>
-        </div>
-        <button onclick="sendLoginOtp()" id="loginSendBtn" class="w-full bg-gradient-to-r from-candy-pink to-candy-orange text-white py-4 rounded-xl font-bold hover:shadow-lg transition-all flex items-center justify-center gap-2">
-          <iconify-icon icon="lucide:mail" width="18"></iconify-icon>
-          Trimite codul
-        </button>
-        <p class="text-xs text-gray-400 text-center">Nu ai cont? Este suficientă o adresă de email validă sau un număr de telefon.</p>
-      </div>
-      
-      <!-- Step 2: OTP code input + phone OTP display -->
-      <div id="loginStep2" class="p-5 space-y-4 hidden">
-        <div class="text-center mb-2">
-          <p class="text-sm text-gray-500">Am trimis un cod la</p>
-          <p id="loginIdentifierDisplay" class="font-bold text-dark"></p>
-        </div>
-        <!-- Phone OTP preview (for testing) -->
-        <div id="phoneOtpPreview" class="hidden bg-candy-green/10 border border-candy-green/30 rounded-xl p-4 text-center">
-          <p class="text-xs text-candy-green font-bold mb-1">📱 COD SMS (TESTARE)</p>
-          <p id="phoneOtpCode" class="text-3xl font-black tracking-widest text-candy-green"></p>
-        </div>
-        <div>
-          <label class="text-sm font-semibold text-gray-700 mb-1 block">Cod de verificare (6 cifre)</label>
-          <input type="text" id="loginOtpCode" maxlength="6" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-candy-pink text-center text-2xl tracking-[0.5em] font-bold" placeholder="_ _ _ _ _ _">
-          <p id="loginOtpError" class="text-red-500 text-xs mt-1 hidden"></p>
-        </div>
-        <button onclick="verifyLoginOtp()" id="loginVerifyBtn" class="w-full bg-gradient-to-r from-candy-pink to-candy-orange text-white py-4 rounded-xl font-bold hover:shadow-lg transition-all flex items-center justify-center gap-2">
-          <iconify-icon icon="lucide:check-circle" width="18"></iconify-icon>
-          Verifică și intră
-        </button>
-        <button onclick="resetLoginModal()" class="w-full bg-gray-100 text-gray-600 py-3 rounded-xl font-bold hover:bg-gray-200 text-sm">Schimbă datele</button>
-        <p class="text-xs text-gray-400 text-center">Nu ai primit codul? Verifică email-ul sau folderul de spam.</p>
-      </div>
-      
-      <!-- Success -->
-      <div id="loginSuccess" class="hidden text-center py-10 px-5">
-        <div class="w-16 h-16 bg-candy-green/20 rounded-full flex items-center justify-center mx-auto mb-4">
-          <iconify-icon icon="lucide:check-circle" width="32" class="text-candy-green"></iconify-icon>
-        </div>
-        <h3 class="font-bold text-xl text-dark mb-2">Bine ai venit!</h3>
-        <p class="text-gray-500 text-sm mb-4">Ești autentificat cu succes.</p>
-        <button onclick="closeLoginModal()" class="bg-gradient-to-r from-candy-pink to-candy-orange text-white px-6 py-3 rounded-xl font-bold">Continuă</button>
-      </div>
-      
-      <!-- Loading spinner overlay -->
-      <div id="loginLoading" class="hidden absolute inset-0 bg-white/80 flex items-center justify-center">
-        <div class="w-10 h-10 border-4 border-candy-pink/30 border-t-candy-pink rounded-full animate-spin"></div>
+        <button onclick="closeCheckoutAll()" class="bg-gray-100 text-gray-700 px-6 py-3 rounded-xl font-bold hover:bg-gray-200" data-i18n="btn_close">Închide</button>
       </div>
     </div>
   </div>
@@ -1297,7 +1223,7 @@
         <div id="modalImgPlaceholder" class="w-full h-56 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center hidden">
           <iconify-icon icon="lucide:image" width="48" class="text-gray-300"></iconify-icon>
         </div>
-        <span id="modalBadge" class="hidden absolute top-4 left-4 bg-candy-yellow text-dark text-xs font-bold px-3 py-1.5 rounded-full shadow" data-i18n="modal_kids_badge">PENTRU COPII</span>
+        <span id="modalBadge" class="hidden absolute top-4 left-4 bg-candy-yellow text-dark text-xs font-bold px-3 py-1.5 rounded-full shadow" data-i18n="modal_kids_badge" data-i18n="hero_kids">PENTRU COPII</span>
       </div>
       
       <div class="p-6 md:p-8">
@@ -1340,6 +1266,33 @@
   // ===== Translations =====
   const translations = {
     ro: {
+      hero_kids: 'PENTRU COPII',
+      hero_sky_kids: 'Sky Kids',
+      cart_total: 'Total:',
+      cart_title: 'Coș',
+      btn_send: 'Trimite',
+      btn_cancel: 'Anulează',
+      btn_save: 'Salvează',
+      btn_delete: 'Șterge',
+      btn_edit: 'Editează',
+      btn_confirm: 'Confirmă',
+      btn_close: 'Închide',
+      btn_continue: 'Continuă',
+      btn_checkout: 'Finalizează comanda',
+      status_open: 'Deschis',
+      status_closed: 'Închis',
+      form_name: 'Nume',
+      form_phone: 'Telefon',
+      form_email: 'Email',
+      form_notes: 'Notițe',
+      form_address: 'Adresă',
+      delivery: 'Livrare',
+      onsite: 'În sală',
+      advance: 'În avans',
+      birthday: 'Zi de Naștere',
+      playground: 'Zona de joacă',
+      login_title: 'Autentificare',
+      order_sent: 'Comandă trimisă!',
       nav_about: 'Despre',
       nav_menu: 'Meniu',
       nav_gallery: 'Galerie',
@@ -1529,8 +1482,56 @@
       footer_rights: 'Все права защищены.',
       modal_price_label: 'ЦЕНА',
       modal_kids_badge: 'ДЛЯ ДЕТЕЙ',
+      cart_view: 'Корзина',
+      cart_empty: 'Корзина пуста',
+      cart_total: 'Итого:',
+      cart_checkout: 'Оформить заказ',
+      cart_add_snacks: 'Добавить снеки для праздника',
+      cart_clear: 'Очистить',
+      btn_send: 'Отправить',
+      btn_cancel: 'Отмена',
+      btn_save: 'Сохранить',
+      btn_delete: 'Удалить',
+      btn_edit: 'Редактировать',
+      btn_confirm: 'Подтвердить',
+      btn_close: 'Закрыть',
+      btn_continue: 'Продолжить',
+      btn_checkout: 'Оформить заказ',
+      status_open: 'Открыто сейчас',
+      status_closed: 'Закрыто',
+      status_checking: 'Проверяется...',
+      form_name: 'Имя',
+      form_phone: 'Телефон',
+      form_email: 'Email',
+      form_notes: 'Заметки',
+      form_date: 'Дата',
+      form_time: 'Время',
+      form_address: 'Адрес доставки',
+      delivery: 'Доставка',
+      onsite: 'В зале',
+      advance: 'Заранее',
+      birthday: 'День рождения',
+      playground: 'Игровая площадка',
+      login_title: 'Вход',
+      login_email_sent: 'Код отправлен на',
+      login_verify_code: 'Код подтверждения (6 цифр)',
+      login_welcome: 'Добро пожаловать!',
+      login_no_account: 'Нет аккаунта? Достаточно действующий email или номер телефона.',
+      login_no_code: 'Не получили код? Проверьте email или папку со спамом.',
+      login_email_or_phone: 'Email или Телефон',
+      login_continue: 'Продолжить',
+      order_sent: 'Заказ отправлен!',
+      order_will_contact: 'С вами свяжутся для подтверждения.',
+      checkout_title: 'Оформление заказа',
+      checkout_contact_data: 'Ваши контактные данные',
+      checkout_order_summary: 'Сводка заказа',
+      checkout_submit: 'Отправить заказ',
+      checkout_new_order: 'Сделать новый заказ',
+      hero_kids: 'ДЛЯ ДЕТЕЙ',
+      hero_sky_kids: 'SKY KIDS',
       menu_category_all: 'Все',
-    }
+    },
+
   };
 
   function setLang(lang) {
@@ -1538,6 +1539,8 @@
     localStorage.setItem('skykids_lang', lang);
     document.getElementById('btnRo').classList.toggle('active', lang === 'ro');
     document.getElementById('btnRu').classList.toggle('active', lang === 'ru');
+    if (document.getElementById('mobileBtnRo')) document.getElementById('mobileBtnRo').classList.toggle('active', lang === 'ro');
+    if (document.getElementById('mobileBtnRu')) document.getElementById('mobileBtnRu').classList.toggle('active', lang === 'ru');
     // Reload dynamic content with new language
     loadMenu();
     loadGallery();
@@ -1672,228 +1675,6 @@
   }
 
   
-  // ===== OTP LOGIN MODAL =====
-  let isLoggedIn = false;
-  let currentCustomer = null;
-  let customerToken = localStorage.getItem('skykids_customer_token') || null;
-  let pendingAction = null; // 'checkout' or 'booking'
-
-  function openLoginModal(action) {
-    pendingAction = action;
-    resetLoginModal();
-    document.getElementById('loginModal').classList.remove('hidden');
-    document.body.style.overflow = 'hidden';
-    
-    // Check if already logged in
-    if(customerToken) {
-      checkCustomerSession();
-    }
-  }
-
-  function closeLoginModal() {
-    document.getElementById('loginModal').classList.add('hidden');
-    document.body.style.overflow = '';
-  }
-
-  function resetLoginModal() {
-    document.getElementById('loginStep1').classList.remove('hidden');
-    document.getElementById('loginStep2').classList.add('hidden');
-    document.getElementById('loginSuccess').classList.add('hidden');
-    document.getElementById('loginLoading').classList.add('hidden');
-    document.getElementById('loginIdentifier').value = '';
-    document.getElementById('loginOtpCode').value = '';
-    document.getElementById('loginIdentifierError').classList.add('hidden');
-    document.getElementById('loginOtpError').classList.add('hidden');
-    document.getElementById('loginModalTitle').textContent = 'Autentificare';
-    document.getElementById('loginModalSubtitle').textContent = 'Introdu email sau telefon pentru a continua';
-    document.getElementById('loginIdentifier').focus();
-  }
-
-  async function checkCustomerSession() {
-    if(!customerToken) return;
-    try {
-      const res = await fetch('/api/auth/me', { headers: { 'Authorization': 'Bearer ' + customerToken } });
-      if(res.ok) {
-        currentCustomer = await res.json();
-        isLoggedIn = true;
-        updateLoginBadge();
-      } else {
-        // Token expired or invalid
-        customerToken = null;
-        localStorage.removeItem('skykids_customer_token');
-      }
-    } catch(e) {}
-  }
-
-  async function sendLoginOtp() {
-    const identifier = document.getElementById('loginIdentifier').value.trim();
-    const errorEl = document.getElementById('loginIdentifierError');
-    
-    // Detect email vs phone
-    const isEmail = identifier && identifier.includes('@') && identifier.includes('.');
-    const isPhone = identifier && (identifier.startsWith('+373') || identifier.startsWith('373') || identifier.startsWith('060') || identifier.startsWith('069') || identifier.startsWith('079'));
-    
-    if(!identifier) {
-      errorEl.textContent = 'Introdu o adresă de email sau un număr de telefon';
-      errorEl.classList.remove('hidden');
-      return;
-    }
-    
-    if(!isEmail && !isPhone) {
-      errorEl.textContent = 'Email invalid sau telefon trebuie să înceapă cu +373, 060, 069 sau 079';
-      errorEl.classList.remove('hidden');
-      return;
-    }
-    
-    // Normalize phone
-    let phonePayload = null;
-    let emailPayload = null;
-    if(isPhone) {
-      phonePayload = identifier.replace(/^0/, '+373');
-      if(!/^\+373[0-9]{8}$/.test(phonePayload)) {
-        errorEl.textContent = 'Număr de telefon invalid. Format: +373XXXXXXXX';
-        errorEl.classList.remove('hidden');
-        return;
-      }
-    } else {
-      emailPayload = identifier;
-    }
-    
-    errorEl.classList.add('hidden');
-    document.getElementById('loginLoading').classList.remove('hidden');
-    
-    try {
-      const res = await fetch('/api/auth/send-otp', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(isEmail ? { email: emailPayload } : { phone: phonePayload })
-      });
-      const data = await res.json();
-      
-      document.getElementById('loginLoading').classList.add('hidden');
-      
-      if(!res.ok) throw new Error(data.error || 'Eroare');
-      
-      // Show step 2
-      document.getElementById('loginStep1').classList.add('hidden');
-      document.getElementById('loginStep2').classList.remove('hidden');
-      document.getElementById('loginIdentifierDisplay').textContent = identifier;
-      document.getElementById('loginModalSubtitle').textContent = isEmail ? 'Introdu codul primit pe email' : 'Introdu codul primit prin SMS';
-      document.getElementById('loginOtpCode').focus();
-      
-      // Show phone OTP preview for phone logins (code returned in response for testing)
-      if(isPhone && data.code) {
-        document.getElementById('phoneOtpPreview').classList.remove('hidden');
-        document.getElementById('phoneOtpCode').textContent = data.code;
-      } else {
-        document.getElementById('phoneOtpPreview').classList.add('hidden');
-      }
-    } catch(e) {
-      document.getElementById('loginLoading').classList.add('hidden');
-      errorEl.textContent = e.message || 'Eroare la trimitere';
-      errorEl.classList.remove('hidden');
-    }
-  }
-
-  async function verifyLoginOtp() {
-    const identifier = document.getElementById('loginIdentifierDisplay').textContent;
-    const code = document.getElementById('loginOtpCode').value.trim();
-    const errorEl = document.getElementById('loginOtpError');
-    
-    const isEmail = identifier && identifier.includes('@') && identifier.includes('.');
-    const isPhone = identifier && (identifier.startsWith('+373') || identifier.startsWith('373') || identifier.startsWith('060') || identifier.startsWith('069') || identifier.startsWith('079'));
-    
-    if(!code || code.length !== 6) {
-      errorEl.textContent = 'Introdu cele 6 cifre';
-      errorEl.classList.remove('hidden');
-      return;
-    }
-    
-    errorEl.classList.add('hidden');
-    document.getElementById('loginLoading').classList.remove('hidden');
-    document.getElementById('loginVerifyBtn').disabled = true;
-    
-    // Build payload
-    let payload = { code };
-    if(isPhone) {
-      payload.phone = identifier.replace(/^0/, '+373');
-    } else {
-      payload.email = identifier;
-    }
-    
-    try {
-      const res = await fetch('/api/auth/verify-otp', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-      const data = await res.json();
-      
-      if(!res.ok) throw new Error(data.error || 'Cod invalid');
-      
-      customerToken = data.token;
-      localStorage.setItem('skykids_customer_token', customerToken);
-      currentCustomer = data.customer;
-      isLoggedIn = true;
-      
-      document.getElementById('loginLoading').classList.add('hidden');
-      document.getElementById('loginStep2').classList.add('hidden');
-      document.getElementById('loginSuccess').classList.remove('hidden');
-      document.getElementById('loginModalTitle').textContent = 'Succes!';
-      
-      updateLoginBadge();
-      
-      // If there was a pending action, continue it
-      setTimeout(() => {
-        closeLoginModal();
-        if(pendingAction === 'checkout') openCheckout();
-        else if(pendingAction === 'booking') {
-          // Continue booking to step 4
-          goToStep(4);
-        }
-        pendingAction = null;
-      }, 1500);
-    } catch(e) {
-      errorEl.textContent = e.message || 'Cod invalid sau expirat';
-      errorEl.classList.remove('hidden');
-    } finally {
-      document.getElementById('loginLoading').classList.add('hidden');
-      document.getElementById('loginVerifyBtn').disabled = false;
-    }
-  }
-
-  function updateLoginBadge() {
-    // Update both desktop and mobile badge if they exist
-    const desktopBadge = document.getElementById('customerBadgeDesktop');
-    const mobileBadge = document.getElementById('customerBadge');
-    const badge = desktopBadge || mobileBadge;
-    if(!badge) return;
-    
-    if(isLoggedIn && currentCustomer) {
-      const initial = (currentCustomer.first_name || currentCustomer.email || 'U').charAt(0).toUpperCase();
-      badge.innerHTML = '<span class="font-bold text-candy-green text-sm">' + initial + '</span>';
-      badge.title = currentCustomer.email + ' (logout)';
-      badge.onclick = () => { if(confirm('Sign out?')) logoutCustomer(); };
-    } else {
-      badge.innerHTML = '<iconify-icon icon="lucide:user" width="20" class="text-candy-green"></iconify-icon>';
-      badge.title = 'Autentificare';
-      badge.onclick = () => openLoginModal();
-    }
-  }
-
-  async function logoutCustomer() {
-    if(customerToken) {
-      try {
-        await fetch('/api/auth/logout', { method: 'POST', headers: { 'Authorization': 'Bearer ' + customerToken } });
-      } catch(e) {}
-    }
-    customerToken = null;
-    localStorage.removeItem('skykids_customer_token');
-    currentCustomer = null;
-    isLoggedIn = false;
-    updateLoginBadge();
-  }
-
   // ===== Init =====
   // ===== Check if restaurant is currently open (10:00 - 22:00) =====
   function updateOpenStatus() {
@@ -1913,7 +1694,7 @@
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('date').min = today;
     
-    await Promise.all([loadMenu(), loadGallery(), loadContact(), loadPackages(), loadDecor(), checkCustomerSession()]);
+    await Promise.all([loadMenu(), loadGallery(), loadContact(), loadPackages(), loadDecor()]);
     addCartBadgeToNav();
     
     // Update open/closed status
@@ -1970,7 +1751,7 @@
             ${p.icon}
           </div>
           <div class="flex-1 min-w-0">
-            <h4 class="font-bold text-base sm:text-lg text-dark truncate">${p.name}</h4>
+            <h4 class="font-bold text-base sm:text-lg text-dark">${p.name}</h4>
             ${p.description ? `<p class="text-xs sm:text-sm text-gray-500 line-clamp-2">${p.description}</p>` : ''}
           </div>
         </div>
@@ -2160,7 +1941,7 @@
       html += `<div class="flex justify-between"><span class="text-gray-500">Gustări:</span><span class="font-bold">${foodTotal} MDL</span></div>`;
       html += bookingFoodItems.map(i => `<div class="flex justify-between pl-4 text-xs"><span class="text-gray-400">${i.name} ×${i.quantity}</span><span class="text-gray-400">${i.price * i.quantity} MDL</span></div>`).join('');
     }
-    html += `<div class="flex justify-between border-t pt-2 mt-2"><span class="text-gray-500">Total:</span><span class="font-black text-candy-pink">${price || '—'}${bookingFoodItems.length > 0 ? ' + ' + foodTotal + ' MDL gustări' : ''}</span></div>`;
+    html += `<div class="flex justify-between border-t pt-2 mt-2"><span class="text-gray-500" data-i18n="cart_total">Total:</span><span class="font-black text-candy-pink">${price || '—'}${bookingFoodItems.length > 0 ? ' + ' + foodTotal + ' MDL gustări' : ''}</span></div>`;
     summary.innerHTML = html;
   }
 
@@ -2206,7 +1987,7 @@
       client_phone: document.getElementById('client_phone').value,
       notes: document.getElementById('notes').value,
       food_items: bookingFoodItems.map(i => ({ id: i.id, name: i.name, price: i.price, quantity: i.quantity }))
-    };
+  };
     
     try {
       const res = await fetch('/api/bookings', {

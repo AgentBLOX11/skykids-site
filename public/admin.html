@@ -191,6 +191,19 @@
     document.getElementById('editNotes').value = b.notes || '';
     document.getElementById('editAdminNotes').value = b.admin_notes || '';
     document.getElementById('editStatus').value = b.status;
+    // Afișează produsele dacă există
+    const foodDiv = document.getElementById('editBookingFood');
+    console.log('DEBUG food_items:', b.food_items, 'food_total:', b.food_total);
+    if (b.food_items && b.food_items.length > 0) {
+      foodDiv.innerHTML = b.food_items.map(fi => `<div class="flex justify-between text-sm py-1"><span>${fi.quantity}× ${fi.product_name}</span><span class="font-bold">${(fi.price * fi.quantity).toFixed(2)} MDL</span></div>`).join('');
+      foodDiv.classList.remove('hidden');
+      document.getElementById('editBookingFoodTotal').classList.remove('hidden');
+      document.getElementById('editBookingFoodTotal').textContent = 'Total produse: ' + (b.food_total || 0).toFixed(2) + ' MDL';
+    } else {
+      foodDiv.innerHTML = '<p class="text-sm text-gray-400">Nu sunt produse adăugate (sau date lipsesc)</p>';
+      foodDiv.classList.remove('hidden');
+      document.getElementById('editBookingFoodTotal').classList.add('hidden');
+    }
     showModal('bookingEditModal');
   }
 
@@ -360,6 +373,19 @@
     document.getElementById('editNotes').value = b.notes || '';
     document.getElementById('editAdminNotes').value = b.admin_notes || '';
     document.getElementById('editStatus').value = b.status;
+    // Afișează produsele dacă există
+    const foodDiv = document.getElementById('editBookingFood');
+    console.log('DEBUG food_items:', b.food_items, 'food_total:', b.food_total);
+    if (b.food_items && b.food_items.length > 0) {
+      foodDiv.innerHTML = b.food_items.map(fi => `<div class="flex justify-between text-sm py-1"><span>${fi.quantity}× ${fi.product_name}</span><span class="font-bold">${(fi.price * fi.quantity).toFixed(2)} MDL</span></div>`).join('');
+      foodDiv.classList.remove('hidden');
+      document.getElementById('editBookingFoodTotal').classList.remove('hidden');
+      document.getElementById('editBookingFoodTotal').textContent = 'Total produse: ' + (b.food_total || 0).toFixed(2) + ' MDL';
+    } else {
+      foodDiv.innerHTML = '<p class="text-sm text-gray-400">Nu sunt produse adăugate (sau date lipsesc)</p>';
+      foodDiv.classList.remove('hidden');
+      document.getElementById('editBookingFoodTotal').classList.add('hidden');
+    }
     showModal('bookingEditModal');
   }
 
@@ -394,100 +420,134 @@
     }
   
   // ===== STATS / DASHBOARD =====
-  async function loadStats() {
-    const period = document.getElementById('statsPeriod').value;
-    const dateFrom = document.getElementById('statsDateFrom').value;
-    const dateTo = document.getElementById('statsDateTo').value;
-    
-    let url = '/api/admin/bookings?all=1';
-    const res = await fetch(url, { headers: authHeaders() });
-    let bookings = (await res.json()).bookings;
-    
-    // Filter by period
-    const now = new Date();
-    let from = new Date();
-    let to = new Date();
-    
-    if (dateFrom && dateTo) {
-      from = new Date(dateFrom);
-      to = new Date(dateTo);
-    } else if (period === 'today') {
-      from = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-      to = new Date();
-    } else if (period === 'yesterday') {
-      from = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
-      to = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
-    } else if (period === 'week') {
-      from = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-      to = new Date();
-    } else if (period === 'month') {
-      from = new Date(now.getFullYear(), now.getMonth(), 1);
-      to = new Date();
-    } else if (period === 'year') {
-      from = new Date(now.getFullYear(), 0, 1);
-      to = new Date();
-    } else if (period === 'all') {
-      from = new Date(2020, 0, 1);
-      to = new Date(2030, 0, 1);
-    }
-    
-    bookings = bookings.filter(b => {
-      const d = new Date(b.date);
-      return d >= from && d <= to && b.status !== 'cancelled';
+  let chartData = { dailyRevenue: [], weeklyRevenue: [], monthlyRevenue: [], daily: [], weekly: [], monthly: [] };
+  let currentChartPeriod = 'month';
+  let dashboardStats = {};
+
+  function setChartPeriod(period) {
+    currentChartPeriod = period;
+    ['today', 'week', 'month'].forEach(p => {
+      document.getElementById('chartBtn' + p.charAt(0).toUpperCase() + p.slice(1)).className = 'px-3 py-1.5 rounded-lg text-xs font-bold ' + (p === period ? 'bg-candy-pink text-white' : 'bg-gray-100 text-gray-600 hover:bg-candy-pink/10');
     });
-    
-    // Calculate stats
+    const labels = { today: 'Astăzi', week: 'Săptămâna aceasta', month: 'Luna aceasta' };
+    document.getElementById('chartPeriodLabel').textContent = labels[period] || '';
+    renderChart(period);
+  }
+
+  function renderChart(period) {
+    const bars = document.getElementById('chartBars');
+    if (!bars) return;
+    let data, labels;
+    if (period === 'today') {
+      const hours = [];
+      for (let h = 10; h <= 22; h++) hours.push(h + ':00');
+      data = new Array(hours.length).fill(0);
+      labels = hours.map(h => h.slice(0, 2));
+    } else if (period === 'week') {
+      const days = ['Du', 'Lu', 'Ma', 'Mi', 'Jo', 'Vi', 'Sâ'];
+      data = chartData.weekly.map(w => w.revenue);
+      labels = chartData.weekly.map((_, i) => days[i % 7]);
+    } else {
+      const months = ['Ian', 'Feb', 'Mar', 'Apr', 'Mai', 'Iun', 'Iul', 'Aug', 'Sep', 'Oct', 'Noi', 'Dec'];
+      data = chartData.monthly.map(m => m.revenue);
+      labels = chartData.monthly.map((m, i) => {
+        const d = new Date(m.month);
+        return months[d.getMonth()];
+      });
+    }
+    const maxVal = Math.max(...data, 1);
+    const totalH = 160;
+    bars.innerHTML = data.map((val, i) => {
+      const h = Math.max(4, Math.round((val / maxVal) * totalH));
+      const isToday = period === 'week' && i === new Date().getDay() - 1;
+      const color = isToday ? 'bg-candy-pink' : 'bg-candy-blue/40';
+      return `<div class="flex flex-col items-center gap-1 flex-1" title="${labels[i]}: ${val} lei">
+        <div class="w-full ${color} rounded-t-lg transition-all hover:opacity-80" style="height:${h}px; min-height:4px;"></div>
+        <span class="text-[10px] text-gray-400">${labels[i]}</span>
+      </div>`;
+    }).join('');
+  }
+
+  async function loadStats() {
+    try {
+      const res = await fetch('/api/admin/stats', { headers: authHeaders() });
+      if (!res.ok) return;
+      dashboardStats = await res.json();
+      chartData.monthly = dashboardStats.monthlyRevenue || [];
+      chartData.weekly = dashboardStats.weeklyRevenue || [];
+      chartData.daily = dashboardStats.dailyRevenue || [];
+
+      // KPI Cards
+      document.getElementById('kpiRevenue').textContent = (dashboardStats.totalRevenue || 0) + ' lei';
+      document.getElementById('kpiBookings').textContent = dashboardStats.thisMonthBookingsCount || 0;
+      document.getElementById('kpiOrders').textContent = dashboardStats.thisMonthOrdersCount || 0;
+      document.getElementById('kpiOccup').textContent = (dashboardStats.occupationRate || 0) + '%';
+
+      function showTrend(badgeId, trend) {
+        const el = document.getElementById(badgeId);
+        if (!el || !trend || trend.value === 0) { el?.classList.add('hidden'); return; }
+        const dir = trend.direction === 'up' ? '↑' : '↓';
+        const color = trend.direction === 'up' ? 'text-candy-green' : 'text-red-500';
+        el.innerHTML = `<span class="${color}">${dir}</span> ${trend.value}%`;
+        el.classList.remove('hidden');
+      }
+      showTrend('kpiRevenueBadge', dashboardStats.revenueTrend);
+      showTrend('kpiBookingsBadge', dashboardStats.bookingsTrend);
+      showTrend('kpiOrdersBadge', null);
+    } catch(e) { console.error('Stats load error:', e); }
+
+    // Legacy stats with period filter
+    const period = document.getElementById('statsPeriod')?.value || 'all';
+    const dateFrom = document.getElementById('statsDateFrom')?.value;
+    const dateTo = document.getElementById('statsDateTo')?.value;
+    let url = '/api/admin/bookings?all=1';
+    const res2 = await fetch(url, { headers: authHeaders() });
+    let bookings = (await res2.json()).bookings;
+    const now = new Date();
+    let from = new Date(), to = new Date();
+    if (dateFrom && dateTo) { from = new Date(dateFrom); to = new Date(dateTo); }
+    else if (period === 'today') { from = new Date(now.getFullYear(), now.getMonth(), now.getDate()); to = new Date(); }
+    else if (period === 'yesterday') { from = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1); to = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1); }
+    else if (period === 'week') { from = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000); to = new Date(); }
+    else if (period === 'month') { from = new Date(now.getFullYear(), now.getMonth(), 1); to = new Date(); }
+    else if (period === 'year') { from = new Date(now.getFullYear(), 0, 1); to = new Date(); }
+    else if (period === 'all') { from = new Date(2020, 0, 1); to = new Date(2030, 0, 1); }
+    bookings = bookings.filter(b => { const d = new Date(b.date); return d >= from && d <= to && b.status !== 'cancelled'; });
     const totalKids = bookings.reduce((sum, b) => sum + (b.kids_count || 0), 0);
     const totalAdults = bookings.reduce((sum, b) => sum + (b.adults_count || 0), 0);
-    
-    // Calculate revenue using actual package prices from API
     try {
       const pkgRes = await fetch('/api/admin/packages', { headers: authHeaders() });
       const packages = await pkgRes.json();
       const pkgPriceMap = {};
-      packages.forEach(p => {
-        pkgPriceMap[p.name.toLowerCase().replace(/\s+/g, '-')] = p;
-      });
-      
+      packages.forEach(p => { pkgPriceMap[p.name.toLowerCase().replace(/\s+/g, '-')] = p; });
       let totalRevenue = 0;
       bookings.forEach(b => {
         const pkg = pkgPriceMap[b.package];
         if (pkg) {
           if (pkg.price_group) totalRevenue += parseFloat(pkg.price_group);
-          else {
-            totalRevenue += (pkg.price_per_child || 0) * (b.kids_count || 0);
-            totalRevenue += (pkg.price_per_adult || 0) * (b.adults_count || 0);
-          }
+          else { totalRevenue += (parseFloat(pkg.price_per_child) || 0) * (b.kids_count || 0); totalRevenue += (parseFloat(pkg.price_per_adult) || 0) * (b.adults_count || 0); }
         }
       });
       document.getElementById('statRevenue').textContent = Math.round(totalRevenue) + ' lei';
-    } catch(e) {
-      document.getElementById('statRevenue').textContent = '— lei';
-    }
-    
+    } catch(e) { document.getElementById('statRevenue').textContent = '— lei'; }
     document.getElementById('statBookings').textContent = bookings.length;
     document.getElementById('statKids').textContent = totalKids;
     document.getElementById('statAdults').textContent = totalAdults;
-    
-    // Render stats bookings list
+    try {
+      const ordersRes = await fetch('/api/orders', { headers: authHeaders() });
+      const orders = await ordersRes.json();
+      const filteredOrders = orders.filter(o => { const d = new Date(o.created_at); return d >= from && d <= to && o.status !== 'cancelled'; });
+      document.getElementById('statOrders').textContent = filteredOrders.length;
+    } catch(e) {}
     const list = document.getElementById('statsBookingsList');
-    if (!bookings.length) {
-      list.innerHTML = '<p class="text-gray-400 text-center py-8">Nicio rezervare în această perioadă.</p>';
-      return;
-    }
-    list.innerHTML = bookings.map(b => `
+    if (!bookings.length) { list.innerHTML = '<p class="text-gray-400 text-center py-8">Nicio activitate în această perioadă.</p>'; return; }
+    list.innerHTML = bookings.slice(0, 20).map(b => `
       <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
-        <div>
-          <p class="font-bold">${b.client_name}</p>
-          <p class="text-sm text-gray-500">${b.date} la ${b.time}</p>
-        </div>
-        <div class="text-right">
-          <p class="font-bold text-candy-pink">${b.package}</p>
-          <p class="text-sm text-gray-500">${b.kids_count} copii, ${b.adults_count || 0} adulți</p>
-        </div>
+        <div><p class="font-bold">${b.client_name}</p><p class="text-sm text-gray-500">${b.date} la ${b.time}</p></div>
+        <div class="text-right"><p class="font-bold text-candy-pink">${b.package}</p><p class="text-sm text-gray-500">${b.kids_count} copii, ${b.adults_count || 0} adulți</p></div>
         <span class="text-xs font-bold px-3 py-1 rounded-full badge-${b.status}">${b.status}</span>
-      </div>
-    `).join('');
+      </div>`).join('');
+    renderChart(currentChartPeriod);
   }
 
   // ===== BOOKINGS =====
@@ -543,6 +603,19 @@
     document.getElementById('editNotes').value = b.notes || '';
     document.getElementById('editAdminNotes').value = b.admin_notes || '';
     document.getElementById('editStatus').value = b.status;
+    // Afișează produsele dacă există
+    const foodDiv = document.getElementById('editBookingFood');
+    console.log('DEBUG food_items:', b.food_items, 'food_total:', b.food_total);
+    if (b.food_items && b.food_items.length > 0) {
+      foodDiv.innerHTML = b.food_items.map(fi => `<div class="flex justify-between text-sm py-1"><span>${fi.quantity}× ${fi.product_name}</span><span class="font-bold">${(fi.price * fi.quantity).toFixed(2)} MDL</span></div>`).join('');
+      foodDiv.classList.remove('hidden');
+      document.getElementById('editBookingFoodTotal').classList.remove('hidden');
+      document.getElementById('editBookingFoodTotal').textContent = 'Total produse: ' + (b.food_total || 0).toFixed(2) + ' MDL';
+    } else {
+      foodDiv.innerHTML = '<p class="text-sm text-gray-400">Nu sunt produse adăugate (sau date lipsesc)</p>';
+      foodDiv.classList.remove('hidden');
+      document.getElementById('editBookingFoodTotal').classList.add('hidden');
+    }
     showModal('bookingEditModal');
   }
 
@@ -649,7 +722,7 @@
           <label class="block text-sm font-bold text-gray-700 mb-2">Parolă</label>
           <input type="password" id="loginPassword" required class="w-full px-4 sm:px-5 py-3 sm:py-4 rounded-xl border-2 border-gray-100 text-base sm:text-lg" placeholder="••••••">
         </div>
-        <button type="button" onclick="document.getElementById('loginForm').requestSubmit()" class="btn-primary w-full flex items-center justify-center gap-2">
+        <button type="submit" class="btn-primary w-full flex items-center justify-center gap-2">
           <iconify-icon icon="lucide:log-in" width="18"></iconify-icon>
           Intră în admin
         </button>
@@ -721,6 +794,9 @@
           <button onclick="showSection('business')" class="sidebar-item w-full flex items-center gap-2 lg:gap-3 px-3 lg:px-4 py-2 lg:py-3 font-bold text-left text-sm lg:text-base" data-section="business">
             <iconify-icon icon="lucide:building-2" width="20"></iconify-icon> Business
           </button>
+          <button onclick="showSection('clienti')" class="sidebar-item w-full flex items-center gap-2 lg:gap-3 px-3 lg:px-4 py-2 lg:py-3 font-bold text-left text-sm lg:text-base" data-section="clienti">
+            <iconify-icon icon="lucide:users" width="20"></iconify-icon> Clienți
+          </button>
         </nav>
       </aside>
 
@@ -771,6 +847,10 @@
             <button onclick="showSection('dashboard'); hideModal('mobileMenuModal')" class="flex flex-col items-center gap-2 p-4 bg-gray-50 hover:bg-candy-pink/10 rounded-2xl transition-colors">
               <iconify-icon icon="lucide:layout-dashboard" width="28" class="text-candy-blue"></iconify-icon>
               <span class="text-xs font-bold text-center">Dashboard</span>
+            </button>
+            <button onclick="showSection('clienti'); hideModal('mobileMenuModal')" class="flex flex-col items-center gap-2 p-4 bg-gray-50 hover:bg-candy-pink/10 rounded-2xl transition-colors">
+              <iconify-icon icon="lucide:users" width="28" class="text-candy-pink"></iconify-icon>
+              <span class="text-xs font-bold text-center">Clienți</span>
             </button>
             <button onclick="showSection('settings'); hideModal('mobileMenuModal')" class="flex flex-col items-center gap-2 p-4 bg-gray-50 hover:bg-candy-pink/10 rounded-2xl transition-colors">
               <iconify-icon icon="lucide:settings" width="28" class="text-gray-500"></iconify-icon>
@@ -887,30 +967,76 @@
 
         <!-- ===== DASHBOARD ===== -->
         <section id="section-dashboard" class="section hidden">
-          <div class="mb-6 sm:mb-8">
-            <h2 class="font-black text-2xl sm:text-3xl text-dark">Dashboard</h2>
-            <p class="text-gray-400 mt-1 text-sm sm:text-base">Statistici și venituri</p>
-          </div>
-          
-          <!-- Period selector -->
-          <div class="flex flex-col gap-3 mb-6 sm:mb-8">
-            <select id="statsPeriod" onchange="loadStats()" class="w-full px-4 py-3 rounded-xl border-2 border-gray-100 font-medium bg-white text-sm sm:text-base">
-              <option value="today">Astăzi</option>
-              <option value="yesterday">Ieri</option>
-              <option value="week">Ultima săptămână</option>
-              <option value="month">Luna aceasta</option>
-              <option value="year">Anul acesta</option>
-              <option value="all" selected>Toate timpurile</option>
-            </select>
-            <div class="flex items-center gap-2">
-              <input type="date" id="statsDateFrom" class="flex-1 px-3 py-3 rounded-xl border-2 border-gray-100 text-sm">
-              <span class="text-gray-400 text-sm">—</span>
-              <input type="date" id="statsDateTo" class="flex-1 px-3 py-3 rounded-xl border-2 border-gray-100 text-sm">
+          <div class="mb-6 sm:mb-8 flex items-center justify-between flex-wrap gap-4">
+            <div>
+              <h2 class="font-black text-2xl sm:text-3xl text-dark">Dashboard</h2>
+              <p class="text-gray-400 mt-1 text-sm sm:text-base">Vezi cum merge afacerea</p>
             </div>
-            <button onclick="loadStats()" class="w-full px-4 py-3 bg-candy-blue text-white rounded-xl font-bold hover:opacity-90 transition-opacity text-sm">Filtrează</button>
+            <div class="flex gap-2">
+              <button onclick="setChartPeriod('today')" id="chartBtnToday" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-candy-pink text-white">Astăzi</button>
+              <button onclick="setChartPeriod('week')" id="chartBtnWeek" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-gray-100 text-gray-600 hover:bg-candy-pink/10">Săptămâna</button>
+              <button onclick="setChartPeriod('month')" id="chartBtnMonth" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-gray-100 text-gray-600 hover:bg-candy-pink/10">Luna</button>
+            </div>
           </div>
           
-          <!-- Stats cards -->
+          <!-- KPI Cards -->
+          <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6">
+            <div class="card p-4 sm:p-5 flex flex-col">
+              <div class="flex items-center justify-between mb-3">
+                <div class="w-10 h-10 sm:w-12 sm:h-12 bg-candy-pink/10 rounded-xl sm:rounded-2xl flex items-center justify-center">
+                  <iconify-icon icon="lucide:wallet" width="20" class="sm:w-6 sm:h-6 text-candy-pink"></iconify-icon>
+                </div>
+                <span id="kpiRevenueBadge" class="flex items-center gap-1 text-xs font-bold text-candy-green hidden"></span>
+              </div>
+              <p class="text-xl sm:text-2xl lg:text-3xl font-black text-candy-pink mb-1" id="kpiRevenue">0 lei</p>
+              <p class="text-xs sm:text-sm text-gray-400">Venit Total</p>
+            </div>
+            <div class="card p-4 sm:p-5 flex flex-col">
+              <div class="flex items-center justify-between mb-3">
+                <div class="w-10 h-10 sm:w-12 sm:h-12 bg-candy-blue/10 rounded-xl sm:rounded-2xl flex items-center justify-center">
+                  <iconify-icon icon="lucide:calendar-check" width="20" class="sm:w-6 sm:h-6 text-candy-blue"></iconify-icon>
+                </div>
+                <span id="kpiBookingsBadge" class="flex items-center gap-1 text-xs font-bold text-candy-green hidden"></span>
+              </div>
+              <p class="text-xl sm:text-2xl lg:text-3xl font-black text-dark mb-1" id="kpiBookings">0</p>
+              <p class="text-xs sm:text-sm text-gray-400">Rezervări (luna)</p>
+            </div>
+            <div class="card p-4 sm:p-5 flex flex-col">
+              <div class="flex items-center justify-between mb-3">
+                <div class="w-10 h-10 sm:w-12 sm:h-12 bg-candy-green/10 rounded-xl sm:rounded-2xl flex items-center justify-center">
+                  <iconify-icon icon="lucide:shopping-bag" width="20" class="sm:w-6 sm:h-6 text-candy-green"></iconify-icon>
+                </div>
+                <span id="kpiOrdersBadge" class="flex items-center gap-1 text-xs font-bold text-candy-green hidden"></span>
+              </div>
+              <p class="text-xl sm:text-2xl lg:text-3xl font-black text-dark mb-1" id="kpiOrders">0</p>
+              <p class="text-xs sm:text-sm text-gray-400">Comenzi (luna)</p>
+            </div>
+            <div class="card p-4 sm:p-5 flex flex-col">
+              <div class="flex items-center justify-between mb-3">
+                <div class="w-10 h-10 sm:w-12 sm:h-12 bg-purple-100 rounded-xl sm:rounded-2xl flex items-center justify-center">
+                  <iconify-icon icon="lucide:percent" width="20" class="sm:w-6 sm:h-6 text-purple-600"></iconify-icon>
+                </div>
+                <span id="kpiOccupBadge" class="flex items-center gap-1 text-xs font-bold text-candy-green hidden"></span>
+              </div>
+              <p class="text-xl sm:text-2xl lg:text-3xl font-black text-dark mb-1" id="kpiOccup">0%</p>
+              <p class="text-xs sm:text-sm text-gray-400">Rata Ocupare</p>
+            </div>
+          </div>
+
+          <!-- Revenue Chart -->
+          <div class="card p-5 sm:p-6 mb-6">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="font-bold text-base sm:text-lg">Venituri</h3>
+              <p class="text-xs text-gray-400" id="chartPeriodLabel">Luna aceasta</p>
+            </div>
+            <div id="revenueChart" class="w-full" style="min-height:180px;">
+              <div class="flex items-end justify-around gap-1 h-44">
+                <div id="chartBars" class="flex items-end justify-around gap-1 flex-1"></div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Old Stats cards (small) -->
           <div class="grid grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4 mb-6 sm:mb-8">
             <div class="card p-4 sm:p-5">
               <div class="w-10 h-10 sm:w-12 sm:h-12 bg-candy-pink/10 rounded-xl sm:rounded-2xl flex items-center justify-center mb-3 sm:mb-4">
@@ -992,6 +1118,7 @@
             <button onclick="filterOrders('delivery')" id="filterOrdersDelivery" class="px-4 py-2 rounded-xl text-sm font-bold bg-gray-100 text-gray-600 hover:bg-candy-blue/10">🏍️ Livrare</button>
             <button onclick="filterOrders('advance')" id="filterOrdersAdvance" class="px-4 py-2 rounded-xl text-sm font-bold bg-gray-100 text-gray-600 hover:bg-candy-blue/10">📅 În avans</button>
             <button onclick="filterOrders('onsite')" id="filterOrdersOnsite" class="px-4 py-2 rounded-xl text-sm font-bold bg-gray-100 text-gray-600 hover:bg-candy-blue/10">🏠 În sală</button>
+            <button onclick="filterOrders('cancelled')" id="filterOrdersCancelled" class="px-4 py-2 rounded-xl text-sm font-bold bg-gray-100 text-gray-600 hover:bg-red-50 ml-auto">🗑️ Anulate</button>
           </div>
           <div class="bg-white rounded-2xl shadow-card p-6">
             <div id="ordersList" class="space-y-4">
@@ -1140,6 +1267,22 @@
         </section>
 
 
+        <!-- ===== CLIENTI (mock user management) ===== -->
+        <section id="section-clienti" class="section hidden">
+          <div class="mb-6 flex items-center justify-between flex-wrap gap-4">
+            <div>
+              <h2 class="font-black text-3xl text-dark">Clienți</h2>
+              <p class="text-gray-400 mt-1 text-sm">Ultimele 20 de comenzi și rezervări</p>
+            </div>
+          </div>
+          <div class="card p-6">
+            <h3 class="font-bold text-base mb-4 flex items-center gap-2"><iconify-icon icon="lucide:history" width="16"></iconify-icon> Activitate recentă</h3>
+            <div id="clientiList" class="space-y-3">
+              <p class="text-gray-400 text-center py-8">Se încarcă...</p>
+            </div>
+          </div>
+        </section>
+
       </main>
     </div>
   </div>
@@ -1251,7 +1394,7 @@
         <div>
           <label class="block text-sm font-bold text-gray-700 mb-2">URL imagine (sau încarcă din folder)</label>
           <div class="flex max-sm:flex-col sm:gap-3 gap-3">
-            <input type="url" id="galleryUrl" required class="flex-1 px-4 py-3 sm:px-5 sm:py-4 rounded-xl border-2 border-gray-100" placeholder="https://...">
+            <input type="text" id="galleryUrl" class="flex-1 px-4 py-3 sm:px-5 sm:py-4 rounded-xl border-2 border-gray-100" placeholder="Se încarcă automat după upload...">
             <label class="px-4 py-3 sm:px-5 sm:py-4 bg-gray-100 hover:bg-gray-200 rounded-xl font-bold cursor-pointer flex items-center justify-center gap-2 transition-colors text-sm sm:text-base">
               <iconify-icon icon="lucide:upload" width="18"></iconify-icon>
               <input type="file" id="galleryImageFile" accept="image/*" class="hidden" onchange="uploadGalleryImage(this)" onclick="this.focus()">
@@ -1347,6 +1490,12 @@
   let gallery = [];
   let packages = [];
   let allBookings = [];
+  let allOrders = [];
+  let pollingInterval = null;
+  let lastBookingIds = [];
+  let lastOrderIds = [];
+  let newItemsBannerTimeout = null;
+  let currentOrdersFilter = 'all';
 
   // ===== Auth =====
   // No auto-login - always show login screen
@@ -1373,6 +1522,7 @@
   });
 
   function logout() {
+    stopPolling();
     token = null;
     localStorage.removeItem('skykids_token');
     document.getElementById('adminDashboard').classList.add('hidden');
@@ -1384,6 +1534,7 @@
     document.getElementById('adminDashboard').classList.remove('hidden');
     showSection('categories');
     loadAll();
+    startPolling();
   }
 
   function showSection(name) {
@@ -1393,12 +1544,158 @@
     if (name === 'dashboard') { loadStats(); return; }
   }
 
+  // ===== POLLING (auto-refresh) =====
+  function startPolling() {
+    stopPolling();
+    // Initialize last-known IDs so first poll doesn't trigger false "new" alerts
+    // Only init if empty; otherwise keep current (data already loaded)
+    if (!lastBookingIds.length) lastBookingIds = allBookings.map(b => b.id);
+    if (!lastOrderIds.length) lastOrderIds = allOrders.map(o => o.id);
+    pollingInterval = setInterval(async () => {
+      await Promise.all([refreshBookings(), refreshOrders()]);
+    }, 5000);
+  }
+
+  function stopPolling() {
+    if (pollingInterval !== null) {
+      clearInterval(pollingInterval);
+      pollingInterval = null;
+    }
+    if (newItemsBannerTimeout !== null) {
+      clearTimeout(newItemsBannerTimeout);
+      newItemsBannerTimeout = null;
+    }
+  }
+
+  window.addEventListener('beforeunload', stopPolling);
+
+  function showNewItemsBanner(type) {
+    // Remove any existing banner first
+    const existing = document.getElementById('newItemsBanner');
+    if (existing) existing.remove();
+    if (newItemsBannerTimeout) clearTimeout(newItemsBannerTimeout);
+
+    const label = type === 'booking' ? 'Rezervări noi!' : 'Comenzi noi!';
+    const banner = document.createElement('div');
+    banner.id = 'newItemsBanner';
+    banner.className = 'fixed top-4 right-4 z-[200] bg-candy-green text-white px-6 py-3 rounded-2xl shadow-2xl font-bold text-sm flex items-center gap-2 animate-pulse';
+    banner.innerHTML = '<iconify-icon icon="lucide:bell" width="18"></iconify-icon> ' + label;
+    document.body.appendChild(banner);
+    newItemsBannerTimeout = setTimeout(() => { const b = document.getElementById('newItemsBanner'); if (b) b.remove(); }, 5000);
+  }
+
+  async function refreshBookings() {
+    const status = document.getElementById('bookingsStatusFilter')?.value || '';
+    let url = '/api/admin/bookings';
+    if (status) url += '?status=' + status;
+    try {
+      const data = await (await fetch(url, { headers: authHeaders() })).json();
+      const fresh = data.bookings || [];
+      const freshIds = fresh.map(b => b.id);
+      const hasNew = freshIds.some(id => !lastBookingIds.includes(id));
+      const statusChanged = fresh.some(f => {
+        const local = allBookings.find(b => b.id === f.id);
+        return local && local.status !== f.status;
+      });
+      if (hasNew || statusChanged) {
+        if (hasNew) allBookings = fresh;
+        renderBookings();
+        if (hasNew) showNewItemsBanner('booking');
+      }
+      lastBookingIds = freshIds;
+    } catch(e) { /* silent fail on poll */ }
+  }
+
+  async function refreshOrders() {
+    try {
+      const res = await fetch('/api/orders', { headers: authHeaders() });
+      if (!res.ok) return;
+      const fresh = await res.json();
+      const freshIds = fresh.map(o => o.id);
+      const hasNew = freshIds.some(id => !lastOrderIds.includes(id));
+      const statusChanged = fresh.some(f => {
+        const local = allOrders.find(o => o.id === f.id);
+        return local && local.status !== f.status;
+      });
+      if (hasNew || statusChanged) {
+        if (hasNew) allOrders = fresh; // Only full replace on new items
+        document.getElementById('ordersCount').textContent = allOrders.length;
+        const badge = document.getElementById('sidebarOrdersBadge');
+        if (allOrders.length > 0) { badge.textContent = allOrders.length; badge.classList.remove('hidden'); }
+        else { badge.classList.add('hidden'); }
+        const filtered2 = currentOrdersFilter === 'cancelled' ? allOrders.filter(o => o.status === 'cancelled') : currentOrdersFilter === 'all' ? allOrders.filter(o => o.status !== 'cancelled') : allOrders.filter(o => o.order_type === currentOrdersFilter && o.status !== 'cancelled');
+        renderOrders(filtered2);
+        if (hasNew) showNewItemsBanner('order');
+      }
+      lastOrderIds = freshIds;
+    } catch(e) { /* silent fail on poll */ }
+  }
+  // ===== END POLLING =====
+
   function authHeaders() { return { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' }; }
 
   async function loadAll() {
-    await Promise.all([loadCategories(), loadGallery(), loadContact(), loadSettings(), loadBookings(), loadPackages(), loadOrders(), loadDecor(), loadBusinessInfo()]);
+    await Promise.all([loadCategories(), loadGallery(), loadContact(), loadSettings(), loadBookings(), loadPackages(), loadOrders(), loadDecor(), loadBusinessInfo(), loadClienti()]);
     // Load stats for dashboard
     try { await loadStats(); } catch(e) {}
+  }
+
+  // ===== CLIENTI =====
+  async function loadClienti() {
+    const list = document.getElementById('clientiList');
+    if (!list) return;
+    try {
+      // Fetch bookings
+      const bRes = await fetch('/api/admin/bookings?all=1', { headers: authHeaders() });
+      const bData = await bRes.json();
+      const bookings = bData.bookings || [];
+      // Fetch orders
+      const oRes = await fetch('/api/orders', { headers: authHeaders() });
+      const orders = oRes.ok ? await oRes.json() : [];
+
+      const items = [
+        ...bookings.map(b => ({ type: 'booking', ...b, created_at: b.date + 'T' + b.time })),
+        ...orders.map(o => ({ type: 'order', ...o }))
+      ].sort((a, b) => new Date(b.created_at) - new Date(a.created_at)).slice(0, 20);
+
+      if (!items.length) {
+        list.innerHTML = '<p class="text-gray-400 text-center py-8">Nicio activitate înregistrată.</p>';
+        return;
+      }
+
+      const months = ['Ian','Feb','Mar','Apr','Mai','Iun','Iul','Aug','Sep','Oct','Noi','Dec'];
+      list.innerHTML = items.map(item => {
+        const d = new Date(item.created_at);
+        const dateStr = d.getDate() + ' ' + months[d.getMonth()];
+        if (item.type === 'order') {
+          const tc = { delivery: { border: '#3b82f6', label: '🏍️ Livrare' }, advance: { border: '#a855f7', label: '📅 În avans' }, onsite: { border: '#26de81', label: '🏠 În sală' } }[item.order_type] || { border: '#6b7280', label: '?' };
+          return `<div class="flex items-center justify-between p-4 bg-purple-50 rounded-xl border-l-4" style="border-left-color:${tc.border}">
+            <div>
+              <p class="font-bold">📦 #${item.order_number}</p>
+              <p class="text-sm text-gray-500">${dateStr} · ${item.first_name} ${item.last_name}</p>
+              <p class="text-xs text-purple-600 mt-1">${tc.label}</p>
+            </div>
+            <div class="text-right">
+              <p class="font-bold text-purple-600">${parseFloat(item.total || 0).toFixed(2)} lei</p>
+              <span class="text-xs font-bold px-3 py-1 rounded-full ${item.status === 'completed' ? 'bg-candy-green/20 text-candy-green' : 'bg-yellow-100 text-yellow-700'}">${item.status}</span>
+            </div>
+          </div>`;
+        }
+        const statusBadge = { pending: 'badge-pending', confirmed: 'badge-confirmed', cancelled: 'badge-cancelled', completed: 'badge-completed' };
+        return `<div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+          <div>
+            <p class="font-bold">${item.client_name}</p>
+            <p class="text-sm text-gray-500">${dateStr} · ${item.package}</p>
+            <p class="text-xs text-gray-400">${item.kids_count} copii${item.adults_count ? ', ' + item.adults_count + ' adulți' : ''}</p>
+          </div>
+          <div class="text-right">
+            <span class="text-xs font-bold px-3 py-1 rounded-full ${statusBadge[item.status] || 'bg-gray-100'}">${item.status}</span>
+          </div>
+        </div>`;
+      }).join('');
+    } catch(e) {
+      list.innerHTML = '<p class="text-red-400 text-center py-8">Eroare la încărcarea datelor.</p>';
+    }
   }
 
   // ===== CATEGORIES =====
@@ -1445,7 +1742,7 @@
   function closeCategoryModal() { hideModal('categoryModal'); }
 
   function editCategory(id) {
-    const cat = categories.find(c => c.id === id);
+    const cat = categories.find(c => c.id === parseInt(id));
     if (cat) openCategoryModal(cat);
   }
 
@@ -1536,7 +1833,7 @@
   function closeProductModal() { hideModal('productModal'); }
 
   function editProduct(id) {
-    const prod = products.find(p => p.id === id);
+    const prod = products.find(p => p.id === parseInt(id));
     if (prod) openProductModal(prod);
   }
 
@@ -1585,7 +1882,7 @@
       });
       const data = await res.json();
       if (data.url) {
-        document.getElementById('productImage').value = window.location.origin + data.url;
+        document.getElementById('productImage').value = data.url;
         status.textContent = '✓ Imagine încărcată!';
         status.className = 'text-xs text-candy-green mt-2';
         setTimeout(() => { status.classList.add('hidden'); }, 2000);
@@ -1613,7 +1910,7 @@
       });
       const data = await res.json();
       if (data.url) {
-        document.getElementById('galleryUrl').value = window.location.origin + data.url;
+        document.getElementById('galleryUrl').value = data.url;
         status.textContent = '✓ Imagine încărcată!';
         status.className = 'text-xs text-candy-green mt-2';
         setTimeout(() => { status.classList.add('hidden'); }, 2000);
@@ -1770,7 +2067,7 @@
   function closeGalleryModal() { hideModal('galleryModal'); }
 
   function editGallery(id) {
-    const item = gallery.find(g => g.id === id);
+    const item = gallery.find(g => g.id === parseInt(id));
     if (item) openGalleryModal(item);
   }
 
@@ -1924,6 +2221,19 @@
     document.getElementById('editNotes').value = b.notes || '';
     document.getElementById('editAdminNotes').value = b.admin_notes || '';
     document.getElementById('editStatus').value = b.status;
+    // Afișează produsele dacă există
+    const foodDiv = document.getElementById('editBookingFood');
+    console.log('DEBUG food_items:', b.food_items, 'food_total:', b.food_total);
+    if (b.food_items && b.food_items.length > 0) {
+      foodDiv.innerHTML = b.food_items.map(fi => `<div class="flex justify-between text-sm py-1"><span>${fi.quantity}× ${fi.product_name}</span><span class="font-bold">${(fi.price * fi.quantity).toFixed(2)} MDL</span></div>`).join('');
+      foodDiv.classList.remove('hidden');
+      document.getElementById('editBookingFoodTotal').classList.remove('hidden');
+      document.getElementById('editBookingFoodTotal').textContent = 'Total produse: ' + (b.food_total || 0).toFixed(2) + ' MDL';
+    } else {
+      foodDiv.innerHTML = '<p class="text-sm text-gray-400">Nu sunt produse adăugate (sau date lipsesc)</p>';
+      foodDiv.classList.remove('hidden');
+      document.getElementById('editBookingFoodTotal').classList.add('hidden');
+    }
     showModal('bookingEditModal');
   }
 
@@ -2063,19 +2373,36 @@
       return;
     }
     const statusBadge = { pending: 'badge-pending', confirmed: 'badge-confirmed', cancelled: 'badge-cancelled', completed: 'badge-completed' };
-    list.innerHTML = allBookings.map(b => `
-      <div class="card p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 cursor-pointer hover:shadow-lg transition-all" onclick="openBookingEditModal('${b.id}')">
-        <div>
+    list.innerHTML = allBookings.map(b => {
+      const foodItems = b.food_items || [];
+      const foodTotal = parseFloat(b.food_total || 0);
+      const kidsCount = parseInt(b.kids_count) || 0;
+      const packagePrices = { 'standard': 100, 'premium': 180, 'zi-de-nastere': 1500 };
+      const packagePrice = (packagePrices[b.package] || 0) * kidsCount;
+      const totalPrice = packagePrice + foodTotal;
+      return `
+      <div class="card p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 cursor-pointer hover:shadow-lg transition-all">
+        <div class="flex-1 min-w-0">
           <h4 class="font-bold text-lg">${b.client_name}</h4>
           <p class="text-gray-500">${b.client_phone}</p>
           <p class="text-sm text-gray-400">${b.date} la ${b.time}</p>
           ${b.notes ? `<p class="text-sm text-gray-400 mt-1">📝 ${b.notes}</p>` : ''}
           ${b.admin_notes ? `<p class="text-sm text-candy-blue mt-1 font-medium">🔒 ${b.admin_notes}</p>` : ''}
+          ${foodItems.length > 0 ? `
+            <div class="mt-2 p-2 bg-gray-50 rounded-lg">
+              <p class="text-xs font-bold text-gray-500 mb-1">Gustări comandate:</p>
+              <div class="flex flex-wrap gap-1">
+                ${foodItems.map(f => `<span class="text-xs bg-candy-pink/10 text-candy-pink px-2 py-0.5 rounded">${f.quantity}× ${f.product_name} (${f.price} MDL)</span>`).join('')}
+              </div>
+            </div>
+          ` : ''}
         </div>
-        <div class="text-center">
+        <div class="text-center sm:text-right">
           <p class="font-bold text-candy-pink">${b.package}</p>
           <p class="text-sm">${b.kids_count} copii</p>
           <p class="text-sm">${b.adults_count || 0} adulți</p>
+          ${foodTotal > 0 ? `<p class="text-xs text-gray-500 mt-1">Gustări: ${foodTotal} MDL</p>` : ''}
+          ${totalPrice > 0 ? `<p class="font-bold text-lg text-candy-green mt-1">Total: ${totalPrice} MDL</p>` : ''}
         </div>
         <div class="flex items-center gap-2">
           <span class="px-3 py-1 rounded-full text-xs font-bold ${statusBadge[b.status]}">${b.status}</span>
@@ -2083,9 +2410,10 @@
             <button onclick="event.stopPropagation(); updateBookingStatus('${b.id}', 'confirmed')" class="px-4 py-2 bg-candy-green text-white rounded-xl text-sm font-bold hover:opacity-90">Confirmă</button>
             <button onclick="event.stopPropagation(); updateBookingStatus('${b.id}', 'cancelled')" class="px-4 py-2 bg-red-500 text-white rounded-xl text-sm font-bold hover:opacity-90">Anulează</button>
           ` : ''}
+          <button onclick="event.stopPropagation(); deleteBooking('${b.id}')" class="px-3 py-1.5 bg-red-100 text-red-600 rounded-lg text-xs font-bold hover:bg-red-200">🗑️</button>
         </div>
       </div>
-    `).join('');
+    `}).join('');
   }
 
   function openBookingEditModal(id) {
@@ -2099,6 +2427,19 @@
     document.getElementById('editNotes').value = b.notes || '';
     document.getElementById('editAdminNotes').value = b.admin_notes || '';
     document.getElementById('editStatus').value = b.status;
+    // Afișează produsele dacă există
+    const foodDiv = document.getElementById('editBookingFood');
+    console.log('DEBUG food_items:', b.food_items, 'food_total:', b.food_total);
+    if (b.food_items && b.food_items.length > 0) {
+      foodDiv.innerHTML = b.food_items.map(fi => `<div class="flex justify-between text-sm py-1"><span>${fi.quantity}× ${fi.product_name}</span><span class="font-bold">${(fi.price * fi.quantity).toFixed(2)} MDL</span></div>`).join('');
+      foodDiv.classList.remove('hidden');
+      document.getElementById('editBookingFoodTotal').classList.remove('hidden');
+      document.getElementById('editBookingFoodTotal').textContent = 'Total produse: ' + (b.food_total || 0).toFixed(2) + ' MDL';
+    } else {
+      foodDiv.innerHTML = '<p class="text-sm text-gray-400">Nu sunt produse adăugate (sau date lipsesc)</p>';
+      foodDiv.classList.remove('hidden');
+      document.getElementById('editBookingFoodTotal').classList.add('hidden');
+    }
     showModal('bookingEditModal');
   }
 
@@ -2140,7 +2481,6 @@
   }
 
   // ===== ORDERS =====
-  let allOrders = [];
   
   async function loadOrders() {
     try {
@@ -2158,24 +2498,35 @@
       } else {
         badge.classList.add('hidden');
       }
-      renderOrders(allOrders);
+      if(currentOrdersFilter === 'cancelled') {
+        filtered = allOrders.filter(o => o.status === 'cancelled');
+      } else if(currentOrdersFilter !== 'all') {
+        filtered = allOrders.filter(o => o.order_type === currentOrdersFilter && o.status !== 'cancelled');
+      } else {
+        filtered = allOrders.filter(o => o.status !== 'cancelled');
+      }
+      renderOrders(filtered);
     } catch(e) {
       document.getElementById('ordersList').innerHTML = '<p class="text-red-400 text-center py-8">Eroare la încărcare</p>';
     }
   }
   
   function filterOrders(type) {
+    currentOrdersFilter = type;
     // Update button styles
-    ['all','delivery','advance','onsite'].forEach(t => {
-      const btn = document.getElementById('filterOrders' + t.charAt(0).toUpperCase() + t.slice(1));
+    ['all','delivery','advance','onsite','cancelled'].forEach(t => {
+      const btn = document.getElementById('filterOrders' + (t === 'cancelled' ? 'Cancelled' : t.charAt(0).toUpperCase() + t.slice(1)));
+      if(!btn) return;
       if(t === type) {
         btn.className = 'px-4 py-2 rounded-xl text-sm font-bold bg-candy-pink text-white';
       } else {
         btn.className = 'px-4 py-2 rounded-xl text-sm font-bold bg-gray-100 text-gray-600 hover:bg-candy-blue/10';
       }
     });
-    // Filter and render
-    const filtered = type === 'all' ? allOrders : allOrders.filter(o => o.order_type === type);
+    let filtered = allOrders;
+    if(type === 'cancelled') filtered = allOrders.filter(o => o.status === 'cancelled');
+    else if(type === 'all') filtered = allOrders.filter(o => o.status !== 'cancelled');
+    else filtered = allOrders.filter(o => o.order_type === type && o.status !== 'cancelled');
     renderOrders(filtered);
   }
   
@@ -2197,6 +2548,7 @@
             <span class="ml-2 text-xs ${tc.bg} ${tc.text} px-2 py-1 rounded-lg font-bold">${o.order_type === 'delivery' ? '🏍️ Livrare' : o.order_type === 'advance' ? '📅 În avans' : '🏠 În sală'}</span>
             ${o.status === 'pending' ? '<span class="ml-2 text-xs bg-yellow-100 text-yellow-700 px-2 py-1 rounded-lg font-bold">În așteptare</span>' : ''}
             ${o.status === 'completed' ? '<span class="ml-2 text-xs bg-candy-green/10 text-candy-green px-2 py-1 rounded-lg font-bold">Finalizată</span>' : ''}
+            ${o.status === 'cancelled' ? '<span class="ml-2 text-xs bg-red-100 text-red-600 px-2 py-1 rounded-lg font-bold">Anulată</span>' : ''}
           </div>
           <span class="text-sm text-gray-400">${new Date(o.created_at).toLocaleDateString('ro-RO')}</span>
         </div>
@@ -2210,9 +2562,15 @@
         </div>
         <div class="flex items-center justify-between">
           <span class="font-bold text-candy-pink">${parseFloat(o.total || 0).toFixed(2)} MDL</span>
-          <div class="flex gap-2">
-            ${o.status === 'pending' ? `<button onclick="updateOrderStatus(${o.id}, 'completed')" class="bg-candy-green text-white px-4 py-2 rounded-lg text-sm font-bold hover:opacity-90">Finalizează</button>` : ''}
-            <button onclick="updateOrderStatus(${o.id}, 'cancelled')" class="bg-red-100 text-red-600 px-4 py-2 rounded-lg text-sm font-bold hover:opacity-90">Anulează</button>
+          <div class="flex items-center gap-2">
+            <select onchange="updateOrderStatus(${o.id}, this.value)" class="px-3 py-2 rounded-xl border-2 border-gray-200 text-sm font-bold bg-white hover:border-candy-pink transition-colors cursor-pointer">
+              <option value="pending" ${o.status === 'pending' ? 'selected' : ''}>În așteptare</option>
+              <option value="preparing" ${o.status === 'preparing' ? 'selected' : ''}>Se pregătește</option>
+              <option value="ready" ${o.status === 'ready' ? 'selected' : ''}>Gata</option>
+              <option value="delivered" ${o.status === 'delivered' ? 'selected' : ''}>Livrat</option>
+              <option value="completed" ${o.status === 'completed' ? 'selected' : ''}>Finalizată</option>
+              <option value="cancelled" ${o.status === 'cancelled' ? 'selected' : ''}>Anulată</option>
+            </select>
           </div>
         </div>
       </div>
@@ -2222,13 +2580,34 @@
   async function updateOrderStatus(id, status) {
     try {
       const token = localStorage.getItem('skykids_token');
-      await fetch('/api/admin/orders/' + id + '/status', {
+      const res = await fetch('/api/admin/orders/' + id + '/status', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
         body: JSON.stringify({ status })
       });
-      loadOrders();
-    } catch(e) { console.error(e); }
+      if(!res.ok) {
+        const text = await res.text();
+        console.error('PATCH failed:', res.status, text);
+        alert('Eroare HTTP ' + res.status);
+        return;
+      }
+      const data = await res.json();
+      console.log('updateOrderStatus result:', data);
+      if(data.deleted) {
+        // Order was deleted from DB, remove from local array
+        allOrders = allOrders.filter(o => o.id !== parseInt(id));
+      } else if(status === 'cancelled') {
+        const idx = allOrders.findIndex(o => o.id === parseInt(id));
+        if(idx !== -1) allOrders[idx].status = 'cancelled';
+      } else {
+        const idx = allOrders.findIndex(o => o.id === parseInt(id));
+        if(idx !== -1) allOrders[idx].status = status;
+      }
+      filterOrders(currentOrdersFilter);
+    } catch(e) {
+      console.error('updateOrderStatus exception:', e);
+      alert('Conexiune pierdută!');
+    }
   }
 
   // ===== DECOR MGMT =====
@@ -2416,9 +2795,8 @@
       });
       const data = await res.json();
       if (data.url) {
-        const fullUrl = window.location.origin + data.url;
-        document.getElementById('decorImage').value = fullUrl;
-        document.getElementById('decorPreviewImg').src = fullUrl;
+        document.getElementById('decorImage').value = data.url;
+        document.getElementById('decorPreviewImg').src = data.url;
         document.getElementById('decorImagePreview').classList.remove('hidden');
         status.textContent = '✓ Imagine încărcată!';
         status.className = 'text-xs text-candy-green mt-2';
@@ -2473,7 +2851,7 @@
           </div>
           <div>
             <label class="block text-sm font-bold text-gray-700 mb-2">Telefon</label>
-            <input type="tel" id="editClientPhone" inputmode="tel" pattern="[+]?[0-9\s\-()]{7,20}" placeholder="+373 __ ___ ___" class="w-full px-4 py-3 rounded-xl border-2 border-gray-100 text-base sm:text-sm">
+            <input type="tel" id="editClientPhone" inputmode="tel" placeholder="+373 __ ___ ___" class="w-full px-4 py-3 rounded-xl border-2 border-gray-100 text-base sm:text-sm">
           </div>
         </div>
         <div class="grid max-sm:grid-cols-1 grid-cols-2 gap-4">
@@ -2503,6 +2881,8 @@
             <option value="cancelled">Anulată</option>
           </select>
         </div>
+        <div id="editBookingFood" class="hidden bg-gray-50 rounded-xl p-4"></div>
+        <div id="editBookingFoodTotal" class="hidden text-right font-bold text-candy-pink text-sm"></div>
         <div class="flex max-sm:flex-col gap-4 pt-4">
           <button type="button" onclick="deleteBooking(document.getElementById('editBookingId').value)" class="flex-1 bg-red-50 text-red-500 py-3 rounded-xl font-bold hover:bg-red-100 transition-colors text-base sm:text-sm">Șterge</button>
           <button type="button" onclick="saveBookingEdit()" class="flex-1 btn-primary text-base sm:text-sm">Salvează</button>
