@@ -668,7 +668,8 @@ app.post('/api/admin/gallery', authMiddleware, (req, res) => {
 // Upload image file
 app.post('/api/admin/upload', authMiddleware, upload.single('image'), (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'Nicio imagine primită' });
-  const url = '/uploads/' + req.file.filename;
+  const base = req.protocol + '://' + req.get('host');
+  const url = base + '/uploads/' + req.file.filename;
   res.json({ url });
 });
 
@@ -1112,6 +1113,11 @@ app.patch('/api/admin/orders/:id/status', (req, res) => {
   const { status } = req.body;
   const order = db.prepare('SELECT * FROM orders WHERE id = ?').get(req.params.id);
   if (!order) return res.status(404).json({ error: 'Comanda nu a fost găsită' });
+  // DELETE if status is 'cancelled'
+  if (status === 'cancelled') {
+    db.prepare('DELETE FROM orders WHERE id = ?').run(req.params.id);
+    return res.json({ success: true, deleted: true });
+  }
   db.prepare('UPDATE orders SET status = ? WHERE id = ?').run(status, req.params.id);
   // Send email on completion
   if (status === 'completed' || status === 'ready') {

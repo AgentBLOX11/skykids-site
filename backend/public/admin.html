@@ -1355,7 +1355,7 @@
         <div>
           <label class="block text-sm font-bold text-gray-700 mb-2">URL imagine (sau încarcă din folder)</label>
           <div class="flex max-sm:flex-col sm:gap-3 gap-3">
-            <input type="url" id="galleryUrl" required class="flex-1 px-4 py-3 sm:px-5 sm:py-4 rounded-xl border-2 border-gray-100" placeholder="https://...">
+            <input type="text" id="galleryUrl" class="flex-1 px-4 py-3 sm:px-5 sm:py-4 rounded-xl border-2 border-gray-100" placeholder="Se încarcă automat după upload...">
             <label class="px-4 py-3 sm:px-5 sm:py-4 bg-gray-100 hover:bg-gray-200 rounded-xl font-bold cursor-pointer flex items-center justify-center gap-2 transition-colors text-sm sm:text-base">
               <iconify-icon icon="lucide:upload" width="18"></iconify-icon>
               <input type="file" id="galleryImageFile" accept="image/*" class="hidden" onchange="uploadGalleryImage(this)" onclick="this.focus()">
@@ -1838,7 +1838,7 @@
       });
       const data = await res.json();
       if (data.url) {
-        document.getElementById('productImage').value = window.location.origin + data.url;
+        document.getElementById('productImage').value = data.url;
         status.textContent = '✓ Imagine încărcată!';
         status.className = 'text-xs text-candy-green mt-2';
         setTimeout(() => { status.classList.add('hidden'); }, 2000);
@@ -1866,7 +1866,7 @@
       });
       const data = await res.json();
       if (data.url) {
-        document.getElementById('galleryUrl').value = window.location.origin + data.url;
+        document.getElementById('galleryUrl').value = data.url;
         status.textContent = '✓ Imagine încărcată!';
         status.className = 'text-xs text-candy-green mt-2';
         setTimeout(() => { status.classList.add('hidden'); }, 2000);
@@ -2523,7 +2523,10 @@
       }
       const data = await res.json();
       console.log('updateOrderStatus result:', data);
-      if(status === 'cancelled') {
+      if(data.deleted) {
+        // Order was deleted from DB, remove from local array
+        allOrders = allOrders.filter(o => o.id !== parseInt(id));
+      } else if(status === 'cancelled') {
         const idx = allOrders.findIndex(o => o.id === parseInt(id));
         if(idx !== -1) allOrders[idx].status = 'cancelled';
       } else {
@@ -2722,9 +2725,8 @@
       });
       const data = await res.json();
       if (data.url) {
-        const fullUrl = window.location.origin + data.url;
-        document.getElementById('decorImage').value = fullUrl;
-        document.getElementById('decorPreviewImg').src = fullUrl;
+        document.getElementById('decorImage').value = data.url;
+        document.getElementById('decorPreviewImg').src = data.url;
         document.getElementById('decorImagePreview').classList.remove('hidden');
         status.textContent = '✓ Imagine încărcată!';
         status.className = 'text-xs text-candy-green mt-2';
