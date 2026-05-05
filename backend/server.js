@@ -14,27 +14,24 @@ const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 
 // ============== TRANSLATION HELPER (LibreTranslate) ==============
-const LIBRE_TRANSLATE_URL = process.env.LIBRE_TRANSLATE_URL || 'https://libretranslate.com/translate';
+// MyMemory API (free, no key needed)
+const MYMEMORY_URL = 'https://api.mymemory.translated.net/get';
 
 function translate(text, targetLang = 'ru') {
   return new Promise((resolve) => {
     if (!text || targetLang !== 'ru') return resolve(text);
-    const body = JSON.stringify({ q: text, source: 'ro', target: 'ru', format: 'text' });
-    const req = https.request(LIBRE_TRANSLATE_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(body) }
-    }, (res) => {
+    const q = encodeURIComponent(text);
+    const req = https.request(MYMEMORY_URL + '?q=' + q + '&langpair=ro|ru', (res) => {
       let data = '';
       res.on('data', chunk => data += chunk);
       res.on('end', () => {
         try {
           const json = JSON.parse(data);
-          resolve(json?.translatedText || text);
+          resolve(json?.responseData?.translatedText || text);
         } catch (e) { resolve(text); }
       });
     });
     req.on('error', () => resolve(text));
-    req.write(body);
     req.end();
   });
 }
