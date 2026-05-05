@@ -1402,9 +1402,9 @@
   async function loadOrders() {
     const list = document.getElementById('ordersList');
     try {
-      const res = await fetch('/api/admin/orders', { headers: authHeaders() });
-      const data = await res.json();
-      const orders = data.allOrders || data.orders || [];
+      const res = await fetch('/api/orders', { headers: authHeaders() });
+      if (!res.ok) throw new Error('API error');
+      const orders = await res.json();
       document.getElementById('ordersCount').textContent = orders.length;
       if (!orders.length) {
         list.innerHTML = '<p class="text-gray-400 text-center py-8">Nicio comandă momentan.</p>';
