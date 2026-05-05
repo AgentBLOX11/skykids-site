@@ -10,9 +10,11 @@ const path = require('path');
 const cors = require('cors');
 const fs = require('fs');
 const https = require('https');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
 
 // ============== TRANSLATION HELPER (LibreTranslate) ==============
-const LIBRE_TRANSLATE_URL = 'https://libretranslate.com/translate';
+const LIBRE_TRANSLATE_URL = process.env.LIBRE_TRANSLATE_URL || 'https://libretranslate.com/translate';
 
 function translate(text, targetLang = 'ru') {
   return new Promise((resolve) => {
@@ -49,27 +51,72 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Email transporter (Gmail App Password)
+// SMTP configuration
+const SMTP_USER = process.env.SMTP_USER || 'skykids.soroca@gmail.com';
+const SMTP_PASS = process.env.SMTP_PASS || '';
+
 const emailTransporter = nodemailer.createTransport({
   service: 'gmail',
-  auth: {
-    user: process.env.SMTP_USER || 'skykids.soroca@gmail.com',
-    pass: process.env.SMTP_PASS || ''
-  },
+  auth: { user: SMTP_USER, pass: SMTP_PASS },
   tls: { rejectUnauthorized: false }
 });
-const JWT_SECRET = process.env.JWT_SECRET || 'skykids2026production';
 
-// ===== SECURITY HEADERS =====
-app.use((req, res, next) => {
-  res.setHeader('X-Content-Type-Options', 'nosniff');
-  res.setHeader('X-Frame-Options', 'DENY');
-  res.setHeader('X-XSS-Protection', '1; mode=block');
-  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
-  res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
-  // Content Security Policy
-  res.setHeader('Content-Security-Policy', "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://code.iconify.design; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https:; connect-src 'self' https://api.iconify.design https://api.simplesvg.com https://api.unisvg.com https://code.iconify.design;");
-  next();
+// Admin password - MUST be set via ADMIN_PASSWORD env var, never hardcode here
+const ADMIN_PASSWORD_ENV = process.env.ADMIN_PASSWORD;
+if (!ADMIN_PASSWORD_ENV) {
+  console.warn('WARNING: ADMIN_PASSWORD env var not set! Admin panel will use default password ONLY if no admin exists in DB.');
+}
+const JWT_SECRET = process.env.JWT_SECRET || 'skykids2026fallback_secret_change_in_production';
+// Fail fast if JWT_SECRET is using the fallback in production
+if (process.env.NODE_ENV === 'production' && JWT_SECRET.includes('fallback')) {
+  console.error('FATAL: JWT_SECRET environment variable is not set in production!');
+  process.exit(1);
+}
+
+// ===== SECURITY HEADERS (Helmet) =====
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "https://cdn.tailwindcss.com", "https://code.iconify.design"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+      fontSrc: ["'self'", "https://fonts.gstatic.com"],
+      imgSrc: ["'self'", "data:", "blob:", "https:"],
+      connectSrc: ["'self'", "https://api.iconify.design", "https://api.simplesvg.com", "https://api.unisvg.com", "https://code.iconify.design"]
+    }
+  },
+  crossOriginEmbedderPolicy: false
+}));
+
+// ===== CORS - explicit origins only =====
+app.use(cors({
+  origin: process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : ['https://skykidssoroca.md', 'https://www.skykidssoroca.md'],
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
+// ===== RATE LIMITING =====
+// General rate limit - 100 requests per minute per IP
+const generalLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 100,
+  message: { error: 'Prea multe cereri, încearcă din nou peste un minut.' },
+  standardHeaders: true,
+  legacyHeaders: false
 });
+app.use(generalLimiter);
+
+// Strict rate limit for admin login - 5 attempts per minute
+const loginLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 5,
+  message: { error: 'Prea multe încercări de login. Încearcă din nou peste un minut.' },
+  standardHeaders: true,
+  legacyHeaders: false
+});
+
+// Apply rate limiters BEFORE the actual route handlers (rate limiters are middleware)
+// Note: loginLimiter is applied directly at the actual /api/admin/login route below
 
 // Force HTTPS (only in production)
 if (process.env.NODE_ENV === 'production') {
@@ -82,8 +129,7 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 // Middleware
-app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '1mb' }));
 app.use(express.static(path.join(__dirname, 'public'), { maxAge: '1h', setHeaders: (res) => { res.setHeader('Cache-Control', 'public, max-age=3600'); } }));
 
 // Serve uploaded images
@@ -91,18 +137,15 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads'), { maxAge: '7
 
 // Database setup
 const db = new Database(path.join(__dirname, 'skykids.db'));
+// Enable foreign keys and WAL mode for data integrity and performance
+db.pragma('foreign_keys = ON');
+db.pragma('journal_mode = WAL');
 
 // ============== CLEANUP DUPLICATES ON STARTUP ==============
 (function cleanupDuplicates() {
   try {
-    const allPackages = db.prepare('SELECT id FROM packages ORDER BY id ASC').all();
-    if (allPackages.length > 3) {
-      const toDelete = allPackages.slice(3).map(p => p.id);
-      if (toDelete.length > 0) {
-        db.prepare(`DELETE FROM packages WHERE id IN (${toDelete.join(',')})`).run();
-        console.log(`Cleaned up ${toDelete.length} duplicate packages`);
-      }
-    }
+    // Keep only first 3 packages by ID (oldest), delete the rest using parameterized query
+    db.prepare(`DELETE FROM packages WHERE id NOT IN (SELECT id FROM packages ORDER BY id ASC LIMIT 3)`).run();
   } catch (e) { console.log('Cleanup skipped:', e.message); }
 })();
 
@@ -292,10 +335,14 @@ if (!fs.existsSync(uploadsDir)) {
 }
 
 // Multer config for image uploads
+// Allowed image extensions
+const ALLOWED_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.avif'];
+const ALLOWED_MIMES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/avif'];
+
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, uploadsDir),
   filename: (req, file, cb) => {
-    const ext = path.extname(file.originalname);
+    const ext = path.extname(file.originalname).toLowerCase();
     const name = crypto.randomBytes(16).toString('hex');
     cb(null, name + ext);
   }
@@ -304,15 +351,30 @@ const upload = multer({
   storage,
   limits: { fileSize: 5 * 1024 * 1024 }, // 5MB max
   fileFilter: (req, file, cb) => {
-    if (file.mimetype.startsWith('image/')) cb(null, true);
-    else cb(new Error('Only images allowed'));
+    const ext = path.extname(file.originalname).toLowerCase();
+    if (ALLOWED_EXTENSIONS.includes(ext) && ALLOWED_MIMES.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error('Doar imagini sunt acceptate (jpg, png, gif, webp, avif)'));
+    }
   }
 });
 const adminExists = db.prepare('SELECT id FROM admin_users WHERE username = ?').get('admin');
 if (!adminExists) {
-  const hash = bcrypt.hashSync('skykids2026', 10);
-  db.prepare('INSERT INTO admin_users (username, password_hash) VALUES (?, ?)').run('admin', hash);
-  console.log('✅ Admin creat: admin / skykids2026');
+  // Only create default admin if ADMIN_PASSWORD env var is set
+  if (ADMIN_PASSWORD_ENV) {
+    const hash = bcrypt.hashSync(ADMIN_PASSWORD_ENV, 10);
+    db.prepare('INSERT INTO admin_users (username, password_hash) VALUES (?, ?)').run('admin', hash);
+    console.log('✅ Admin creat cu parola din ADMIN_PASSWORD env var');
+  } else {
+    // Create with a random password and log it so owner can use it
+    const tempPassword = crypto.randomBytes(8).toString('hex');
+    const hash = bcrypt.hashSync(tempPassword, 10);
+    db.prepare('INSERT INTO admin_users (username, password_hash) VALUES (?, ?)').run('admin', hash);
+    console.log('⚠️  ADMIN_PASSWORD nu este setat! Admin temporar creat.');
+    console.log('📋 Parola temporară:', tempPassword);
+    console.log('🔑 Setează ADMIN_PASSWORD env var și restartează pentru parolă permanentă.');
+  }
 }
 
 // Insert default settings if not exist
@@ -388,8 +450,10 @@ if (packageCount === 0) {
 }
 
 try { db.exec("CREATE INDEX IF NOT EXISTS idx_orders_created_at ON orders(created_at)"); } catch(e) {}
+try { db.exec("CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status)"); } catch(e) {}
 try { db.exec("CREATE INDEX IF NOT EXISTS idx_bookings_created_at ON bookings(created_at)"); } catch(e) {}
 try { db.exec("CREATE INDEX IF NOT EXISTS idx_bookings_date ON bookings(date)"); } catch(e) {}
+try { db.exec("CREATE INDEX IF NOT EXISTS idx_bookings_status ON bookings(status)"); } catch(e) {}
 
 // Migrations: add user_id columns if missing
 try { db.exec('ALTER TABLE orders ADD COLUMN user_id INTEGER'); } catch(e) {}
@@ -410,6 +474,14 @@ try { db.exec('SELECT 1 FROM decor_types LIMIT 1'); } catch(e) {
 // Also add adults_count and package_price columns if missing
 try { db.exec('ALTER TABLE bookings ADD COLUMN adults_count INTEGER DEFAULT 0'); } catch(e) {}
 try { db.exec('ALTER TABLE bookings ADD COLUMN package_price DECIMAL(10,2) DEFAULT 0'); } catch(e) {}
+// Migration: add Russian translation columns
+try { db.exec("ALTER TABLE categories ADD COLUMN name_ru TEXT DEFAULT ''"); } catch(e) {}
+try { db.exec("ALTER TABLE categories ADD COLUMN description_ru TEXT DEFAULT ''"); } catch(e) {}
+try { db.exec("ALTER TABLE products ADD COLUMN name_ru TEXT DEFAULT ''"); } catch(e) {}
+try { db.exec("ALTER TABLE products ADD COLUMN description_ru TEXT DEFAULT ''"); } catch(e) {}
+try { db.exec("ALTER TABLE packages ADD COLUMN name_ru TEXT DEFAULT ''"); } catch(e) {}
+try { db.exec("ALTER TABLE packages ADD COLUMN description_ru TEXT DEFAULT ''"); } catch(e) {}
+try { db.exec("ALTER TABLE packages ADD COLUMN includes_ru TEXT DEFAULT ''"); } catch(e) {}
 
 // SSE clients array
 let sseClients = [];
@@ -441,6 +513,11 @@ function authMiddleware(req, res, next) {
   }
   try {
     const decoded = jwt.verify(authHeader.split(' ')[1], JWT_SECRET);
+    // Also verify the user still exists and is active in DB (prevents stolen tokens)
+    const user = db.prepare('SELECT id, username FROM admin_users WHERE id = ?').get(decoded.id);
+    if (!user) {
+      return res.status(401).json({ error: 'Utilizator inexistent' });
+    }
     req.admin = decoded;
     next();
   } catch {
@@ -449,7 +526,7 @@ function authMiddleware(req, res, next) {
 }
 
 // ============== AUTH API ==============
-app.post('/api/admin/login', (req, res) => {
+app.post('/api/admin/login', loginLimiter, (req, res) => {
   const { username, password } = req.body;
   if (!username || !password) {
     return res.status(400).json({ error: 'Username și parolă necesare' });
@@ -734,18 +811,20 @@ app.post('/api/bookings', (req, res) => {
   if (!pkg || !date || !time || !client_name || !client_phone) {
     return res.status(400).json({ error: 'Toate câmpurile obligatorii trebuie completate' });
   }
-  if (kids_count < 1 || kids_count > 30) {
-    return res.status(400).json({ error: 'Număr invalid de copii (1-30)' });
-  }
-  // Check package-specific limits
+  // First check package-specific limits to give accurate error messages
   const packageInfo = db.prepare('SELECT max_children, max_adults FROM packages WHERE name = ? OR name LIKE ? LIMIT 1').get(pkg, `%${pkg}%`);
-  if (packageInfo) {
-    if (kids_count > packageInfo.max_children) {
-      return res.status(400).json({ error: `Numărul maxim de copii pentru acest pachet este ${packageInfo.max_children}` });
-    }
-    if ((adults_count || 0) > packageInfo.max_adults) {
-      return res.status(400).json({ error: `Numărul maxim de adulți pentru acest pachet este ${packageInfo.max_adults}` });
-    }
+  if (!packageInfo) {
+    return res.status(400).json({ error: 'Pachet inexistent' });
+  }
+  const maxAllowed = Math.min(packageInfo.max_children, 30);
+  if (kids_count < 1 || kids_count > maxAllowed) {
+    return res.status(400).json({ error: `Număr invalid de copii pentru acest pachet (1-${maxAllowed})` });
+  }
+  if (kids_count > packageInfo.max_children) {
+    return res.status(400).json({ error: `Numărul maxim de copii pentru acest pachet este ${packageInfo.max_children}` });
+  }
+  if ((adults_count || 0) > packageInfo.max_adults) {
+    return res.status(400).json({ error: `Numărul maxim de adulți pentru acest pachet este ${packageInfo.max_adults}` });
   }
   const blocked = db.prepare('SELECT id FROM blocked_slots WHERE date = ? AND time = ?').get(date, time);
   if (blocked) {
@@ -900,7 +979,7 @@ app.get('/api/admin/stats', authMiddleware, (req, res) => {
   function calcRevenue(bookingsArr) {
     let rev = 0;
     bookingsArr.forEach(b => {
-      const pkg = pkgPriceMap[b.package];
+      const pkg = pkgPriceMap[b.package.toLowerCase().replace(/\s+/g, '-')];
       if (pkg) {
         if (pkg.price_group) rev += parseFloat(pkg.price_group) || 0;
         else {
@@ -1119,23 +1198,26 @@ app.post('/api/orders', (req, res) => {
       if(sessionData) { try { userId = JSON.parse(sessionData.value).customer_id; } catch(e) {} }
     }
     // Calculate total server-side from items
+  // Always calculate total server-side from items - NEVER trust client-provided total
   const itemsTotal = Array.isArray(items) ? items.reduce((sum, item) => sum + (parseFloat(item.price) || 0) * (parseInt(item.quantity) || 1), 0) : 0;
-  const finalTotal = itemsTotal > 0 ? itemsTotal : (parseFloat(total) || 0);
-  const result = db.prepare('INSERT INTO orders (order_number, first_name, last_name, phone, address, order_type, datetime, total, notes, user_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)').run(orderNumber, first_name, last_name, phone, address || '', order_type || 'delivery', datetime || '', finalTotal, notes || '', userId);
+  if (itemsTotal <= 0) {
+    return res.status(400).json({ error: 'Coșul este gol sau prețurile sunt invalide' });
+  }
+  const result = db.prepare('INSERT INTO orders (order_number, first_name, last_name, phone, address, order_type, datetime, total, notes, user_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)').run(orderNumber, first_name, last_name, phone, address || '', order_type || 'delivery', datetime || '', itemsTotal, notes || '', userId);
     const orderId = result.lastInsertRowid;
     const insertItem = db.prepare('INSERT INTO order_items (order_id, product_name, product_id, quantity, price) VALUES (?, ?, ?, ?, ?)');
     for(const item of items) {
       insertItem.run(orderId, item.name, item.id || null, item.quantity || 1, item.price || 0);
     }
     res.json({ success: true, order_number: orderNumber, order_id: orderId });
-    broadcastEvent('new_order', { order: { order_number: orderNumber, id: orderId, first_name, last_name, phone, total, status: 'pending', created_at: new Date().toISOString() }, at: new Date().toISOString() });
+    broadcastEvent('new_order', { order: { order_number: orderNumber, id: orderId, first_name, last_name, phone, total: itemsTotal, status: 'pending', created_at: new Date().toISOString() }, at: new Date().toISOString() });
   } catch(e) {
     console.error('Order error:', e);
     res.status(500).json({ error: 'Eroare la salvarea comenzii' });
   }
 });
 
-app.get('/api/orders', (req, res) => {
+app.get('/api/orders', authMiddleware, (req, res) => {
   const orders = db.prepare('SELECT * FROM orders ORDER BY created_at DESC').all();
   const ordersWithItems = orders.map(o => {
     const items = db.prepare('SELECT * FROM order_items WHERE order_id = ?').all(o.id);
@@ -1144,7 +1226,7 @@ app.get('/api/orders', (req, res) => {
   res.json(ordersWithItems);
 });
 
-app.patch('/api/admin/orders/:id/status', (req, res) => {
+app.patch('/api/admin/orders/:id/status', authMiddleware, (req, res) => {
   const { status } = req.body;
   const order = db.prepare('SELECT * FROM orders WHERE id = ?').get(req.params.id);
   if (!order) return res.status(404).json({ error: 'Comanda nu a fost găsită' });

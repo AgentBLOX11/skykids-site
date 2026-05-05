@@ -15,7 +15,7 @@
   <meta name="twitter:description" content="Zonă de joacă pentru copii + bucătărie delicioasă în Soroca">
   <link rel="preconnect" href="https://cdn.tailwindcss.com">
   <link rel="dns-prefetch" href="https://cdn.tailwindcss.com">
-  <script src="https://cdn.tailwindcss.com?async=defer"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js" defer></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1534,6 +1534,14 @@
 
   };
 
+  // ===== XSS PREVENTION =====
+  function escapeHtml(str) {
+    if (str === null || str === undefined) return '';
+    const div = document.createElement('div');
+    div.textContent = String(str);
+    return div.innerHTML;
+  }
+
   function setLang(lang) {
     currentLang = lang;
     localStorage.setItem('skykids_lang', lang);
@@ -1751,8 +1759,8 @@
             ${p.icon}
           </div>
           <div class="flex-1 min-w-0">
-            <h4 class="font-bold text-base sm:text-lg text-dark">${p.name}</h4>
-            ${p.description ? `<p class="text-xs sm:text-sm text-gray-500 line-clamp-2">${p.description}</p>` : ''}
+            <h4 class="font-bold text-base sm:text-lg text-dark">${escapeHtml(p.name)}</h4>
+            ${p.description ? `<p class="text-xs sm:text-sm text-gray-500 line-clamp-2">${escapeHtml(p.description)}</p>` : ''}
           </div>
         </div>
         <div class="flex items-end justify-between">
@@ -1939,7 +1947,7 @@
     `;
     if(bookingFoodItems.length > 0) {
       html += `<div class="flex justify-between"><span class="text-gray-500">Gustări:</span><span class="font-bold">${foodTotal} MDL</span></div>`;
-      html += bookingFoodItems.map(i => `<div class="flex justify-between pl-4 text-xs"><span class="text-gray-400">${i.name} ×${i.quantity}</span><span class="text-gray-400">${i.price * i.quantity} MDL</span></div>`).join('');
+      html += bookingFoodItems.map(i => `<div class="flex justify-between pl-4 text-xs"><span class="text-gray-400">${escapeHtml(i.name)} ×${i.quantity}</span><span class="text-gray-400">${i.price * i.quantity} MDL</span></div>`).join('');
     }
     html += `<div class="flex justify-between border-t pt-2 mt-2"><span class="text-gray-500" data-i18n="cart_total">Total:</span><span class="font-black text-candy-pink">${price || '—'}${bookingFoodItems.length > 0 ? ' + ' + foodTotal + ' MDL gustări' : ''}</span></div>`;
     summary.innerHTML = html;
@@ -2040,7 +2048,7 @@
     container.innerHTML = categories.map(cat => `
       <button onclick="selectCategory(${cat.id})" 
         class="cat-tab px-6 py-3 rounded-xl font-bold text-sm border-2 border-gray-100 ${currentCategory === cat.id ? 'active' : 'bg-white text-gray-600 hover:border-candy-pink'}">
-        ${cat.icon} ${cat.name}
+        ${cat.icon} ${escapeHtml(cat.name)}
       </button>
     `).join('');
   }
@@ -2087,15 +2095,15 @@
     }
     
     grid.innerHTML = filtered.map(p => `
-      <div class="menu-item card overflow-hidden" onclick="openProductModal('${p.image}', '${p.name.replace(/'/g, "\\'")}', '${(p.description||'').replace(/'/g, "\\'")}', '${p.price}', '${p.weight}', '${p.badge}', '${p.id}')">
+      <div class="menu-item card overflow-hidden" onclick="openProductModal('${p.image}', '${p.name.replace(/'/g, "\\'")}', '${(p.description||'').replace(/'/g, "\\'")}', '${p.price}', '${p.weight}', '${escapeHtml(p.badge)}', '${p.id}')">
         ${p.image ? 
-          `<img src="${p.image}" alt="${p.name}" class="w-full h-40 object-cover" width="400" height="160" loading="lazy" decoding="async">` : 
+          `<img src="${p.image}" alt="${escapeHtml(p.name)}" class="w-full h-40 object-cover" width="400" height="160" loading="lazy" decoding="async">` : 
           `<div class="w-full h-40 bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center text-5xl opacity-30">${p.icon || '🍽️'}</div>`
         }
         <div class="p-5">
-          ${p.badge ? `<span class="inline-block bg-candy-yellow text-dark text-xs font-bold px-3 py-1 rounded-full mb-3">${p.badge}</span>` : ''}
-          <h4 class="font-bold text-lg text-dark mb-2 leading-tight">${p.name}</h4>
-          ${p.description ? `<p class="text-gray-500 text-sm mb-3 line-clamp-2">${p.description}</p>` : ''}
+          ${p.badge ? `<span class="inline-block bg-candy-yellow text-dark text-xs font-bold px-3 py-1 rounded-full mb-3">${escapeHtml(p.badge)}</span>` : ''}
+          <h4 class="font-bold text-lg text-dark mb-2 leading-tight">${escapeHtml(p.name)}</h4>
+          ${p.description ? `<p class="text-gray-500 text-sm mb-3 line-clamp-2">${escapeHtml(p.description)}</p>` : ''}
           <div class="flex items-center justify-between">
             ${p.weight ? `<span class="text-xs text-gray-400">${p.weight}</span>` : '<span></span>'}
             ${p.price ? `<span class="font-black text-xl price-tag">${p.price}</span>` : ''}
@@ -2164,7 +2172,7 @@
         grid.innerHTML = gallery.map(item => `
           <div class="gallery-item cursor-pointer">
             <img src="${item.image_url}" alt="${item.caption || ''}" class="w-full h-48 object-cover" width="400" height="192" loading="lazy" decoding="async">
-            ${item.caption ? `<div class="p-3 bg-white"><p class="text-sm font-medium text-gray-700">${item.caption}</p></div>` : ''}
+            ${item.caption ? `<div class="p-3 bg-white"><p class="text-sm font-medium text-gray-700">${escapeHtml(item.caption)}</p></div>` : ''}
           </div>
         `).join('');
       }
@@ -2354,7 +2362,7 @@
       const isDecor = item.id.startsWith('decor_');
       return `<div class="flex items-center justify-between bg-gray-50 rounded-xl p-4">
         <div class="flex-1">
-          <div class="font-bold text-dark">${item.name}</div>
+          <div class="font-bold text-dark">${escapeHtml(item.name)}</div>
           <div class="text-sm text-gray-500">${item.price} MDL × ${item.quantity}</div>
         </div>
         <div class="flex items-center gap-2">
@@ -2403,7 +2411,7 @@
     document.getElementById('checkoutSuccess').classList.add('hidden');
     document.querySelector('#checkoutModal > div:nth-child(2) > div:nth-child(4)').classList.remove('hidden');
     const itemsEl = document.getElementById('checkoutItems');
-    itemsEl.innerHTML = cart.map(i => `<div class="flex justify-between"><span>${i.quantity}× ${i.name}</span><span>${(i.price * i.quantity).toFixed(0)} MDL</span></div>`).join('');
+    itemsEl.innerHTML = cart.map(i => `<div class="flex justify-between"><span>${i.quantity}× ${escapeHtml(i.name)}</span><span>${(i.price * i.quantity).toFixed(0)} MDL</span></div>`).join('');
     document.getElementById('checkoutTotal').textContent = getCartTotal().toFixed(0) + ' MDL';
     document.getElementById('coFirstName').value = '';
     document.getElementById('coLastName').value = '';
@@ -2504,10 +2512,10 @@
       grid.innerHTML = decor.map(d => `
         <div class="bg-white rounded-2xl shadow-card overflow-hidden">
           <div class="h-48 bg-gradient-to-br from-candy-pink/20 to-candy-blue/20 flex items-center justify-center">
-            ${d.image ? `<img src="${d.image}" alt="${d.name}" class="w-full h-full object-cover" loading="lazy">` : `<iconify-icon icon="lucide:sparkles" width="48" class="text-candy-pink/40"></iconify-icon>`}
+            ${d.image ? `<img src="${d.image}" alt="${escapeHtml(d.name)}" class="w-full h-full object-cover" loading="lazy">` : `<iconify-icon icon="lucide:sparkles" width="48" class="text-candy-pink/40"></iconify-icon>`}
           </div>
           <div class="p-5">
-            <h4 class="font-bold text-lg text-dark mb-1">${d.name}</h4>
+            <h4 class="font-bold text-lg text-dark mb-1">${escapeHtml(d.name)}</h4>
             <p class="text-sm text-gray-500 mb-3">${d.description || ''}</p>
             <div class="flex items-center justify-between">
               <span class="font-black text-candy-pink">${parseFloat(d.price).toFixed(0)} MDL</span>

@@ -3,3 +3,8 @@ skykids.db
 *.db
 .DS_Store
 .env
+backups/
+uploads/
+*.log
+*.pem
+
