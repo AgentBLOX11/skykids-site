@@ -14,24 +14,27 @@ const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 
 // ============== TRANSLATION HELPER (LibreTranslate) ==============
-// MyMemory API (free, no key needed)
-const MYMEMORY_URL = 'https://api.mymemory.translated.net/get';
+const LIBRE_TRANSLATE_URL = process.env.LIBRE_TRANSLATE_URL || 'https://libretranslate.com/translate';
 
 function translate(text, targetLang = 'ru') {
   return new Promise((resolve) => {
     if (!text || targetLang !== 'ru') return resolve(text);
-    const q = encodeURIComponent(text);
-    const req = https.request(MYMEMORY_URL + '?q=' + q + '&langpair=ro|ru', (res) => {
+    const body = JSON.stringify({ q: text, source: 'ro', target: 'ru', format: 'text' });
+    const req = https.request(LIBRE_TRANSLATE_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(body) }
+    }, (res) => {
       let data = '';
       res.on('data', chunk => data += chunk);
       res.on('end', () => {
         try {
           const json = JSON.parse(data);
-          resolve(json?.responseData?.translatedText || text);
+          resolve(json?.translatedText || text);
         } catch (e) { resolve(text); }
       });
     });
     req.on('error', () => resolve(text));
+    req.write(body);
     req.end();
   });
 }
@@ -76,7 +79,6 @@ app.use(helmet({
     directives: {
       defaultSrc: ["'self'"],
       scriptSrc: ["'self'", "'unsafe-inline'", "https://cdn.tailwindcss.com", "https://code.iconify.design"],
-      scriptSrcAttr: ["'unsafe-inline'"],
       styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
       fontSrc: ["'self'", "https://fonts.gstatic.com"],
       imgSrc: ["'self'", "data:", "blob:", "https:"],
@@ -131,7 +133,7 @@ app.use(express.json({ limit: '1mb' }));
 app.use(express.static(path.join(__dirname, 'public'), { maxAge: '1h', setHeaders: (res) => { res.setHeader('Cache-Control', 'public, max-age=3600'); } }));
 
 // Serve uploaded images
-app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads'), { maxAge: '7d', setHeaders: (res) => { res.setHeader('Cache-Control', 'public, max-age=604800'); } }));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads'), { maxAge: '7d', setHeaders: (res) => { res.setHeader('Cache-Control', 'public, max-age=604800'); } }));
 
 // Database setup
 const db = new Database(path.join(__dirname, 'skykids.db'));
@@ -260,6 +262,7 @@ db.exec(`
     phone TEXT NOT NULL,
     address TEXT DEFAULT '',
     order_type TEXT DEFAULT 'delivery',
+    table_number TEXT DEFAULT '',
     datetime TEXT DEFAULT '',
     total DECIMAL(10,2) DEFAULT 0,
     status TEXT DEFAULT 'pending',
@@ -1145,7 +1148,7 @@ app.post('/api/orders', (req, res) => {
   if(eventCheck) {
     return res.status(403).json({ error: `Restaurantul are un ${eventCheck.reason} și nu poate prelua comenzi în acest moment. Vă rugăm reveniți mai târziu sau contactați-ne la telefon.` });
   }
-  const { first_name, last_name, phone, address, order_type, datetime, items, total, notes } = req.body;
+  const { first_name, last_name, phone, address, order_type, table_number, datetime, items, total, notes } = req.body;
   // Generate sequential order number: a1, a2... a99, b1, b2... b99, c1...
   function generateOrderNumber() {
     let letter = db.prepare("SELECT value FROM settings WHERE key = 'order_num_letter'").get();
@@ -1203,7 +1206,7 @@ app.post('/api/orders', (req, res) => {
   if (itemsTotal <= 0) {
     return res.status(400).json({ error: 'Coșul este gol sau prețurile sunt invalide' });
   }
-  const result = db.prepare('INSERT INTO orders (order_number, first_name, last_name, phone, address, order_type, datetime, total, notes, user_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)').run(orderNumber, first_name, last_name, phone, address || '', order_type || 'delivery', datetime || '', itemsTotal, notes || '', userId);
+  const result = db.prepare('INSERT INTO orders (order_number, first_name, last_name, phone, address, order_type, table_number, datetime, total, notes, user_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)').run(orderNumber, first_name, last_name, phone, address || '', order_type || 'delivery', table_number || '', datetime || '', itemsTotal, notes || '', userId);
     const orderId = result.lastInsertRowid;
     const insertItem = db.prepare('INSERT INTO order_items (order_id, product_name, product_id, quantity, price) VALUES (?, ?, ?, ?, ?)');
     for(const item of items) {
