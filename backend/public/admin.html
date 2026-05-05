@@ -1318,9 +1318,10 @@
         </div>
         <div class="text-center">
           <p class="font-bold text-candy-pink">${b.package}</p>
+          ${b.package_price > 0 ? `<p class="text-sm font-bold text-green-600">Pachet: ${parseFloat(b.package_price).toFixed(0)} MDL</p>` : ''}
           <p class="text-sm">${b.kids_count} copii</p>
           <p class="text-sm">${b.adults_count || 0} adulți</p>
-          ${b.package_price > 0 ? `<p class="text-sm font-bold text-candy-pink">${grandTotal} MDL</p>` : ''}
+          ${b.package_price > 0 ? `<p class="text-sm font-bold text-candy-pink">Total: ${grandTotal} MDL</p>` : ''}
         </div>
         <div class="flex items-center gap-2">
           <span class="px-3 py-1 rounded-full text-xs font-bold ${statusBadge[b.status]}">${b.status}</span>
@@ -1328,6 +1329,7 @@
             <button onclick="event.stopPropagation(); updateBookingStatus('${b.id}', 'confirmed')" class="px-4 py-2 bg-green-500 text-white rounded-xl text-sm font-bold hover:opacity-90">Confirmă</button>
             <button onclick="event.stopPropagation(); updateBookingStatus('${b.id}', 'cancelled')" class="px-4 py-2 bg-red-500 text-white rounded-xl text-sm font-bold hover:opacity-90">Anulează</button>
           ` : ''}
+          ${b.status === 'confirmed' ? `<button onclick="event.stopPropagation(); updateBookingStatus('${b.id}', 'completed')" class="px-4 py-2 bg-blue-500 text-white rounded-xl text-sm font-bold hover:opacity-90">Finalizată</button>` : ''}
         </div>
       </div>
     `;
@@ -1387,6 +1389,7 @@
         </div>
         <div class="text-center">
           <p class="font-bold text-candy-pink">${b.package}</p>
+          ${b.package_price > 0 ? `<p class="text-sm font-bold text-green-600">Pachet: ${parseFloat(b.package_price).toFixed(0)} MDL</p>` : ''}
           <p class="text-sm">${b.kids_count} copii</p>
           <p class="text-sm">${b.adults_count || 0} adulți</p>
         </div>
@@ -1396,6 +1399,7 @@
             <button onclick="event.stopPropagation(); updateBookingStatus('${b.id}', 'confirmed')" class="px-4 py-2 bg-green-500 text-white rounded-xl text-sm font-bold hover:opacity-90">Confirmă</button>
             <button onclick="event.stopPropagation(); updateBookingStatus('${b.id}', 'cancelled')" class="px-4 py-2 bg-red-500 text-white rounded-xl text-sm font-bold hover:opacity-90">Anulează</button>
           ` : ''}
+          ${b.status === 'confirmed' ? `<button onclick="event.stopPropagation(); updateBookingStatus('${b.id}', 'completed')" class="px-4 py-2 bg-blue-500 text-white rounded-xl text-sm font-bold hover:opacity-90">Finalizată</button>` : ''}
         </div>
       </div>
     `).join('');
