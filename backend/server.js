@@ -79,7 +79,6 @@ app.use(helmet({
     directives: {
       defaultSrc: ["'self'"],
       scriptSrc: ["'self'", "'unsafe-inline'", "https://cdn.tailwindcss.com", "https://code.iconify.design"],
-      scriptSrcAttr: ["'unsafe-inline'"],
       styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
       fontSrc: ["'self'", "https://fonts.gstatic.com"],
       imgSrc: ["'self'", "data:", "blob:", "https:"],
@@ -746,7 +745,9 @@ app.post('/api/admin/gallery', authMiddleware, (req, res) => {
 // Upload image file
 app.post('/api/admin/upload', authMiddleware, upload.single('image'), (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'Nicio imagine primită' });
-  const base = req.protocol + '://' + req.get('host');
+  const proto = req.get('X-Forwarded-Proto') || req.protocol;
+  const host = req.get('host');
+  const base = proto + '://' + host;
   const url = base + '/uploads/' + req.file.filename;
   res.json({ url });
 });
@@ -980,7 +981,7 @@ app.get('/api/admin/stats', authMiddleware, (req, res) => {
   function calcRevenue(bookingsArr) {
     let rev = 0;
     bookingsArr.forEach(b => {
-      const pkg = pkgPriceMap[b.package.toLowerCase().replace(/\s+/g, '-')];
+      const pkg = pkgPriceMap[b.package];
       if (pkg) {
         if (pkg.price_group) rev += parseFloat(pkg.price_group) || 0;
         else {
