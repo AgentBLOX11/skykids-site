@@ -1005,7 +1005,7 @@
       });
       const data = await res.json();
       if (data.url) {
-        document.getElementById('productImage').value = window.location.origin + data.url;
+        document.getElementById('productImage').value = data.url;
         status.textContent = '✓ Imagine încărcată!';
         status.className = 'text-xs text-candy-green mt-2';
         setTimeout(() => { status.classList.add('hidden'); }, 2000);
@@ -1033,7 +1033,7 @@
       });
       const data = await res.json();
       if (data.url) {
-        document.getElementById('galleryUrl').value = window.location.origin + data.url;
+        document.getElementById('galleryUrl').value = data.url;
         status.textContent = '✓ Imagine încărcată!';
         status.className = 'text-xs text-candy-green mt-2';
         setTimeout(() => { status.classList.add('hidden'); }, 2000);
@@ -1694,9 +1694,8 @@
       });
       const data = await res.json();
       if (data.url) {
-        const fullUrl = window.location.origin + data.url;
-        document.getElementById('decorImage').value = fullUrl;
-        document.getElementById('decorPreviewImg').src = fullUrl;
+        document.getElementById('decorImage').value = data.url;
+        document.getElementById('decorPreviewImg').src = data.url;
         document.getElementById('decorImagePreview').classList.remove('hidden');
         status.textContent = '✓ Imagine încărcată!';
         status.className = 'text-xs text-candy-green mt-2';
