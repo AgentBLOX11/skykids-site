@@ -789,6 +789,7 @@
     if (name === 'dashboard') { loadStats(); return; }
     if (name === 'bookings') { loadBookings(); startAutoRefresh('bookings'); return; }
     if (name === 'comenzi') { loadOrders(); startAutoRefresh('comenzi'); return; }
+    if (name === 'decor') { loadDecor(); return; }
     stopAutoRefresh();
   }
 
