@@ -131,7 +131,7 @@ app.use(express.json({ limit: '1mb' }));
 app.use(express.static(path.join(__dirname, 'public'), { maxAge: '1h', setHeaders: (res) => { res.setHeader('Cache-Control', 'public, max-age=3600'); } }));
 
 // Serve uploaded images
-app.use('/uploads', express.static(path.join(__dirname, 'uploads'), { maxAge: '7d', setHeaders: (res) => { res.setHeader('Cache-Control', 'public, max-age=604800'); } }));
+app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads'), { maxAge: '7d', setHeaders: (res) => { res.setHeader('Cache-Control', 'public, max-age=604800'); } }));
 
 // Database setup
 const db = new Database(path.join(__dirname, 'skykids.db'));
