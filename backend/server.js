@@ -78,12 +78,18 @@ function formatBookingMessage(booking) {
 `;
   msg += `📦 Pachet: ${booking.package}
 `;
+  if (booking.package_price > 0) msg += `💵 Preț pachet: ${parseFloat(booking.package_price).toFixed(0)} MDL
+`;
   if (booking.food_items && booking.food_items.length > 0) {
     msg += `🍔 Produse:
 `;
     booking.food_items.forEach(fi => { msg += `   • ${fi.quantity}× ${fi.product_name} (${(fi.price * fi.quantity).toFixed(0)} MDL)\n`; });
+    msg += `💵 Preț produse: ${booking.food_total || 0} MDL
+`;
   }
-  msg += `💰 Total: *${booking.total || 0} MDL*`;
+  msg += `━━━━━━━━━━━━━━━━━━
+`;
+  msg += `💰 *TOTAL: ${booking.total || 0} MDL*`;
   return msg;
 }
 
@@ -917,7 +923,7 @@ app.post('/api/bookings', (req, res) => {
   const foodItems = db.prepare('SELECT * FROM booking_products WHERE booking_id = ?').all(id);
   const foodTotal = foodItems.reduce((sum, fi) => sum + (fi.price * fi.quantity), 0);
   const grandTotal = ((parseFloat(booking.package_price) || 0) + foodTotal).toFixed(0);
-  const bookingData = { client_name: booking.client_name, client_phone: booking.client_phone, date: booking.date, time: booking.time, kids_count: booking.kids_count, package: booking.package, total: grandTotal, food_items: foodItems };
+  const bookingData = { client_name: booking.client_name, client_phone: booking.client_phone, date: booking.date, time: booking.time, kids_count: booking.kids_count, package: booking.package, package_price: booking.package_price, total: grandTotal, food_items: foodItems, food_total: foodTotal };
   res.status(201).json({ success: true, booking });
   broadcastEvent('new_booking', { booking, at: new Date().toISOString() });
   sendTelegramMessage(BOOKINGS_BOT_TOKEN, formatBookingMessage(bookingData));
