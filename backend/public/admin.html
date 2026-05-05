@@ -170,7 +170,7 @@
       </aside>
 
       <!-- Mobile menu button (visible only on mobile) -->
-      <button onclick="showModal('mobileMenuModal')" class="md:hidden fixed bottom-6 right-6 z-50 w-14 h-14 bg-candy-pink text-white rounded-full shadow-lg flex items-center justify-center hover:scale-105 active:scale-95 transition-all">
+      <button onclick="showModal('mobileMenuModal')" class="md:hidden fixed bottom-6 right-6 z-50 w-14 h-14 bg-pink-500 text-white rounded-full shadow-lg flex items-center justify-center hover:scale-105 active:scale-95 transition-all">
         <iconify-icon icon="lucide:menu" width="24"></iconify-icon>
       </button>
 
@@ -352,7 +352,7 @@
               <span class="text-gray-400 text-sm">—</span>
               <input type="date" id="statsDateTo" class="flex-1 px-3 py-3 rounded-xl border-2 border-gray-100 text-sm">
             </div>
-            <button onclick="loadStats()" class="w-full px-4 py-3 bg-candy-blue text-white rounded-xl font-bold hover:opacity-90 transition-opacity text-sm">Filtrează</button>
+            <button onclick="loadStats()" class="w-full px-4 py-3 bg-blue-500 text-white rounded-xl font-bold hover:opacity-90 transition-opacity text-sm">Filtrează</button>
           </div>
           
           <!-- Stats cards -->
@@ -418,7 +418,7 @@
         <section id="section-comenzi" class="section hidden">
           <div class="flex items-center justify-between mb-6">
             <h2 class="text-2xl font-bold text-dark">Comenzi</h2>
-            <span id="ordersCount" class="bg-candy-pink text-white px-3 py-1 rounded-full text-sm font-bold">0</span>
+            <span id="ordersCount" class="bg-pink-500 text-white px-3 py-1 rounded-full text-sm font-bold">0</span>
           </div>
           <div class="bg-white rounded-2xl shadow-card p-6">
             <div id="ordersList" class="space-y-4">
@@ -484,7 +484,7 @@
                   <label class="block text-sm font-bold text-gray-700 mb-2">Confirmă parola nouă</label>
                   <input type="password" id="confirmPassword" required minlength="6" class="w-full px-5 py-4 rounded-xl border-2 border-gray-100">
                 </div>
-                <button type="submit" class="bg-candy-orange text-white px-6 py-3 rounded-xl font-bold hover:opacity-90 transition-all">
+                <button type="submit" class="bg-gradient-to-r from-pink-500 to-orange-400 text-white px-6 py-3 rounded-xl font-bold hover:opacity-90 transition-all">
                   Schimbă parola
                 </button>
                 <p id="passwordChangeMsg" class="hidden text-sm font-bold"></p>
@@ -918,7 +918,7 @@
           </div>
           ${p.description ? `<p class="text-sm text-gray-500 mb-2 line-clamp-2">${p.description}</p>` : ''}
           ${p.weight ? `<p class="text-xs text-gray-400 mb-3">${p.weight}</p>` : ''}
-          ${p.badge ? `<span class="inline-block bg-candy-yellow text-dark text-xs font-bold px-3 py-1 rounded-full mb-3">${p.badge}</span>` : ''}
+          ${p.badge ? `<span class="inline-block bg-yellow-400 text-dark text-xs font-bold px-3 py-1 rounded-full mb-3">${p.badge}</span>` : ''}
           <div class="flex items-center justify-between pt-3 border-t">
             <span class="text-xs font-bold px-3 py-1 rounded-full ${p.active ? 'badge-active' : 'badge-inactive'}">${p.active ? 'Activ' : 'Inactiv'}</span>
             <div class="flex gap-1">
@@ -1325,7 +1325,7 @@
         <div class="flex items-center gap-2">
           <span class="px-3 py-1 rounded-full text-xs font-bold ${statusBadge[b.status]}">${b.status}</span>
           ${b.status === 'pending' ? `
-            <button onclick="event.stopPropagation(); updateBookingStatus('${b.id}', 'confirmed')" class="px-4 py-2 bg-candy-green text-white rounded-xl text-sm font-bold hover:opacity-90">Confirmă</button>
+            <button onclick="event.stopPropagation(); updateBookingStatus('${b.id}', 'confirmed')" class="px-4 py-2 bg-green-500 text-white rounded-xl text-sm font-bold hover:opacity-90">Confirmă</button>
             <button onclick="event.stopPropagation(); updateBookingStatus('${b.id}', 'cancelled')" class="px-4 py-2 bg-red-500 text-white rounded-xl text-sm font-bold hover:opacity-90">Anulează</button>
           ` : ''}
         </div>
@@ -1393,7 +1393,7 @@
         <div class="flex items-center gap-2">
           <span class="px-3 py-1 rounded-full text-xs font-bold ${statusBadge[b.status]}">${b.status}</span>
           ${b.status === 'pending' ? `
-            <button onclick="event.stopPropagation(); updateBookingStatus('${b.id}', 'confirmed')" class="px-4 py-2 bg-candy-green text-white rounded-xl text-sm font-bold hover:opacity-90">Confirmă</button>
+            <button onclick="event.stopPropagation(); updateBookingStatus('${b.id}', 'confirmed')" class="px-4 py-2 bg-green-500 text-white rounded-xl text-sm font-bold hover:opacity-90">Confirmă</button>
             <button onclick="event.stopPropagation(); updateBookingStatus('${b.id}', 'cancelled')" class="px-4 py-2 bg-red-500 text-white rounded-xl text-sm font-bold hover:opacity-90">Anulează</button>
           ` : ''}
         </div>
