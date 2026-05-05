@@ -1455,7 +1455,8 @@
           ${o.notes ? `<p class="text-sm text-gray-500"><span class="font-medium">Notițe:</span> ${o.notes}</p>` : ''}
           <div class="flex gap-2 mt-2">
             ${o.status === 'pending' ? `<button onclick="updateOrderStatus(${o.id}, 'confirmed')" class="flex-1 bg-green-100 text-green-600 py-2 rounded-lg text-sm font-bold">Acceptă</button>` : ''}
-            ${o.status !== 'cancelled' ? `<button onclick="updateOrderStatus(${o.id}, 'cancelled')" class="flex-1 bg-red-100 text-red-600 py-2 rounded-lg text-sm font-bold">Anulează</button>` : ''}
+            ${o.status === 'confirmed' ? `<button onclick="updateOrderStatus(${o.id}, 'completed')" class="flex-1 bg-blue-100 text-blue-600 py-2 rounded-lg text-sm font-bold">Finalizată</button>` : ''}
+            ${o.status !== 'cancelled' && o.status !== 'completed' ? `<button onclick="updateOrderStatus(${o.id}, 'cancelled')" class="flex-1 bg-red-100 text-red-600 py-2 rounded-lg text-sm font-bold">Anulează</button>` : ''}
           </div>
         </div>
       `).join('');
