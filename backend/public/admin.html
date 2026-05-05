@@ -1476,7 +1476,7 @@
       
       let totalRevenue = 0;
       bookings.forEach(b => {
-        const pkg = pkgPriceMap[b.package.toLowerCase().replace(/\s+/g, '-')];
+        const pkg = pkgPriceMap[b.package];
         if (pkg) {
           if (pkg.price_group) totalRevenue += parseFloat(pkg.price_group);
           else {
@@ -1515,6 +1515,8 @@
     `).join('');
   }
 
+  async function loadBusinessInfo() {
+    try {
       const res = await fetch('/api/settings/business', { headers: { 'Authorization': 'Bearer ' + token } });
       if(!res.ok) return;
       const data = await res.json();
