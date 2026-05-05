@@ -39,6 +39,49 @@ function translate(text, targetLang = 'ru') {
   });
 }
 
+// ============== TELEGRAM NOTIFICATIONS ==============
+function sendTelegramMessage(botToken, message) {
+  if (!botToken || !TELEGRAM_CHAT_ID) return;
+  const url = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${TELEGRAM_CHAT_ID}&text=${encodeURIComponent(message)}`;
+  https.get(url, (res) => {}).on('error', () => {});
+}
+
+function formatOrderMessage(order) {
+  let msg = `🛒 *Comandă nouă!*
+\n`;
+  msg += `📋 Nr: *${order.order_number}*
+`;
+  msg += `👤 Nume: ${order.first_name} ${order.last_name}
+`;
+  msg += `📞 Telefon: ${order.phone}
+`;
+  if (order.address) msg += `📍 Adresă: ${order.address}
+`;
+  if (order.table_number) msg += `🍽️ Masă: #${order.table_number}
+`;
+  msg += `💰 Total: *${order.total || 0} MDL*
+`;
+  if (order.notes) msg += `📝 Notițe: ${order.notes}`;
+  return msg;
+}
+
+function formatBookingMessage(booking) {
+  let msg = `📅 *Rezervare nouă!*
+\n`;
+  msg += `👤 Nume: ${booking.client_name}
+`;
+  msg += `📞 Telefon: ${booking.client_phone}
+`;
+  msg += `📆 Data: ${booking.date} la ${booking.time}
+`;
+  msg += `🎈 Copii: ${booking.kids_count}
+`;
+  msg += `📦 Pachet: ${booking.package}
+`;
+  if (booking.total) msg += `💰 Total: *${booking.total} MDL*`;
+  return msg;
+}
+
 async function translateObject(obj, fields) {
   const result = { ...obj };
   await Promise.all(fields.map(async (f) => {
@@ -67,6 +110,10 @@ if (!ADMIN_PASSWORD_ENV) {
   console.warn('WARNING: ADMIN_PASSWORD env var not set! Admin panel will use default password ONLY if no admin exists in DB.');
 }
 const JWT_SECRET = process.env.JWT_SECRET || 'skykids2026fallback_secret_change_in_production';
+const ORDERS_BOT_TOKEN = process.env.ORDERS_BOT_TOKEN || '';
+const BOOKINGS_BOT_TOKEN = process.env.BOOKINGS_BOT_TOKEN || '';
+const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID || '';
+
 // Fail fast if JWT_SECRET is using the fallback in production
 if (process.env.NODE_ENV === 'production' && JWT_SECRET.includes('fallback')) {
   console.error('FATAL: JWT_SECRET environment variable is not set in production!');
@@ -864,6 +911,9 @@ app.post('/api/bookings', (req, res) => {
   const booking = db.prepare('SELECT * FROM bookings WHERE id = ?').get(id);
   res.status(201).json({ success: true, booking });
   broadcastEvent('new_booking', { booking, at: new Date().toISOString() });
+  const grandTotal = ((parseFloat(booking.package_price) || 0) + (parseFloat(booking.food_total) || 0)).toFixed(0);
+  const bookingData = { client_name: booking.client_name, client_phone: booking.client_phone, date: booking.date, time: booking.time, kids_count: booking.kids_count, package: booking.package, total: grandTotal };
+  sendTelegramMessage(BOOKINGS_BOT_TOKEN, formatBookingMessage(bookingData));
 });
 
 app.get('/api/slots/:date', (req, res) => {
@@ -1215,6 +1265,8 @@ app.post('/api/orders', (req, res) => {
     }
     res.json({ success: true, order_number: orderNumber, order_id: orderId });
     broadcastEvent('new_order', { order: { order_number: orderNumber, id: orderId, first_name, last_name, phone, total: itemsTotal, status: 'pending', created_at: new Date().toISOString() }, at: new Date().toISOString() });
+    const orderData = { order_number: orderNumber, first_name, last_name, phone, address, table_number: table_number || '', total: itemsTotal, notes };
+    sendTelegramMessage(ORDERS_BOT_TOKEN, formatOrderMessage(orderData));
   } catch(e) {
     console.error('Order error:', e);
     res.status(500).json({ error: 'Eroare la salvarea comenzii' });
