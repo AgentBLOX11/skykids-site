@@ -1399,6 +1399,61 @@
     loadBookings();
   }
 
+  async function loadOrders() {
+    const list = document.getElementById('ordersList');
+    try {
+      const res = await fetch('/api/admin/orders', { headers: authHeaders() });
+      const data = await res.json();
+      const orders = data.allOrders || data.orders || [];
+      document.getElementById('ordersCount').textContent = orders.length;
+      if (!orders.length) {
+        list.innerHTML = '<p class="text-gray-400 text-center py-8">Nicio comandă momentan.</p>';
+        return;
+      }
+      list.innerHTML = orders.map(o => `
+        <div class="card p-4 flex items-center justify-between">
+          <div>
+            <p class="font-bold">#${o.order_number || o.id}</p>
+            <p class="text-sm text-gray-500">${o.customer_name || '—'}</p>
+            <p class="text-xs text-gray-400">${new Date(o.created_at).toLocaleDateString('ro-RO')}</p>
+          </div>
+          <div class="text-right">
+            <p class="font-bold text-candy-pink">${o.total || 0} MDL</p>
+            <span class="text-xs px-2 py-1 rounded-full badge-${o.status || 'pending'}">${o.status || 'pending'}</span>
+          </div>
+        </div>
+      `).join('');
+    } catch(e) {
+      list.innerHTML = '<p class="text-red-400 text-center py-8">Eroare la încărcare.</p>';
+    }
+  }
+
+  async function loadDecor() {
+    const list = document.getElementById('decorList');
+    try {
+      const res = await fetch('/api/admin/decor', { headers: authHeaders() });
+      const items = await res.json();
+      if (!items.length) {
+        list.innerHTML = '<p class="text-gray-400 text-center py-8 col-span-3">Niciun decor adăugat.</p>';
+        return;
+      }
+      list.innerHTML = items.map(d => `
+        <div class="card p-4">
+          ${d.image ? `<img src="${d.image}" class="w-full h-40 object-cover rounded-xl mb-3">` : ''}
+          <h4 class="font-bold">${d.name}</h4>
+          <p class="text-sm text-gray-500">${d.description || ''}</p>
+          <p class="font-bold text-candy-pink mt-2">${d.price} MDL</p>
+          <div class="flex gap-2 mt-3">
+            <button onclick="editDecor(${d.id})" class="flex-1 bg-blue-100 text-blue-600 py-2 rounded-lg text-sm font-bold">Editează</button>
+            <button onclick="deleteDecor(${d.id})" class="flex-1 bg-red-100 text-red-600 py-2 rounded-lg text-sm font-bold">Șterge</button>
+          </div>
+        </div>
+      `).join('');
+    } catch(e) {
+      list.innerHTML = '<p class="text-red-400 text-center py-8 col-span-3">Eroare la încărcare.</p>';
+    }
+  }
+
   function showBookingModal() {
     alert('Pentru a adăuga o rezervare, contactează clientul direct.');
   }
