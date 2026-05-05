@@ -787,6 +787,30 @@
     document.getElementById('section-' + name).classList.remove('hidden');
     document.querySelectorAll('.sidebar-item').forEach(b => b.classList.toggle('active', b.dataset.section === name));
     if (name === 'dashboard') { loadStats(); return; }
+    if (name === 'bookings') { loadBookings(); startAutoRefresh('bookings'); return; }
+    if (name === 'comenzi') { loadOrders(); startAutoRefresh('comenzi'); return; }
+    stopAutoRefresh();
+  }
+
+  let autoRefreshInterval = null;
+  let currentAutoRefreshSection = null;
+
+  function startAutoRefresh(section) {
+    if (currentAutoRefreshSection === section) return;
+    stopAutoRefresh();
+    currentAutoRefreshSection = section;
+    autoRefreshInterval = setInterval(() => {
+      if (section === 'bookings') loadBookings();
+      if (section === 'comenzi') loadOrders();
+    }, 10000); // Refresh every 10 seconds
+  }
+
+  function stopAutoRefresh() {
+    if (autoRefreshInterval) {
+      clearInterval(autoRefreshInterval);
+      autoRefreshInterval = null;
+      currentAutoRefreshSection = null;
+    }
   }
 
   function authHeaders() { return { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' }; }
