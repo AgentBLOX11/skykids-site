@@ -1924,22 +1924,20 @@
 
   function updateSummary() {
     const summary = document.getElementById('bookingSummary');
-    const pkgNames = { standard: 'Standard (100 lei/copil)', premium: 'Premium (180 lei/copil)', 'zi-de-nastere': 'Zi de Naștere (1500 lei/grup)' };
     const kids = document.getElementById('kids_count').value || 1;
+    const adults = document.getElementById('adults_count').value || 0;
     const date = document.getElementById('date').value || '';
     const time = selectedTime || '';
     
-    let price = '';
-    if (selectedPackage === 'zi-de-nastere') price = '1500 lei';
-    else if (selectedPackage === 'premium') price = `${180 * kids} lei`;
-    else if (selectedPackage === 'standard') price = `${100 * kids} lei`;
+    const pkgTotal = selectedPackagePrice * (parseInt(kids) + parseInt(adults));
+    const price = pkgTotal > 0 ? pkgTotal.toFixed(0) + ' lei' : '';
     
     const foodTotal = bookingFoodItems.reduce((sum, i) => sum + i.price * i.quantity, 0);
     
     let html = `
-      <div class="flex justify-between"><span class="text-gray-500">Pachet:</span><span class="font-bold">${pkgNames[selectedPackage] || '—'}</span></div>
+      <div class="flex justify-between"><span class="text-gray-500">Pachet:</span><span class="font-bold">${selectedPackage || '—'}</span></div>
       <div class="flex justify-between"><span class="text-gray-500">Copii:</span><span class="font-bold">${kids}</span></div>
-      <div class="flex justify-between"><span class="text-gray-500">Adulți:</span><span class="font-bold">${document.getElementById('adults_count').value || 0}</span></div>
+      <div class="flex justify-between"><span class="text-gray-500">Adulți:</span><span class="font-bold">${adults}</span></div>
       <div class="flex justify-between"><span class="text-gray-500">Data:</span><span class="font-bold">${date || '—'}</span></div>
       <div class="flex justify-between"><span class="text-gray-500">Ora:</span><span class="font-bold">${time || '—'}</span></div>
     `;
@@ -1989,10 +1987,12 @@
       date: document.getElementById('date').value,
       time: selectedTime,
       kids_count: parseInt(document.getElementById('kids_count').value),
+      adults_count: parseInt(document.getElementById('adults_count').value) || 0,
       client_name: document.getElementById('client_name').value,
       client_phone: document.getElementById('client_phone').value,
       notes: document.getElementById('notes').value,
-      food_items: bookingFoodItems.map(i => ({ id: i.id, name: i.name, price: i.price, quantity: i.quantity }))
+      food_items: bookingFoodItems.map(i => ({ id: i.id, name: i.name, price: i.price, quantity: i.quantity })),
+      package_price: selectedPackagePrice * ((parseInt(document.getElementById('kids_count').value) || 1) + (parseInt(document.getElementById('adults_count').value) || 0))
   };
     
     try {
