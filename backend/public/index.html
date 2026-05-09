@@ -117,11 +117,17 @@
       cursor: pointer;
       transition: all 0.3s ease;
       border: 2px solid transparent;
+      flex-shrink: 0;
+      width: 280px;
+      scroll-snap-align: start;
     }
     .menu-item:hover {
       border-color: #ff6b9d;
       transform: translateY(-4px);
       box-shadow: 0 12px 30px rgba(255,107,157,0.15);
+    }
+    @media (min-width: 640px) {
+      .menu-item { width: 300px; }
     }
     
     /* Category tab */
@@ -685,7 +691,7 @@
       </div>
       
       <div id="categoryTabs" class="flex overflow-x-auto snap-x snap-mandatory gap-2 sm:gap-3 px-4 -mx-4 sm:mx-0 sm:px-0 sm:justify-center mb-8 sm:mb-12 fade-up pb-2 sm:pb-0"></div>
-      <div id="menuGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mt-8"></div>
+      <div id="menuGrid" class="flex overflow-x-auto snap-x snap-mandatory gap-4 sm:gap-6 mt-8 pb-4 px-4 -mx-4 sm:mx-0 sm:px-0" style="scroll-snap-type: x mandatory;"></div>
       <div id="menuLoading" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         ${[1,2,3,4,5,6].map(() => `
           <div class="skeleton-card card overflow-hidden">
@@ -1263,6 +1269,7 @@
   let selectedTime = null;
   let currentStep = 1;
   let selectedPackagePrice = 0;
+  let pricePerAdult = 80; // Default price per adult
   let selectedPackageName = '';
   let bookingFoodItems = []; // { id, name, price, quantity }
   let bookingCategories = [];
@@ -1672,10 +1679,12 @@
 
   function updateBookingPrices() {
     const foodTotal = bookingFoodItems.reduce((sum, i) => sum + i.price * i.quantity, 0);
-    const pkgCount = (parseInt(document.getElementById('kids_count')?.value) || 1) + (parseInt(document.getElementById('adults_count')?.value) || 0);
-    const total = (selectedPackagePrice * pkgCount) + foodTotal;
+    const kidsCount = parseInt(document.getElementById('kids_count')?.value) || 1;
+    const adultsCount = parseInt(document.getElementById('adults_count')?.value) || 0;
+    const pkgTotal = (selectedPackagePrice * kidsCount) + (pricePerAdult * adultsCount);
+    const total = pkgTotal + foodTotal;
     
-    document.getElementById('bookingPkgPrice').textContent = (selectedPackagePrice * pkgCount).toFixed(0) + ' MDL';
+    document.getElementById('bookingPkgPrice').textContent = pkgTotal.toFixed(0) + ' MDL';
     document.getElementById('bookingFoodPrice').textContent = foodTotal.toFixed(0) + ' MDL';
     document.getElementById('bookingTotalPrice').textContent = total.toFixed(0) + ' MDL';
   }
@@ -1800,10 +1809,15 @@
         // Per-child price
         selectedPackagePrice = parseFloat(pkgData.price_per_child) || 0;
       }
+      // Set adult price if available
+      if (pkgData.price_per_adult) {
+        pricePerAdult = parseFloat(pkgData.price_per_adult) || 80;
+      }
     } else {
       // Fallback to hardcoded map
       const pkgMap = { 'standard': 100, 'premium': 180, 'zi-de-nastere': 1500 };
       selectedPackagePrice = pkgMap[pkg] || 0;
+      pricePerAdult = 80;
     }
     // Reset inputs to valid values within new limits
     const kidsInput = document.getElementById('kids_count');
@@ -1929,7 +1943,7 @@
     const date = document.getElementById('date').value || '';
     const time = selectedTime || '';
     
-    const pkgTotal = selectedPackagePrice * (parseInt(kids) + parseInt(adults));
+    const pkgTotal = (selectedPackagePrice * parseInt(kids)) + (pricePerAdult * parseInt(adults));
     const price = pkgTotal > 0 ? pkgTotal.toFixed(0) + ' lei' : '';
     
     const foodTotal = bookingFoodItems.reduce((sum, i) => sum + i.price * i.quantity, 0);
@@ -1992,7 +2006,7 @@
       client_phone: document.getElementById('client_phone').value,
       notes: document.getElementById('notes').value,
       food_items: bookingFoodItems.map(i => ({ id: i.id, name: i.name, price: i.price, quantity: i.quantity })),
-      package_price: selectedPackagePrice * ((parseInt(document.getElementById('kids_count').value) || 1) + (parseInt(document.getElementById('adults_count').value) || 0))
+      package_price: (selectedPackagePrice * (parseInt(document.getElementById('kids_count').value) || 1)) + (pricePerAdult * (parseInt(document.getElementById('adults_count').value) || 0))
   };
     
     try {
@@ -2088,12 +2102,12 @@
     }
     
     if (!filtered.length) {
-      grid.innerHTML = '<div class="col-span-full text-center py-12 text-gray-400">Niciun produs găsit.</div>';
+      grid.innerHTML = '<div class="flex-shrink-0 w-full text-center py-12 text-gray-400">Niciun produs găsit.</div>';
       return;
     }
     
     grid.innerHTML = filtered.map(p => `
-      <div class="menu-item card overflow-hidden" onclick="openProductModal('${p.image}', '${p.name.replace(/'/g, "\\'")}', '${(p.description||'').replace(/'/g, "\\'")}', '${p.price}', '${p.weight}', '${p.badge}', '${p.id}')">
+      <div class="menu-item card overflow-hidden" onclick="openProductModal('${p.image}', '${p.name.replace(/'/g, "\\'")}', '${(p.description||'').replace(/'/g, "\\'")}', '${p.price}', '${p.weight}', '${p.badge}', '${p.id}')" style="scroll-snap-align: start;">
         ${p.image ? 
           `<img src="${p.image}" alt="${p.name}" class="w-full h-40 object-cover" width="400" height="160" loading="lazy" decoding="async">` : 
           `<div class="w-full h-40 bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center text-5xl opacity-30">${p.icon || '🍽️'}</div>`

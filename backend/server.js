@@ -498,8 +498,8 @@ for (const c of defaultContact) {
 const packageCount = db.prepare('SELECT COUNT(*) as c FROM packages').get().c;
 if (packageCount === 0) {
   const defaultPackages = [
-    { name: 'Standard', icon: '[balloon]', description: 'Acces la zona de joacă + o băutură', price_per_child: '100', price_per_adult: '', price_group: '', max_children: 15, max_adults: 10, includes: 'Zona de joacă, O băutură', sort_order: 0 },
-    { name: 'Premium', icon: '⭐', description: 'Acces + farfurie + băutură + dulciuri', price_per_child: '180', price_per_adult: '', price_group: '', max_children: 15, max_adults: 10, includes: 'Zona de joacă, Fel principal, Băutură, Desert', sort_order: 1 },
+    { name: 'Standard', icon: '[balloon]', description: 'Acces la zona de joacă + o băutură', price_per_child: '100', price_per_adult: '80', price_group: '', max_children: 15, max_adults: 10, includes: 'Zona de joacă, O băutură', sort_order: 0 },
+    { name: 'Premium', icon: '⭐', description: 'Acces + farfurie + băutură + dulciuri', price_per_child: '180', price_per_adult: '80', price_group: '', max_children: 15, max_adults: 10, includes: 'Zona de joacă, Fel principal, Băutură, Desert', sort_order: 1 },
     { name: 'Zi de Naștere', icon: '🎂', description: 'Pachet complet petrecere copii (max 15 copii)', price_per_child: '', price_per_adult: '', price_group: '1500', max_children: 15, max_adults: 10, includes: 'Zonă privată, Catering complet, Decorare, animator', sort_order: 2 },
   ];
   const insertPackage = db.prepare('INSERT INTO packages (name, icon, description, price_per_child, price_per_adult, price_group, max_children, max_adults, includes, sort_order) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
